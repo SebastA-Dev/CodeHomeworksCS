@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Compilar main.cpp (g++)",
+			"type": "shell",
+			"command": "g++ src/main.cpp -o bin/algoritmos.exe",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}
