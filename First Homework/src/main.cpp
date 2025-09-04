@@ -1,65 +1,66 @@
 #include <iostream>
-#include <cstdlib>
+#include <vector>
+#include <fstream>
 using namespace std;
-
-/*
-
-INTEGRANTES GRUPO - TAREA 1
-
-SERGIO MENDIVELSO > 20231020227
-SEBASTIAN AVENDANO > 20232020101
-
-*/
-
 
 struct nodo {
     int x,y;
     nodo *sig;
 };
 
-void codigo1(int N){    
-    nodo *cab = NULL, *Aux;
-    cout << sizeof(cab) << endl;
-    cout << sizeof(Aux) << endl;
+struct nodo2 {
+    int a;
+    float b;
+};
 
-    for(int i = 0; i < N; ++i)
-        {Aux = new nodo;
-            Aux -> x = i;
-            Aux -> y = N-i;
-            Aux -> sig = cab;
-            cab = Aux;
-            
-            cout << sizeof(cab) << endl;
-            cout << sizeof(Aux) << endl;
-        }
-    Aux = cab;
-    while (Aux != NULL)
-    { //cout << Aux->x <<Aux->y<<endl;
-        cout << sizeof(cab->x) << sizeof(cab->y) << endl;
-        Aux = Aux-> sig; 
-        cout << sizeof(Aux) << endl;
+/*
+
+INTEGRANTES
+
+SEBASTIAN AVENDAÑO 20232020101
+SERGIO MENDIVELSO 20231020227
+
+*/
+
+// ------------------- FUNCIONES -------------------
+
+vector<size_t> codigo1(int N){    
+    vector<size_t> memoria_usada;
+    nodo *cab = NULL, *Aux;
+    
+    size_t mem_inicial = sizeof(cab) + sizeof(Aux);
+    memoria_usada.push_back(mem_inicial);
+    
+    for(int i = 0; i < N; ++i) {
+        Aux = new nodo;
+        Aux->x = i;
+        Aux->y = N-i;
+        Aux->sig = cab;
+        cab = Aux;
+        memoria_usada.push_back(mem_inicial + sizeof(nodo) * (i+1));
     }
-    for (Aux=cab->sig; Aux!=NULL; Aux=Aux->sig)
-    {
+    
+    Aux = cab;
+    while (Aux != NULL) Aux = Aux->sig; 
+    
+    for (Aux=cab->sig; Aux!=NULL; Aux=Aux->sig) {
         delete cab;
         cab = Aux;
     }
-    delete cab;
+    delete cab;    
+    return memoria_usada;
 }
 
-void codigo2(int M, int tam) {
+vector<size_t> codigo2(int M, int tam) {
+    vector<size_t> memoria_usada;
     nodo **arr, *Aux;
-
-    cout << "sizeof(nodo): " << sizeof(nodo) << endl;
-    cout << "sizeof(nodo*): " << sizeof(nodo*) << endl;
-    cout << "sizeof(nodo**): " << sizeof(nodo**) << endl;
-
     arr = new nodo *[M];
-    cout << "sizeof(arr): " << sizeof(arr) << endl;
+    size_t mem_array = sizeof(nodo*) * M;
+    memoria_usada.push_back(mem_array);
 
-    for (int i = 0; i < M; i++)
-        arr[i] = NULL;
+    for (int i = 0; i < M; i++) arr[i] = NULL;
 
+    int total_nodos = 0;
     for (int i = 0; i < M; i++) {
         for (int j = 1; j <= tam; j++) {
             Aux = new nodo;
@@ -67,59 +68,53 @@ void codigo2(int M, int tam) {
             Aux->y = M + j * i;
             Aux->sig = arr[i];
             arr[i] = Aux;
-
-            cout << "sizeof(*Aux): " << sizeof(*Aux) << endl;
+            total_nodos++;
+            memoria_usada.push_back(mem_array + sizeof(nodo) * total_nodos);
         }
     }
 
     for (int i = 0; i < M; i++) {
-        Aux = arr[i];
-        while (Aux != NULL) {
-            cout << "sizeof(Aux->x): " << sizeof(Aux->x)
-                 << " sizeof(Aux->y): " << sizeof(Aux->y) << endl;
-            Aux = Aux->sig;
-        }
         for (Aux = arr[i]->sig; Aux != NULL; Aux = Aux->sig) {
             delete arr[i];
             arr[i] = Aux;
         }
-        delete arr[i];
+        delete arr[i];        
     }
-    delete[] arr;
+    delete[] arr;    
+    return memoria_usada;
 }
 
-void codigo3(int N) {
+vector<size_t> codigo3_listas(int N) {
+    vector<size_t> memoria_usada;
     nodo ***a, *Aux;
-
     a = new nodo **[N];
-    cout << "sizeof(a): " << sizeof(a) << endl;
-
+    size_t mem_array3d = sizeof(nodo**) * N;
+    size_t mem_arrays2d = 0;
     for (int i = 0; i < N; i++) {
         a[i] = new nodo *[N];
-        for (int j = 0; j < N; j++)
-            a[i][j] = NULL;
+        mem_arrays2d += sizeof(nodo*) * N;
+        for (int j = 0; j < N; j++) a[i][j] = NULL;
     }
+    size_t mem_estructuras = mem_array3d + mem_arrays2d;
+    memoria_usada.push_back(mem_estructuras);
 
-    for (int i = 0; i < N; i++)
-        for (int j = 0; j < N; j++)
+    int total_nodos = 0;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
             for (int k = 0; k < N; k++) {
                 Aux = new nodo;
-                Aux->x = j * k;
-                Aux->y = i + k;
+                Aux->x = j*k;
+                Aux->y = i+k;
                 Aux->sig = a[i][j];
                 a[i][j] = Aux;
-
-                cout << "sizeof(*Aux): " << sizeof(*Aux) << endl;
+                total_nodos++;
+                memoria_usada.push_back(mem_estructuras + sizeof(nodo) * total_nodos);
             }
+        }
+    }
 
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            Aux = a[i][j];
-            while (Aux != NULL) {
-                cout << "sizeof(Aux->x): " << sizeof(Aux->x)
-                     << " sizeof(Aux->y): " << sizeof(Aux->y) << endl;
-                Aux = Aux->sig;
-            }
             for (Aux = a[i][j]->sig; Aux != NULL; Aux = Aux->sig) {
                 delete a[i][j];
                 a[i][j] = Aux;
@@ -129,52 +124,70 @@ void codigo3(int N) {
         delete a[i];
     }
     delete[] a;
+    memoria_usada.push_back(0);
+    return memoria_usada;
 }
 
-struct nodo2 {
-    int a;
-    float b;
-};
-
-void codigo3(int N) {
+vector<size_t> codigo3_structs(int N) {
+    vector<size_t> memoria_usada;
     nodo2 **a;
-
     a = new nodo2 *[N];
-    cout << "sizeof(a): " << sizeof(a) << endl;
+    size_t mem_array_ptrs = sizeof(nodo2*) * static_cast<size_t>(N);
+    memoria_usada.push_back(mem_array_ptrs);
 
+    size_t mem_total_structs = 0;
     for (int i = 0; i < N; i++) {
         a[i] = new nodo2[N];
-        for (int j = 0; j < N; j++) {
-            a[i][j].a = j * i;
-            a[i][j].b = j + i;
+        mem_total_structs += sizeof(nodo2) * static_cast<size_t>(N);
 
-            cout << "sizeof(a[i][j].a): " << sizeof(a[i][j].a)
-                 << " sizeof(a[i][j].b): " << sizeof(a[i][j].b) << endl;
+        for (int j = 0; j < N; j++) {
+            a[i][j].a = j*i;
+            a[i][j].b = static_cast<float>(j+i);
+            
+            memoria_usada.push_back(mem_array_ptrs + mem_total_structs);
         }
     }
 
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++)
-            cout << a[i][j].a << "," << a[i][j].b << " ";
-        delete[] a[i];
-    }
+    for (int i = 0; i < N; i++) delete[] a[i];
     delete[] a;
+    return memoria_usada;
 }
 
 
+// ------------------- MAIN -------------------
+
+void guardar_resultados(ofstream &f, const vector<size_t>& datos, const string& nombre, int N) {
+    f << "\n=== " << nombre << ", N = " << N << " ===\n";
+    f << "Paso\tMemoria (bytes)\n";
+    for (size_t i = 0; i < datos.size(); i++) {
+        f << i << "\t" << datos[i] << "\n";
+    }
+    size_t maximo = 0;
+    for (size_t mem : datos) if (mem > maximo) maximo = mem;
+    f << "Máximo uso de memoria: " << maximo << " bytes\n";
+}
+
 int main() {
+    ofstream salida("analisis_memoria.txt");
+    salida << "Análisis de complejidad espacial usando sizeof\n";
+    salida << "sizeof(nodo): " << sizeof(nodo) << " bytes\n";
+    salida << "sizeof(nodo2): " << sizeof(nodo2) << " bytes\n";
+    salida << "sizeof(nodo*): " << sizeof(nodo*) << " bytes\n";
 
-    // LLenamos los valores los cuales seran usados, en total 50, paso de 10
-    // const int size = 50;
-    // int array[size];
+    for (int i = 10; i <= 200; i += 10) {
+        vector<size_t> mem1 = codigo1(i);
+        guardar_resultados(salida, mem1, "CODIGO1 - Lista enlazada", i);
 
-    // for (int i = 0; i < size; ++i) {
-    //     array[i] = i * 10;
-    // }
+        vector<size_t> mem2 = codigo2(i, i);
+        guardar_resultados(salida, mem2, "CODIGO2 - Array de listas", i);
 
-    //TODO: Setear este valor a el valor de N dentro del array de 50 espacios
-    cout << sizeof(5) << endl;
-    codigo1(5);
+        vector<size_t> mem3 = codigo3_listas(i);
+        guardar_resultados(salida, mem3, "CODIGO3 - Array 3D de listas", i);
 
+        vector<size_t> mem4 = codigo3_structs(i);
+        guardar_resultados(salida, mem4, "CODIGO3 - Array 2D de structs", i);
+    }
+
+    salida.close();
     return 0;
 }
