@@ -156,6 +156,10 @@ vector<size_t> codigo3_structs(int N) {
 
 // ------------------- MAIN -------------------
 
+//NOTA: MAIN ANTERIOR QUE MUESTRA TODAS LAS ITERACIONES DE CADA VALOR DE N POSIBLE
+
+
+/*
 void guardar_resultados(ofstream &f, const vector<size_t>& datos, const string& nombre, int N) {
     f << "\n=== " << nombre << ", N = " << N << " ===\n";
     f << "Paso\tMemoria (bytes)\n";
@@ -164,12 +168,12 @@ void guardar_resultados(ofstream &f, const vector<size_t>& datos, const string& 
     }
     size_t maximo = 0;
     for (size_t mem : datos) if (mem > maximo) maximo = mem;
-    f << "MÃ¡ximo uso de memoria: " << maximo << " bytes\n";
+    f << "Máximo uso de memoria: " << maximo << " bytes\n";
 }
 
 int main() {
     ofstream salida("analisis_memoria.txt");
-    salida << "AnÃ¡lisis de complejidad espacial usando sizeof\n";
+    salida << "Análisis de complejidad espacial usando sizeof\n";
     salida << "sizeof(nodo): " << sizeof(nodo) << " bytes\n";
     salida << "sizeof(nodo2): " << sizeof(nodo2) << " bytes\n";
     salida << "sizeof(nodo*): " << sizeof(nodo*) << " bytes\n";
@@ -191,3 +195,44 @@ int main() {
     salida.close();
     return 0;
 }
+*/
+int main() {
+    ofstream salida("analisis_memoria.txt");
+    salida << "Codigo; N; Max de bytes usados \n";
+    
+
+// NOTA: EN CASO DE NO ENSEÑAR TODAS LAS ITERACIONES, HACERLAS POR SECCIONES REDUCIENDO LOS VALORES DE i O EJECUTANDO CADA FOR POR SEPARADO
+
+	for (int i = 10; i <= 500; i += 10) {
+        vector<size_t> mem = codigo1(i);
+        size_t max_mem = 0;
+        for (size_t m : mem) if (m > max_mem) max_mem = m;
+        salida << "CODIGO1 - Lista enlazada; " << i << "; " << max_mem << "\n";
+    }
+
+   	for (int i = 10; i <= 500; i += 10) {
+        vector<size_t> mem = codigo2(i, i);
+        size_t max_mem = 0;
+        for (size_t m : mem) if (m > max_mem) max_mem = m;
+        salida << "CODIGO2 - Array de listas; " << i << "; " << max_mem << "\n";
+    }
+
+	
+    for (int i = 10; i <= 500; i += 10) {
+        vector<size_t> mem = codigo3_listas(i);
+        size_t max_mem = 0;
+        for (size_t m : mem) if (m > max_mem) max_mem = m;
+        salida << "CODIGO3 - Array 3D de listas; " << i << "; " << max_mem << "\n";
+    }
+
+    for (int i = 10; i <= 500; i += 10) {
+        vector<size_t> mem = codigo3_structs(i);
+        size_t max_mem = 0;
+        for (size_t m : mem) if (m > max_mem) max_mem = m;
+        salida << "CODIGO4 - Array 2D de structs; " << i << "; " << max_mem << "\n";
+    }
+*/
+    salida.close();
+    return 0;
+}
+
