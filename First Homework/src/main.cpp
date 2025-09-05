@@ -217,7 +217,7 @@ int main() {
         salida << "CODIGO2 - Array de listas; " << i << "; " << max_mem << "\n";
     }
 
-	
+	/*
     for (int i = 10; i <= 500; i += 10) {
         vector<size_t> mem = codigo3_listas(i);
         size_t max_mem = 0;
@@ -225,13 +225,14 @@ int main() {
         salida << "CODIGO3 - Array 3D de listas; " << i << "; " << max_mem << "\n";
     }
 
+*/
     for (int i = 10; i <= 500; i += 10) {
         vector<size_t> mem = codigo3_structs(i);
         size_t max_mem = 0;
         for (size_t m : mem) if (m > max_mem) max_mem = m;
         salida << "CODIGO4 - Array 2D de structs; " << i << "; " << max_mem << "\n";
     }
-*/
+
     salida.close();
     return 0;
 }
