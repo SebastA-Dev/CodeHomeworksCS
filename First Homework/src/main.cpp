@@ -1,7 +1,13 @@
 #include <iostream>
+#include <windows.h>
+#include <x86intrin.h>
 #include <vector>
 #include <fstream>
+#include <chrono>
+#include <iomanip>
 using namespace std;
+using namespace chrono;
+
 
 struct nodo {
     int x,y;
@@ -23,6 +29,37 @@ SERGIO MENDIVELSO 20231020227
 */
 
 // ------------------- FUNCIONES -------------------
+
+ /**
+  * FUNCIONES AUXILIARES
+  */
+
+  double obtener_velocidad_CPU() {
+    std::array<char, 128> buffer;
+    std::string result;
+    FILE* pipe = _popen("wmic cpu get currentclockspeed", "r");
+    if (!pipe) {
+        return -1;
+    }
+
+    while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
+        result += buffer.data();
+    }
+    _pclose(pipe);
+
+    std::string::size_type pos = result.find_first_of("0123456789");
+    if (pos != std::string::npos) {
+        int mhz = std::stoi(result.substr(pos));
+        return mhz / 1000.0; 
+    }
+
+    return -1; 
+}
+
+
+/**
+ * FUNCIONES ALGORITMICAS
+ */
 
 vector<size_t> codigo1(int N){    
     vector<size_t> memoria_usada;
@@ -128,7 +165,7 @@ vector<size_t> codigo3_listas(int N) {
     return memoria_usada;
 }
 
-vector<size_t> codigo3_structs(int N) {
+vector<size_t> codigo4_structs(int N) {
     vector<size_t> memoria_usada;
     nodo2 **a;
     a = new nodo2 *[N];
@@ -153,57 +190,17 @@ vector<size_t> codigo3_structs(int N) {
     return memoria_usada;
 }
 
-
-// ------------------- MAIN -------------------
-
-//NOTA: MAIN ANTERIOR QUE MUESTRA TODAS LAS ITERACIONES DE CADA VALOR DE N POSIBLE
-
-
 /*
-void guardar_resultados(ofstream &f, const vector<size_t>& datos, const string& nombre, int N) {
-    f << "\n=== " << nombre << ", N = " << N << " ===\n";
-    f << "Paso\tMemoria (bytes)\n";
-    for (size_t i = 0; i < datos.size(); i++) {
-        f << i << "\t" << datos[i] << "\n";
-    }
-    size_t maximo = 0;
-    for (size_t mem : datos) if (mem > maximo) maximo = mem;
-    f << "Máximo uso de memoria: " << maximo << " bytes\n";
-}
+ * 
+ * FUNCIONES PERFORMANCE
+ * 
+ */
 
-int main() {
-    ofstream salida("analisis_memoria.txt");
-    salida << "Análisis de complejidad espacial usando sizeof\n";
-    salida << "sizeof(nodo): " << sizeof(nodo) << " bytes\n";
-    salida << "sizeof(nodo2): " << sizeof(nodo2) << " bytes\n";
-    salida << "sizeof(nodo*): " << sizeof(nodo*) << " bytes\n";
-
-    for (int i = 10; i <= 200; i += 10) {
-        vector<size_t> mem1 = codigo1(i);
-        guardar_resultados(salida, mem1, "CODIGO1 - Lista enlazada", i);
-
-        vector<size_t> mem2 = codigo2(i, i);
-        guardar_resultados(salida, mem2, "CODIGO2 - Array de listas", i);
-
-        vector<size_t> mem3 = codigo3_listas(i);
-        guardar_resultados(salida, mem3, "CODIGO3 - Array 3D de listas", i);
-
-        vector<size_t> mem4 = codigo3_structs(i);
-        guardar_resultados(salida, mem4, "CODIGO3 - Array 2D de structs", i);
-    }
-
-    salida.close();
-    return 0;
-}
-*/
-int main() {
+void resultados()
+{
     ofstream salida("analisis_memoria.txt");
     salida << "Codigo; N; Max de bytes usados \n";
-    
-
-// NOTA: EN CASO DE NO ENSEÑAR TODAS LAS ITERACIONES, HACERLAS POR SECCIONES REDUCIENDO LOS VALORES DE i O EJECUTANDO CADA FOR POR SEPARADO
-
-	for (int i = 10; i <= 500; i += 10) {
+for (int i = 10; i <= 500; i += 10) {
         vector<size_t> mem = codigo1(i);
         size_t max_mem = 0;
         for (size_t m : mem) if (m > max_mem) max_mem = m;
@@ -217,7 +214,7 @@ int main() {
         salida << "CODIGO2 - Array de listas; " << i << "; " << max_mem << "\n";
     }
 
-	/*
+	
     for (int i = 10; i <= 500; i += 10) {
         vector<size_t> mem = codigo3_listas(i);
         size_t max_mem = 0;
@@ -225,15 +222,124 @@ int main() {
         salida << "CODIGO3 - Array 3D de listas; " << i << "; " << max_mem << "\n";
     }
 
-*/
+
     for (int i = 10; i <= 500; i += 10) {
-        vector<size_t> mem = codigo3_structs(i);
+        vector<size_t> mem = codigo4_structs(i);
         size_t max_mem = 0;
         for (size_t m : mem) if (m > max_mem) max_mem = m;
         salida << "CODIGO4 - Array 2D de structs; " << i << "; " << max_mem << "\n";
     }
 
     salida.close();
+}
+
+void herramienta_tiempo_1(int N) {
+    auto start = high_resolution_clock::now();
+    vector<size_t> mem = codigo1(N);
+    auto end = high_resolution_clock::now();
+
+    auto tiempo_ns = duration_cast<nanoseconds>(end - start).count();
+
+    long long segundos = tiempo_ns / 1'000'000'000;
+    long long milisegundos = (tiempo_ns / 1'000'000) % 1000;
+    long long nanosegundos = tiempo_ns % 1'000'000;
+
+    cout << "[chrono] "
+         << setfill('0') << setw(2) << segundos << ":"
+         << setfill('0') << setw(3) << milisegundos << ":"
+         << setfill('0') << setw(6) << nanosegundos << endl;
+}
+
+void herramienta_tiempo_2(int N) {
+    LARGE_INTEGER freq, start, end;
+    QueryPerformanceFrequency(&freq);
+    QueryPerformanceCounter(&start);
+
+    vector<size_t> mem = codigo1(N);
+
+    QueryPerformanceCounter(&end);
+
+    double elapsed_ns = (end.QuadPart - start.QuadPart) * 1e9 / freq.QuadPart;
+
+    long long segundos = static_cast<long long>(elapsed_ns) / 1'000'000'000;
+    long long milisegundos = (static_cast<long long>(elapsed_ns) / 1'000'000) % 1000;
+    long long nanosegundos = static_cast<long long>(elapsed_ns) % 1'000'000;
+
+    cout << "[QPC] "
+         << setfill('0') << setw(2) << segundos << ":"
+         << setfill('0') << setw(3) << milisegundos << ":"
+         << setfill('0') << setw(6) << nanosegundos << endl;
+}
+
+void herramienta_tiempo_3(int N) {
+
+    unsigned long long start = __rdtsc();
+    vector<size_t> mem = codigo1(N);
+    unsigned long long end = __rdtsc();
+
+    unsigned long long ciclos = end - start;
+    
+    double frecuencia_ghz = obtener_velocidad_CPU();
+    if (frecuencia_ghz <= 0) {
+        cerr << "[RDTSC] Error al obtener frecuencia de CPU\n";
+        return;
+    }
+
+    double frecuencia_hz = frecuencia_ghz * 1e9;
+
+    // Convertir ciclos a nanosegundos
+    double tiempo_ns = ciclos * (1e9 / frecuencia_hz);
+
+    long long segundos = static_cast<long long>(tiempo_ns) / 1'000'000'000;
+    long long milisegundos = (static_cast<long long>(tiempo_ns) / 1'000'000) % 1000;
+    long long nanosegundos = static_cast<long long>(tiempo_ns) % 1'000'000;
+
+    cout << "[RDTSC] "
+         << setfill('0') << setw(2) << segundos << ":"
+         << setfill('0') << setw(3) << milisegundos << ":"
+         << setfill('0') << setw(6) << nanosegundos << endl;
+}
+
+void herramienta_tiempo_4(int N) {
+    HANDLE hProcess = GetCurrentProcess();
+    FILETIME ftCreation, ftExit, ftKernelStart, ftUserStart, ftKernelEnd, ftUserEnd;
+
+    GetProcessTimes(hProcess, &ftCreation, &ftExit, &ftKernelStart, &ftUserStart);
+
+    vector<size_t> mem = codigo1(N);
+
+    GetProcessTimes(hProcess, &ftCreation, &ftExit, &ftKernelEnd, &ftUserEnd);
+
+    ULARGE_INTEGER kernelStart, userStart, kernelEnd, userEnd;
+    kernelStart.LowPart = ftKernelStart.dwLowDateTime;
+    kernelStart.HighPart = ftKernelStart.dwHighDateTime;
+    userStart.LowPart = ftUserStart.dwLowDateTime;
+    userStart.HighPart = ftUserStart.dwHighDateTime;
+
+    kernelEnd.LowPart = ftKernelEnd.dwLowDateTime;
+    kernelEnd.HighPart = ftKernelEnd.dwHighDateTime;
+    userEnd.LowPart = ftUserEnd.dwLowDateTime;
+    userEnd.HighPart = ftUserEnd.dwHighDateTime;
+
+    // Diferencia en 100-ns ticks â†’ convertir a ns
+    unsigned long long kernelTime = (kernelEnd.QuadPart - kernelStart.QuadPart) * 100;
+    unsigned long long userTime   = (userEnd.QuadPart   - userStart.QuadPart) * 100;
+
+    unsigned long long tiempo_ns = kernelTime + userTime;
+
+    long long segundos = tiempo_ns / 1'000'000'000;
+    long long milisegundos = (tiempo_ns / 1'000'000) % 1000;
+    long long nanosegundos = tiempo_ns % 1'000'000;
+
+    cout << "[GetProcessTimes] "
+         << setfill('0') << setw(2) << segundos << ":"
+         << setfill('0') << setw(3) << milisegundos << ":"
+         << setfill('0') << setw(6) << nanosegundos << endl;
+}
+
+int main() {       
+    
+    herramienta_tiempo_4(1e7);
     return 0;
 }
 
