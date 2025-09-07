@@ -234,28 +234,30 @@ for (int i = 10; i <= 500; i += 10) {
 }
 
 void herramienta_tiempo_1(int N) {
-    auto start = high_resolution_clock::now();
-    vector<size_t> mem = codigo1(N);
-    auto end = high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
+    vector<size_t> mem = codigo2(N, N);
+    auto end = std::chrono::high_resolution_clock::now();
 
-    auto tiempo_ns = duration_cast<nanoseconds>(end - start).count();
+    // Calcular en double nanosegundos directamente
+    double tiempo_ns = std::chrono::duration<double, std::nano>(end - start).count();
 
-    long long segundos = tiempo_ns / 1'000'000'000;
-    long long milisegundos = (tiempo_ns / 1'000'000) % 1000;
-    long long nanosegundos = tiempo_ns % 1'000'000;
+    long long segundos      = static_cast<long long>(tiempo_ns) / 1'000'000'000;
+    long long milisegundos  = (static_cast<long long>(tiempo_ns) / 1'000'000) % 1000;
+    long long nanosegundos  = static_cast<long long>(tiempo_ns) % 1'000'000;
 
-    cout << "[chrono] "
-         << setfill('0') << setw(2) << segundos << ":"
-         << setfill('0') << setw(3) << milisegundos << ":"
-         << setfill('0') << setw(6) << nanosegundos << endl;
+    std::cout << "[chrono precise] "
+              << std::setfill('0') << std::setw(2) << segundos << ":"
+              << std::setfill('0') << std::setw(3) << milisegundos << ":"
+              << std::setfill('0') << std::setw(6) << nanosegundos << std::endl;
 }
+
 
 void herramienta_tiempo_2(int N) {
     LARGE_INTEGER freq, start, end;
     QueryPerformanceFrequency(&freq);
     QueryPerformanceCounter(&start);
 
-    vector<size_t> mem = codigo1(N);
+    vector<size_t> mem = codigo2(N,N);
 
     QueryPerformanceCounter(&end);
 
@@ -274,7 +276,7 @@ void herramienta_tiempo_2(int N) {
 void herramienta_tiempo_3(int N) {
 
     unsigned long long start = __rdtsc();
-    vector<size_t> mem = codigo1(N);
+    vector<size_t> mem = codigo2(N,N);
     unsigned long long end = __rdtsc();
 
     unsigned long long ciclos = end - start;
@@ -301,45 +303,58 @@ void herramienta_tiempo_3(int N) {
 }
 
 void herramienta_tiempo_4(int N) {
-    HANDLE hProcess = GetCurrentProcess();
-    FILETIME ftCreation, ftExit, ftKernelStart, ftUserStart, ftKernelEnd, ftUserEnd;
+    using GetSystemTimePreciseAsFileTime_t = VOID (WINAPI*)(LPFILETIME);
+    HMODULE hKernel = GetModuleHandleW(L"kernel32.dll");
+    GetSystemTimePreciseAsFileTime_t pPrecise = nullptr;
+    if (hKernel) {
+        pPrecise = (GetSystemTimePreciseAsFileTime_t)GetProcAddress(hKernel, "GetSystemTimePreciseAsFileTime");
+    }
 
-    GetProcessTimes(hProcess, &ftCreation, &ftExit, &ftKernelStart, &ftUserStart);
+    if (pPrecise) {
+        FILETIME ftStart, ftEnd;
+        pPrecise(&ftStart);
 
-    vector<size_t> mem = codigo1(N);
+        // Código a medir
+        vector<size_t> mem = codigo2(N, N);
 
-    GetProcessTimes(hProcess, &ftCreation, &ftExit, &ftKernelEnd, &ftUserEnd);
+        pPrecise(&ftEnd);
 
-    ULARGE_INTEGER kernelStart, userStart, kernelEnd, userEnd;
-    kernelStart.LowPart = ftKernelStart.dwLowDateTime;
-    kernelStart.HighPart = ftKernelStart.dwHighDateTime;
-    userStart.LowPart = ftUserStart.dwLowDateTime;
-    userStart.HighPart = ftUserStart.dwHighDateTime;
+        ULARGE_INTEGER uStart, uEnd;
+        uStart.LowPart  = ftStart.dwLowDateTime;
+        uStart.HighPart = ftStart.dwHighDateTime;
+        uEnd.LowPart    = ftEnd.dwLowDateTime;
+        uEnd.HighPart   = ftEnd.dwHighDateTime;
 
-    kernelEnd.LowPart = ftKernelEnd.dwLowDateTime;
-    kernelEnd.HighPart = ftKernelEnd.dwHighDateTime;
-    userEnd.LowPart = ftUserEnd.dwLowDateTime;
-    userEnd.HighPart = ftUserEnd.dwHighDateTime;
+        // FILETIME está en ticks de 100 ns
+        unsigned long long diff100ns = (uEnd.QuadPart - uStart.QuadPart);
+        unsigned long long tiempo_ns  = diff100ns * 100ULL; // convertir a ns
 
-    // Diferencia en 100-ns ticks → convertir a ns
-    unsigned long long kernelTime = (kernelEnd.QuadPart - kernelStart.QuadPart) * 100;
-    unsigned long long userTime   = (userEnd.QuadPart   - userStart.QuadPart) * 100;
+        long long segundos     = tiempo_ns / 1'000'000'000;
+        long long milisegundos = (tiempo_ns / 1'000'000) % 1000;
+        long long nanosegundos = tiempo_ns % 1'000'000;
 
-    unsigned long long tiempo_ns = kernelTime + userTime;
-
-    long long segundos = tiempo_ns / 1'000'000'000;
-    long long milisegundos = (tiempo_ns / 1'000'000) % 1000;
-    long long nanosegundos = tiempo_ns % 1'000'000;
-
-    cout << "[GetProcessTimes] "
-         << setfill('0') << setw(2) << segundos << ":"
-         << setfill('0') << setw(3) << milisegundos << ":"
-         << setfill('0') << setw(6) << nanosegundos << endl;
+        std::cout << "[GetSystemTimePreciseAsFileTime] "
+                  << std::setfill('0') << std::setw(2) << segundos << ":"
+                  << std::setfill('0') << std::setw(3) << milisegundos << ":"
+                  << std::setfill('0') << std::setw(6) << nanosegundos << std::endl;
+    }
 }
+
 
 int main() {       
     
-    herramienta_tiempo_4(1e7);
+    for(int i=10; i<500; i+=10){
+        herramienta_tiempo_1(i);                   
+    }
+    for(int i=10; i<500; i+=10){        
+        herramienta_tiempo_2(i);
+    }
+    for(int i=10; i<500; i+=10){
+        herramienta_tiempo_3(i);
+    }
+    for(int i=10; i<500; i+=10){
+        herramienta_tiempo_4(i);
+    }
     return 0;
 }
 
