@@ -1,0 +1,151 @@
+Codigo; N; Max de bytes usados 
+CODIGO1 - Lista enlazada; 10; 176
+CODIGO1 - Lista enlazada; 20; 336
+CODIGO1 - Lista enlazada; 30; 496
+CODIGO1 - Lista enlazada; 40; 656
+CODIGO1 - Lista enlazada; 50; 816
+CODIGO1 - Lista enlazada; 60; 976
+CODIGO1 - Lista enlazada; 70; 1136
+CODIGO1 - Lista enlazada; 80; 1296
+CODIGO1 - Lista enlazada; 90; 1456
+CODIGO1 - Lista enlazada; 100; 1616
+CODIGO1 - Lista enlazada; 110; 1776
+CODIGO1 - Lista enlazada; 120; 1936
+CODIGO1 - Lista enlazada; 130; 2096
+CODIGO1 - Lista enlazada; 140; 2256
+CODIGO1 - Lista enlazada; 150; 2416
+CODIGO1 - Lista enlazada; 160; 2576
+CODIGO1 - Lista enlazada; 170; 2736
+CODIGO1 - Lista enlazada; 180; 2896
+CODIGO1 - Lista enlazada; 190; 3056
+CODIGO1 - Lista enlazada; 200; 3216
+CODIGO1 - Lista enlazada; 210; 3376
+CODIGO1 - Lista enlazada; 220; 3536
+CODIGO1 - Lista enlazada; 230; 3696
+CODIGO1 - Lista enlazada; 240; 3856
+CODIGO1 - Lista enlazada; 250; 4016
+CODIGO1 - Lista enlazada; 260; 4176
+CODIGO1 - Lista enlazada; 270; 4336
+CODIGO1 - Lista enlazada; 280; 4496
+CODIGO1 - Lista enlazada; 290; 4656
+CODIGO1 - Lista enlazada; 300; 4816
+CODIGO1 - Lista enlazada; 310; 4976
+CODIGO1 - Lista enlazada; 320; 5136
+CODIGO1 - Lista enlazada; 330; 5296
+CODIGO1 - Lista enlazada; 340; 5456
+CODIGO1 - Lista enlazada; 350; 5616
+CODIGO1 - Lista enlazada; 360; 5776
+CODIGO1 - Lista enlazada; 370; 5936
+CODIGO1 - Lista enlazada; 380; 6096
+CODIGO1 - Lista enlazada; 390; 6256
+CODIGO1 - Lista enlazada; 400; 6416
+CODIGO1 - Lista enlazada; 410; 6576
+CODIGO1 - Lista enlazada; 420; 6736
+CODIGO1 - Lista enlazada; 430; 6896
+CODIGO1 - Lista enlazada; 440; 7056
+CODIGO1 - Lista enlazada; 450; 7216
+CODIGO1 - Lista enlazada; 460; 7376
+CODIGO1 - Lista enlazada; 470; 7536
+CODIGO1 - Lista enlazada; 480; 7696
+CODIGO1 - Lista enlazada; 490; 7856
+CODIGO1 - Lista enlazada; 500; 8016
+CODIGO2 - Array de listas; 10; 1680
+CODIGO2 - Array de listas; 20; 6560
+CODIGO2 - Array de listas; 30; 14640
+CODIGO2 - Array de listas; 40; 25920
+CODIGO2 - Array de listas; 50; 40400
+CODIGO2 - Array de listas; 60; 58080
+CODIGO2 - Array de listas; 70; 78960
+CODIGO2 - Array de listas; 80; 103040
+CODIGO2 - Array de listas; 90; 130320
+CODIGO2 - Array de listas; 100; 160800
+CODIGO2 - Array de listas; 110; 194480
+CODIGO2 - Array de listas; 120; 231360
+CODIGO2 - Array de listas; 130; 271440
+CODIGO2 - Array de listas; 140; 314720
+CODIGO2 - Array de listas; 150; 361200
+CODIGO2 - Array de listas; 160; 410880
+CODIGO2 - Array de listas; 170; 463760
+CODIGO2 - Array de listas; 180; 519840
+CODIGO2 - Array de listas; 190; 579120
+CODIGO2 - Array de listas; 200; 641600
+CODIGO2 - Array de listas; 210; 707280
+CODIGO2 - Array de listas; 220; 776160
+CODIGO2 - Array de listas; 230; 848240
+CODIGO2 - Array de listas; 240; 923520
+CODIGO2 - Array de listas; 250; 1002000
+CODIGO2 - Array de listas; 260; 1083680
+CODIGO2 - Array de listas; 270; 1168560
+CODIGO2 - Array de listas; 280; 1256640
+CODIGO2 - Array de listas; 290; 1347920
+CODIGO2 - Array de listas; 300; 1442400
+CODIGO2 - Array de listas; 310; 1540080
+CODIGO2 - Array de listas; 320; 1640960
+CODIGO2 - Array de listas; 330; 1745040
+CODIGO2 - Array de listas; 340; 1852320
+CODIGO2 - Array de listas; 350; 1962800
+CODIGO2 - Array de listas; 360; 2076480
+CODIGO2 - Array de listas; 370; 2193360
+CODIGO2 - Array de listas; 380; 2313440
+CODIGO2 - Array de listas; 390; 2436720
+CODIGO2 - Array de listas; 400; 2563200
+CODIGO2 - Array de listas; 410; 2692880
+CODIGO2 - Array de listas; 420; 2825760
+CODIGO2 - Array de listas; 430; 2961840
+CODIGO2 - Array de listas; 440; 3101120
+CODIGO2 - Array de listas; 450; 3243600
+CODIGO2 - Array de listas; 460; 3389280
+CODIGO2 - Array de listas; 470; 3538160
+CODIGO2 - Array de listas; 480; 3690240
+CODIGO2 - Array de listas; 490; 3845520
+CODIGO2 - Array de listas; 500; 4004000
+CODIGO4 - Array 2D de structs; 10; 880
+CODIGO4 - Array 2D de structs; 20; 3360
+CODIGO4 - Array 2D de structs; 30; 7440
+CODIGO4 - Array 2D de structs; 40; 13120
+CODIGO4 - Array 2D de structs; 50; 20400
+CODIGO4 - Array 2D de structs; 60; 29280
+CODIGO4 - Array 2D de structs; 70; 39760
+CODIGO4 - Array 2D de structs; 80; 51840
+CODIGO4 - Array 2D de structs; 90; 65520
+CODIGO4 - Array 2D de structs; 100; 80800
+CODIGO4 - Array 2D de structs; 110; 97680
+CODIGO4 - Array 2D de structs; 120; 116160
+CODIGO4 - Array 2D de structs; 130; 136240
+CODIGO4 - Array 2D de structs; 140; 157920
+CODIGO4 - Array 2D de structs; 150; 181200
+CODIGO4 - Array 2D de structs; 160; 206080
+CODIGO4 - Array 2D de structs; 170; 232560
+CODIGO4 - Array 2D de structs; 180; 260640
+CODIGO4 - Array 2D de structs; 190; 290320
+CODIGO4 - Array 2D de structs; 200; 321600
+CODIGO4 - Array 2D de structs; 210; 354480
+CODIGO4 - Array 2D de structs; 220; 388960
+CODIGO4 - Array 2D de structs; 230; 425040
+CODIGO4 - Array 2D de structs; 240; 462720
+CODIGO4 - Array 2D de structs; 250; 502000
+CODIGO4 - Array 2D de structs; 260; 542880
+CODIGO4 - Array 2D de structs; 270; 585360
+CODIGO4 - Array 2D de structs; 280; 629440
+CODIGO4 - Array 2D de structs; 290; 675120
+CODIGO4 - Array 2D de structs; 300; 722400
+CODIGO4 - Array 2D de structs; 310; 771280
+CODIGO4 - Array 2D de structs; 320; 821760
+CODIGO4 - Array 2D de structs; 330; 873840
+CODIGO4 - Array 2D de structs; 340; 927520
+CODIGO4 - Array 2D de structs; 350; 982800
+CODIGO4 - Array 2D de structs; 360; 1039680
+CODIGO4 - Array 2D de structs; 370; 1098160
+CODIGO4 - Array 2D de structs; 380; 1158240
+CODIGO4 - Array 2D de structs; 390; 1219920
+CODIGO4 - Array 2D de structs; 400; 1283200
+CODIGO4 - Array 2D de structs; 410; 1348080
+CODIGO4 - Array 2D de structs; 420; 1414560
+CODIGO4 - Array 2D de structs; 430; 1482640
+CODIGO4 - Array 2D de structs; 440; 1552320
+CODIGO4 - Array 2D de structs; 450; 1623600
+CODIGO4 - Array 2D de structs; 460; 1696480
+CODIGO4 - Array 2D de structs; 470; 1770960
+CODIGO4 - Array 2D de structs; 480; 1847040
+CODIGO4 - Array 2D de structs; 490; 1924720
+CODIGO4 - Array 2D de structs; 500; 2004000
