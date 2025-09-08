@@ -5,6 +5,9 @@
 #include <fstream>
 #include <chrono>
 #include <iomanip>
+#include <array>
+#include <functional>
+
 using namespace std;
 using namespace chrono;
 
@@ -196,165 +199,116 @@ vector<size_t> codigo4_structs(int N) {
  * 
  */
 
-void resultados()
-{
-    ofstream salida("analisis_memoria.txt");
-    salida << "Codigo; N; Max de bytes usados \n";
-for (int i = 10; i <= 500; i += 10) {
-        vector<size_t> mem = codigo1(i);
-        size_t max_mem = 0;
-        for (size_t m : mem) if (m > max_mem) max_mem = m;
-        salida << "CODIGO1 - Lista enlazada; " << i << "; " << max_mem << "\n";
-    }
+//VECTORES DE APUNTADORES A FUNCIONES
 
-   	for (int i = 10; i <= 500; i += 10) {
-        vector<size_t> mem = codigo2(i, i);
-        size_t max_mem = 0;
-        for (size_t m : mem) if (m > max_mem) max_mem = m;
-        salida << "CODIGO2 - Array de listas; " << i << "; " << max_mem << "\n";
-    }
-
-	
-    for (int i = 10; i <= 500; i += 10) {
-        vector<size_t> mem = codigo3_listas(i);
-        size_t max_mem = 0;
-        for (size_t m : mem) if (m > max_mem) max_mem = m;
-        salida << "CODIGO3 - Array 3D de listas; " << i << "; " << max_mem << "\n";
-    }
+typedef vector<size_t> (*Codigo1Func)(int);
+typedef vector<size_t> (*Codigo2Func)(int, int);
+typedef vector<size_t> (*Codigo3Func)(int);
+typedef vector<size_t> (*Codigo4Func)(int);
 
 
-    for (int i = 10; i <= 500; i += 10) {
-        vector<size_t> mem = codigo4_structs(i);
-        size_t max_mem = 0;
-        for (size_t m : mem) if (m > max_mem) max_mem = m;
-        salida << "CODIGO4 - Array 2D de structs; " << i << "; " << max_mem << "\n";
-    }
+// Punteros a funciones de tiempo modificadas
 
-    salida.close();
-}
-
-void herramienta_tiempo_1(int N) {
+double medir_tiempo_chrono(Codigo2Func f, int N) {
     auto start = std::chrono::high_resolution_clock::now();
-    vector<size_t> mem = codigo2(N, N);
+    vector<size_t> mem = f(N, N);
     auto end = std::chrono::high_resolution_clock::now();
-
-    // Calcular en double nanosegundos directamente
     double tiempo_ns = std::chrono::duration<double, std::nano>(end - start).count();
-
-    long long segundos      = static_cast<long long>(tiempo_ns) / 1'000'000'000;
-    long long milisegundos  = (static_cast<long long>(tiempo_ns) / 1'000'000) % 1000;
-    long long nanosegundos  = static_cast<long long>(tiempo_ns) % 1'000'000;
-
-    std::cout << "[chrono precise] "
-              << std::setfill('0') << std::setw(2) << segundos << ":"
-              << std::setfill('0') << std::setw(3) << milisegundos << ":"
-              << std::setfill('0') << std::setw(6) << nanosegundos << std::endl;
+    return tiempo_ns;
 }
-
-
-void herramienta_tiempo_2(int N) {
+double medir_tiempo_qpc(Codigo2Func f, int N) {
     LARGE_INTEGER freq, start, end;
     QueryPerformanceFrequency(&freq);
     QueryPerformanceCounter(&start);
-
-    vector<size_t> mem = codigo2(N,N);
-
+    vector<size_t> mem = f(N, N);
     QueryPerformanceCounter(&end);
-
     double elapsed_ns = (end.QuadPart - start.QuadPart) * 1e9 / freq.QuadPart;
-
-    long long segundos = static_cast<long long>(elapsed_ns) / 1'000'000'000;
-    long long milisegundos = (static_cast<long long>(elapsed_ns) / 1'000'000) % 1000;
-    long long nanosegundos = static_cast<long long>(elapsed_ns) % 1'000'000;
-
-    cout << "[QPC] "
-         << setfill('0') << setw(2) << segundos << ":"
-         << setfill('0') << setw(3) << milisegundos << ":"
-         << setfill('0') << setw(6) << nanosegundos << endl;
+    return elapsed_ns;
 }
-
-void herramienta_tiempo_3(int N) {
-
+double medir_tiempo_rdtsc(Codigo2Func f, int N) {
     unsigned long long start = __rdtsc();
-    vector<size_t> mem = codigo2(N,N);
+    vector<size_t> mem = f(N, N);
     unsigned long long end = __rdtsc();
-
-    unsigned long long ciclos = end - start;
-    
     double frecuencia_ghz = obtener_velocidad_CPU();
-    if (frecuencia_ghz <= 0) {
-        cerr << "[RDTSC] Error al obtener frecuencia de CPU\n";
-        return;
-    }
-
     double frecuencia_hz = frecuencia_ghz * 1e9;
-
-    // Convertir ciclos a nanosegundos
-    double tiempo_ns = ciclos * (1e9 / frecuencia_hz);
-
-    long long segundos = static_cast<long long>(tiempo_ns) / 1'000'000'000;
-    long long milisegundos = (static_cast<long long>(tiempo_ns) / 1'000'000) % 1000;
-    long long nanosegundos = static_cast<long long>(tiempo_ns) % 1'000'000;
-
-    cout << "[RDTSC] "
-         << setfill('0') << setw(2) << segundos << ":"
-         << setfill('0') << setw(3) << milisegundos << ":"
-         << setfill('0') << setw(6) << nanosegundos << endl;
+    double tiempo_ns = (end - start) * (1e9 / frecuencia_hz);
+    return tiempo_ns;
 }
-
-void herramienta_tiempo_4(int N) {
+double medir_tiempo_preciso(Codigo2Func f, int N) {
     using GetSystemTimePreciseAsFileTime_t = VOID (WINAPI*)(LPFILETIME);
     HMODULE hKernel = GetModuleHandleW(L"kernel32.dll");
     GetSystemTimePreciseAsFileTime_t pPrecise = nullptr;
     if (hKernel) {
         pPrecise = (GetSystemTimePreciseAsFileTime_t)GetProcAddress(hKernel, "GetSystemTimePreciseAsFileTime");
     }
+    if (!pPrecise) return 0;
+    FILETIME ftStart, ftEnd;
+    pPrecise(&ftStart);
+    vector<size_t> mem = f(N, N);
+    pPrecise(&ftEnd);
+    ULARGE_INTEGER uStart, uEnd;
+    uStart.LowPart  = ftStart.dwLowDateTime;
+    uStart.HighPart = ftStart.dwHighDateTime;
+    uEnd.LowPart    = ftEnd.dwLowDateTime;
+    uEnd.HighPart   = ftEnd.dwHighDateTime;
+    unsigned long long diff100ns = (uEnd.QuadPart - uStart.QuadPart);
+    unsigned long long tiempo_ns  = diff100ns * 100ULL;
+    return static_cast<double>(tiempo_ns);
+}
 
-    if (pPrecise) {
-        FILETIME ftStart, ftEnd;
-        pPrecise(&ftStart);
+// Wrapper para adaptar códigos al tipo 2
 
-        // CÃ³digo a medir
-        vector<size_t> mem = codigo2(N, N);
+vector<size_t> codigo1_wrapper(int N, int unused) { return codigo1(N); }
+vector<size_t> codigo3_wrapper(int N, int unused) { return codigo3_listas(N); }
+vector<size_t> codigo4_wrapper(int N, int unused) { return codigo4_structs(N); }
 
-        pPrecise(&ftEnd);
+// Funcion para medir todos los tiempos para un código con un formato especfico
 
-        ULARGE_INTEGER uStart, uEnd;
-        uStart.LowPart  = ftStart.dwLowDateTime;
-        uStart.HighPart = ftStart.dwHighDateTime;
-        uEnd.LowPart    = ftEnd.dwLowDateTime;
-        uEnd.HighPart   = ftEnd.dwHighDateTime;
+	void medir_y_guardar(ofstream &salida,
+    	const string& codigo_nombre,
+    	int codigo_num,
+    	Codigo2Func codigo_func,
+    	int N_min,
+    	int N_max,
+    	int N_step) 
+{
+    
 
-        // FILETIME estÃ¡ en ticks de 100 ns
-        unsigned long long diff100ns = (uEnd.QuadPart - uStart.QuadPart);
-        unsigned long long tiempo_ns  = diff100ns * 100ULL; // convertir a ns
+    for (int i = N_min; i <= N_max; i += N_step) {
+        double t1 = medir_tiempo_chrono(codigo_func, i);
+        double t2 = medir_tiempo_qpc(codigo_func, i);
+        double t3 = medir_tiempo_rdtsc(codigo_func, i);
+        double t4 = medir_tiempo_preciso(codigo_func, i);
 
-        long long segundos     = tiempo_ns / 1'000'000'000;
-        long long milisegundos = (tiempo_ns / 1'000'000) % 1000;
-        long long nanosegundos = tiempo_ns % 1'000'000;
+        // Guardar tiempos
+		auto formatear = [](double ns) {
+    		long long tiempo_ns = static_cast<long long>(ns);
+    		char buffer[64];
+    	snprintf(buffer, sizeof(buffer), "%lld", tiempo_ns);
+    	return string(buffer);
+		};		
 
-        std::cout << "[GetSystemTimePreciseAsFileTime] "
-                  << std::setfill('0') << std::setw(2) << segundos << ":"
-                  << std::setfill('0') << std::setw(3) << milisegundos << ":"
-                  << std::setfill('0') << std::setw(6) << nanosegundos << std::endl;
+        salida << codigo_num << " - " << codigo_nombre << ";" << i << ";" 
+               << formatear(t1) << ";" << formatear(t2) << ";" << formatear(t3) << ";" << formatear(t4) 
+               << "\n";
     }
 }
 
 
-int main() {       
+int main() {
+    ofstream salida("analisis_memoria.txt");
     
-    for(int i=10; i<500; i+=10){
-        herramienta_tiempo_1(i);                   
-    }
-    for(int i=10; i<500; i+=10){        
-        herramienta_tiempo_2(i);
-    }
-    for(int i=10; i<500; i+=10){
-        herramienta_tiempo_3(i);
-    }
-    for(int i=10; i<500; i+=10){
-        herramienta_tiempo_4(i);
-    }
+    //medir_y_guardar(salida, "Lista enlazada", 1, codigo1_wrapper, 10, 500, 10);
+    //medir_y_guardar(salida, "Array de listas", 2, codigo2, 10, 500, 10);
+    medir_y_guardar(salida, "Array 3D de listas", 3, codigo3_wrapper, 410, 500, 10);
+    medir_y_guardar(salida, "Array 2D de structs", 4, codigo4_wrapper, 10, 500, 10);
+
+    salida.close();
     return 0;
 }
+
+
+
+
+
 
