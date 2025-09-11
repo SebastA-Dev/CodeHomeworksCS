@@ -1,10 +1,14 @@
 #include <iostream>
+#include <array>
 #include <windows.h>
 #include <x86intrin.h>
-#include <vector>
-#include <fstream>
 #include <chrono>
 #include <iomanip>
+#include <cstdio>   
+#include <windows.h>
+#include <iostream>
+#include <thread>
+
 using namespace std;
 using namespace chrono;
 // Clase para medir el tiempo de ejecución de algoritmos usando diferentes métodos
@@ -12,34 +16,12 @@ class TimeComplexAlgorithms {
 
 public:
 
-    double obtener_velocidad_CPU() {
-        std::array<char, 128> buffer;
-        std::string result;
-        FILE* pipe = _popen("wmic cpu get currentclockspeed", "r");
-        if (!pipe) {
-            return -1;
-        }
-
-        while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
-            result += buffer.data();
-        }
-        _pclose(pipe);
-
-        std::string::size_type pos = result.find_first_of("0123456789");
-        if (pos != std::string::npos) {
-            int mhz = std::stoi(result.substr(pos));
-            return mhz / 1000.0; 
-        }
-
-        return -1; 
-    }
-
-
 	// Mide el tiempo usando std::chrono (alta resolución)
-	// Recibe N y un puntero a función que retorna vector<size_t>
-	void herramienta_tiempo_1(int N, std::vector<size_t> (*algoritmo)(int, int)) {
+	// Recibe cualquier función y argumentos
+	template<typename Func, typename... Args>
+	void herramienta_tiempo_1(Func&& algoritmo, Args&&... args) {
 		auto start = std::chrono::high_resolution_clock::now(); // Marca inicio
-		std::vector<size_t> mem = algoritmo(N, N); // Ejecuta el algoritmo
+		std::invoke(std::forward<Func>(algoritmo), std::forward<Args>(args)...);
 		auto end = std::chrono::high_resolution_clock::now(); // Marca fin
 
 		double tiempo_ns = std::chrono::duration<double, std::nano>(end - start).count(); // Calcula tiempo en nanosegundos
@@ -56,12 +38,13 @@ public:
 	}
 
 	// Mide el tiempo usando QueryPerformanceCounter (Windows, alta precisión)
-	void herramienta_tiempo_2(int N, std::vector<size_t> (*algoritmo)(int, int)) {
+	template<typename Func, typename... Args>
+	void herramienta_tiempo_2(Func&& algoritmo, Args&&... args) {
 		LARGE_INTEGER freq, start, end;
 		QueryPerformanceFrequency(&freq); // Obtiene frecuencia del contador
 		QueryPerformanceCounter(&start);  // Marca inicio
 
-		std::vector<size_t> mem = algoritmo(N, N); // Ejecuta el algoritmo
+		invoke(std::forward<Func>(algoritmo), std::forward<Args>(args)...); // Ejecuta el algoritmo
 
 		QueryPerformanceCounter(&end);    // Marca fin
 
@@ -79,13 +62,14 @@ public:
 	}
 
 	// Mide el tiempo usando el contador de ciclos de CPU (RDTSC)
-	void herramienta_tiempo_3(int N, std::vector<size_t> (*algoritmo)(int, int)) {
+	template<typename Func, typename... Args>
+	void herramienta_tiempo_3(Func&& algoritmo, Args&&... args) {
 		unsigned long long start = __rdtsc(); // Marca inicio
-		std::vector<size_t> mem = algoritmo(N,N); // Ejecuta el algoritmo
+		invoke(std::forward<Func>(algoritmo), std::forward<Args>(args)...); // Ejecuta el algoritmo
 		unsigned long long end = __rdtsc();   // Marca fin
 
 		unsigned long long ciclos = end - start; // Calcula ciclos usados
-		double frecuencia_ghz = obtener_velocidad_CPU(); // Obtiene frecuencia CPU
+		double frecuencia_ghz = 4.87; // Obtiene frecuencia CPU
 		if (frecuencia_ghz <= 0) {
 			std::cerr << "[RDTSC] Error al obtener frecuencia de CPU\n";
 			return;
@@ -106,7 +90,8 @@ public:
 	}
 
 	// Mide el tiempo usando GetSystemTimePreciseAsFileTime (Windows, alta precisión)
-	void herramienta_tiempo_4(int N, std::vector<size_t> (*algoritmo)(int, int)) {
+	template<typename Func, typename... Args>
+	void herramienta_tiempo_4(Func&& algoritmo, Args&&... args) {
 		using GetSystemTimePreciseAsFileTime_t = VOID (WINAPI*)(LPFILETIME);
 		HMODULE hKernel = GetModuleHandleW(L"kernel32.dll"); // Obtiene handle de kernel32
 		GetSystemTimePreciseAsFileTime_t pPrecise = nullptr;
@@ -118,7 +103,7 @@ public:
 			FILETIME ftStart, ftEnd;
 			pPrecise(&ftStart); // Marca inicio
 
-			std::vector<size_t> mem = algoritmo(N, N); // Ejecuta el algoritmo
+			invoke(std::forward<Func>(algoritmo), std::forward<Args>(args)...); // Ejecuta el algoritmo
 
 			pPrecise(&ftEnd);   // Marca fin
 
