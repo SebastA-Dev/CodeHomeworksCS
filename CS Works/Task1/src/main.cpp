@@ -234,6 +234,132 @@ int main() {
     }
 
     salida.close();
+<<<<<<< Updated upstream:First Homework/src/main.cpp
+=======
+}
+
+void herramienta_tiempo_1(int N) {
+    auto start = std::chrono::high_resolution_clock::now();
+    vector<size_t> mem = codigo2(N, N);
+    auto end = std::chrono::high_resolution_clock::now();
+
+    // Calcular en double nanosegundos directamente
+    double tiempo_ns = std::chrono::duration<double, std::nano>(end - start).count();
+
+    long long segundos      = static_cast<long long>(tiempo_ns) / 1'000'000'000;
+    long long milisegundos  = (static_cast<long long>(tiempo_ns) / 1'000'000) % 1000;
+    long long nanosegundos  = static_cast<long long>(tiempo_ns) % 1'000'000;
+
+    std::cout << "[chrono precise] "
+              << std::setfill('0') << std::setw(2) << segundos << ":"
+              << std::setfill('0') << std::setw(3) << milisegundos << ":"
+              << std::setfill('0') << std::setw(6) << nanosegundos << std::endl;
+}
+
+
+void herramienta_tiempo_2(int N) {
+    LARGE_INTEGER freq, start, end;
+    QueryPerformanceFrequency(&freq);
+    QueryPerformanceCounter(&start);
+
+    vector<size_t> mem = codigo2(N,N);
+
+    QueryPerformanceCounter(&end);
+
+    double elapsed_ns = (end.QuadPart - start.QuadPart) * 1e9 / freq.QuadPart;
+
+    long long segundos = static_cast<long long>(elapsed_ns) / 1'000'000'000;
+    long long milisegundos = (static_cast<long long>(elapsed_ns) / 1'000'000) % 1000;
+    long long nanosegundos = static_cast<long long>(elapsed_ns) % 1'000'000;
+
+    cout << "[QPC] "
+         << setfill('0') << setw(2) << segundos << ":"
+         << setfill('0') << setw(3) << milisegundos << ":"
+         << setfill('0') << setw(6) << nanosegundos << endl;
+}
+
+void herramienta_tiempo_3(int N) {
+
+    unsigned long long start = __rdtsc();
+    vector<size_t> mem = codigo2(N,N);
+    unsigned long long end = __rdtsc();
+
+    unsigned long long ciclos = end - start;
+    
+    double frecuencia_ghz = obtener_velocidad_CPU();
+    if (frecuencia_ghz <= 0) {
+        cerr << "[RDTSC] Error al obtener frecuencia de CPU\n";
+        return;
+    }
+
+    double frecuencia_hz = frecuencia_ghz * 1e9;
+
+    // Convertir ciclos a nanosegundos
+    double tiempo_ns = ciclos * (1e9 / frecuencia_hz);
+
+    long long segundos = static_cast<long long>(tiempo_ns) / 1'000'000'000;
+    long long milisegundos = (static_cast<long long>(tiempo_ns) / 1'000'000) % 1000;
+    long long nanosegundos = static_cast<long long>(tiempo_ns) % 1'000'000;
+
+    cout << "[RDTSC] "
+         << setfill('0') << setw(2) << segundos << ":"
+         << setfill('0') << setw(3) << milisegundos << ":"
+         << setfill('0') << setw(6) << nanosegundos << endl;
+}
+
+void herramienta_tiempo_4(int N) {
+    using GetSystemTimePreciseAsFileTime_t = VOID (WINAPI*)(LPFILETIME);
+    HMODULE hKernel = GetModuleHandleW(L"kernel32.dll");
+    GetSystemTimePreciseAsFileTime_t pPrecise = nullptr;
+    if (hKernel) {
+        pPrecise = (GetSystemTimePreciseAsFileTime_t)GetProcAddress(hKernel, "GetSystemTimePreciseAsFileTime");
+    }
+
+    if (pPrecise) {
+        FILETIME ftStart, ftEnd;
+        pPrecise(&ftStart);
+
+        // Código a medir
+        vector<size_t> mem = codigo2(N, N);
+
+        pPrecise(&ftEnd);
+
+        ULARGE_INTEGER uStart, uEnd;
+        uStart.LowPart  = ftStart.dwLowDateTime;
+        uStart.HighPart = ftStart.dwHighDateTime;
+        uEnd.LowPart    = ftEnd.dwLowDateTime;
+        uEnd.HighPart   = ftEnd.dwHighDateTime;
+        
+        unsigned long long diff100ns = (uEnd.QuadPart - uStart.QuadPart);
+        unsigned long long tiempo_ns  = diff100ns * 100ULL; 
+
+        long long segundos     = tiempo_ns / 1'000'000'000;
+        long long milisegundos = (tiempo_ns / 1'000'000) % 1000;
+        long long nanosegundos = tiempo_ns % 1'000'000;
+
+        std::cout << "[GetSystemTimePreciseAsFileTime] "
+                  << std::setfill('0') << std::setw(2) << segundos << ":"
+                  << std::setfill('0') << std::setw(3) << milisegundos << ":"
+                  << std::setfill('0') << std::setw(6) << nanosegundos << std::endl;
+    }
+}
+
+
+int main() {       
+    
+    for(int i=10; i<500; i+=10){
+        herramienta_tiempo_1(i);                   
+    }
+    for(int i=10; i<500; i+=10){        
+        herramienta_tiempo_2(i);
+    }
+    for(int i=10; i<500; i+=10){
+        herramienta_tiempo_3(i);
+    }
+    for(int i=10; i<500; i+=10){
+        herramienta_tiempo_4(i);
+    }
+>>>>>>> Stashed changes:CS Works/Task1/src/main.cpp
     return 0;
 }
 
