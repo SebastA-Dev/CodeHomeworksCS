@@ -100,6 +100,11 @@
     "chrono": "cpp",
     "ctime": "cpp",
     "ratio": "cpp",
+<<<<<<< HEAD:CS Works/.vscode/settings.json
+    "iomanip": "cpp",
+    "thread": "cpp"
+=======
     "iomanip": "cpp"
+>>>>>>> 8d94a8fade8d53e7ce3725de96cfd79fe431500f:First Homework/.vscode/settings.json
   }
 }
