@@ -1,7 +1,16 @@
 #include <iostream>
+#include <windows.h>
+#include <x86intrin.h>
 #include <vector>
 #include <fstream>
+#include <chrono>
+#include <iomanip>
+#include <array>
+#include <functional>
+
 using namespace std;
+using namespace chrono;
+
 
 struct nodo {
     int x,y;
@@ -23,6 +32,37 @@ SERGIO MENDIVELSO 20231020227
 */
 
 // ------------------- FUNCIONES -------------------
+
+ /**
+  * FUNCIONES AUXILIARES
+  */
+
+  double obtener_velocidad_CPU() {
+    std::array<char, 128> buffer;
+    std::string result;
+    FILE* pipe = _popen("wmic cpu get currentclockspeed", "r");
+    if (!pipe) {
+        return -1;
+    }
+
+    while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
+        result += buffer.data();
+    }
+    _pclose(pipe);
+
+    std::string::size_type pos = result.find_first_of("0123456789");
+    if (pos != std::string::npos) {
+        int mhz = std::stoi(result.substr(pos));
+        return mhz / 1000.0; 
+    }
+
+    return -1; 
+}
+
+
+/**
+ * FUNCIONES ALGORITMICAS
+ */
 
 vector<size_t> codigo1(int N){    
     vector<size_t> memoria_usada;
@@ -128,7 +168,7 @@ vector<size_t> codigo3_listas(int N) {
     return memoria_usada;
 }
 
-vector<size_t> codigo3_structs(int N) {
+vector<size_t> codigo4_structs(int N) {
     vector<size_t> memoria_usada;
     nodo2 **a;
     a = new nodo2 *[N];
@@ -153,85 +193,115 @@ vector<size_t> codigo3_structs(int N) {
     return memoria_usada;
 }
 
-
-// ------------------- MAIN -------------------
-
-//NOTA: MAIN ANTERIOR QUE MUESTRA TODAS LAS ITERACIONES DE CADA VALOR DE N POSIBLE
-
-
 /*
-void guardar_resultados(ofstream &f, const vector<size_t>& datos, const string& nombre, int N) {
-    f << "\n=== " << nombre << ", N = " << N << " ===\n";
-    f << "Paso\tMemoria (bytes)\n";
-    for (size_t i = 0; i < datos.size(); i++) {
-        f << i << "\t" << datos[i] << "\n";
+ * 
+ * FUNCIONES PERFORMANCE
+ * 
+ */
+
+//VECTORES DE APUNTADORES A FUNCIONES
+
+typedef vector<size_t> (*Codigo1Func)(int);
+typedef vector<size_t> (*Codigo2Func)(int, int);
+typedef vector<size_t> (*Codigo3Func)(int);
+typedef vector<size_t> (*Codigo4Func)(int);
+
+
+// Punteros a funciones de tiempo modificadas
+
+double medir_tiempo_chrono(Codigo2Func f, int N) {
+    auto start = std::chrono::high_resolution_clock::now();
+    vector<size_t> mem = f(N, N);
+    auto end = std::chrono::high_resolution_clock::now();
+    double tiempo_ns = std::chrono::duration<double, std::nano>(end - start).count();
+    return tiempo_ns;
+}
+double medir_tiempo_qpc(Codigo2Func f, int N) {
+    LARGE_INTEGER freq, start, end;
+    QueryPerformanceFrequency(&freq);
+    QueryPerformanceCounter(&start);
+    vector<size_t> mem = f(N, N);
+    QueryPerformanceCounter(&end);
+    double elapsed_ns = (end.QuadPart - start.QuadPart) * 1e9 / freq.QuadPart;
+    return elapsed_ns;
+}
+double medir_tiempo_rdtsc(Codigo2Func f, int N) {
+    unsigned long long start = __rdtsc();
+    vector<size_t> mem = f(N, N);
+    unsigned long long end = __rdtsc();
+    double frecuencia_ghz = obtener_velocidad_CPU();
+    double frecuencia_hz = frecuencia_ghz * 1e9;
+    double tiempo_ns = (end - start) * (1e9 / frecuencia_hz);
+    return tiempo_ns;
+}
+double medir_tiempo_preciso(Codigo2Func f, int N) {
+    using GetSystemTimePreciseAsFileTime_t = VOID (WINAPI*)(LPFILETIME);
+    HMODULE hKernel = GetModuleHandleW(L"kernel32.dll");
+    GetSystemTimePreciseAsFileTime_t pPrecise = nullptr;
+    if (hKernel) {
+        pPrecise = (GetSystemTimePreciseAsFileTime_t)GetProcAddress(hKernel, "GetSystemTimePreciseAsFileTime");
     }
-    size_t maximo = 0;
-    for (size_t mem : datos) if (mem > maximo) maximo = mem;
-    f << "Máximo uso de memoria: " << maximo << " bytes\n";
+    if (!pPrecise) return 0;
+    FILETIME ftStart, ftEnd;
+    pPrecise(&ftStart);
+    vector<size_t> mem = f(N, N);
+    pPrecise(&ftEnd);
+    ULARGE_INTEGER uStart, uEnd;
+    uStart.LowPart  = ftStart.dwLowDateTime;
+    uStart.HighPart = ftStart.dwHighDateTime;
+    uEnd.LowPart    = ftEnd.dwLowDateTime;
+    uEnd.HighPart   = ftEnd.dwHighDateTime;
+    unsigned long long diff100ns = (uEnd.QuadPart - uStart.QuadPart);
+    unsigned long long tiempo_ns  = diff100ns * 100ULL;
+    return static_cast<double>(tiempo_ns);
 }
 
-int main() {
-    ofstream salida("analisis_memoria.txt");
-    salida << "Análisis de complejidad espacial usando sizeof\n";
-    salida << "sizeof(nodo): " << sizeof(nodo) << " bytes\n";
-    salida << "sizeof(nodo2): " << sizeof(nodo2) << " bytes\n";
-    salida << "sizeof(nodo*): " << sizeof(nodo*) << " bytes\n";
+// Wrapper para adaptar códigos al tipo 2
 
-    for (int i = 10; i <= 200; i += 10) {
-        vector<size_t> mem1 = codigo1(i);
-        guardar_resultados(salida, mem1, "CODIGO1 - Lista enlazada", i);
+vector<size_t> codigo1_wrapper(int N, int unused) { return codigo1(N); }
+vector<size_t> codigo3_wrapper(int N, int unused) { return codigo3_listas(N); }
+vector<size_t> codigo4_wrapper(int N, int unused) { return codigo4_structs(N); }
 
-        vector<size_t> mem2 = codigo2(i, i);
-        guardar_resultados(salida, mem2, "CODIGO2 - Array de listas", i);
+// Funcion para medir todos los tiempos para un código con un formato especfico
 
-        vector<size_t> mem3 = codigo3_listas(i);
-        guardar_resultados(salida, mem3, "CODIGO3 - Array 3D de listas", i);
-
-        vector<size_t> mem4 = codigo3_structs(i);
-        guardar_resultados(salida, mem4, "CODIGO3 - Array 2D de structs", i);
-    }
-
-    salida.close();
-    return 0;
-}
-*/
-int main() {
-    ofstream salida("analisis_memoria.txt");
-    salida << "Codigo; N; Max de bytes usados \n";
+	void medir_y_guardar(ofstream &salida,
+    	const string& codigo_nombre,
+    	int codigo_num,
+    	Codigo2Func codigo_func,
+    	int N_min,
+    	int N_max,
+    	int N_step) 
+{
     
 
-// NOTA: EN CASO DE NO ENSEÑAR TODAS LAS ITERACIONES, HACERLAS POR SECCIONES REDUCIENDO LOS VALORES DE i O EJECUTANDO CADA FOR POR SEPARADO
+    for (int i = N_min; i <= N_max; i += N_step) {
+        double t1 = medir_tiempo_chrono(codigo_func, i);
+        double t2 = medir_tiempo_qpc(codigo_func, i);
+        double t3 = medir_tiempo_rdtsc(codigo_func, i);
+        double t4 = medir_tiempo_preciso(codigo_func, i);
 
-	for (int i = 10; i <= 500; i += 10) {
-        vector<size_t> mem = codigo1(i);
-        size_t max_mem = 0;
-        for (size_t m : mem) if (m > max_mem) max_mem = m;
-        salida << "CODIGO1 - Lista enlazada; " << i << "; " << max_mem << "\n";
-    }
+        // Guardar tiempos
+		auto formatear = [](double ns) {
+    		long long tiempo_ns = static_cast<long long>(ns);
+    		char buffer[64];
+    	snprintf(buffer, sizeof(buffer), "%lld", tiempo_ns);
+    	return string(buffer);
+		};		
 
-   	for (int i = 10; i <= 500; i += 10) {
-        vector<size_t> mem = codigo2(i, i);
-        size_t max_mem = 0;
-        for (size_t m : mem) if (m > max_mem) max_mem = m;
-        salida << "CODIGO2 - Array de listas; " << i << "; " << max_mem << "\n";
+        salida << codigo_num << " - " << codigo_nombre << ";" << i << ";" 
+               << formatear(t1) << ";" << formatear(t2) << ";" << formatear(t3) << ";" << formatear(t4) 
+               << "\n";
     }
+}
 
-	/*
-    for (int i = 10; i <= 500; i += 10) {
-        vector<size_t> mem = codigo3_listas(i);
-        size_t max_mem = 0;
-        for (size_t m : mem) if (m > max_mem) max_mem = m;
-        salida << "CODIGO3 - Array 3D de listas; " << i << "; " << max_mem << "\n";
-    }
 
-*/
-    for (int i = 10; i <= 500; i += 10) {
-        vector<size_t> mem = codigo3_structs(i);
-        size_t max_mem = 0;
-        for (size_t m : mem) if (m > max_mem) max_mem = m;
-        salida << "CODIGO4 - Array 2D de structs; " << i << "; " << max_mem << "\n";
-    }
+int main() {
+    ofstream salida("analisis_memoria.txt");
+    
+    //medir_y_guardar(salida, "Lista enlazada", 1, codigo1_wrapper, 10, 500, 10);
+    //medir_y_guardar(salida, "Array de listas", 2, codigo2, 10, 500, 10);
+    medir_y_guardar(salida, "Array 3D de listas", 3, codigo3_wrapper, 410, 500, 10);
+    medir_y_guardar(salida, "Array 2D de structs", 4, codigo4_wrapper, 10, 500, 10);
 
     salida.close();
 <<<<<<< Updated upstream:First Homework/src/main.cpp
@@ -362,4 +432,9 @@ int main() {
 >>>>>>> Stashed changes:CS Works/Task1/src/main.cpp
     return 0;
 }
+
+
+
+
+
 
