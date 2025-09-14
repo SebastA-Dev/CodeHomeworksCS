@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/user/Desktop/random/CS/CS Works/Task 2/src",
-      "program": "c:/Users/user/Desktop/random/CS/CS Works/Task 2/src/build/Debug/outDebug",
+      "cwd": "c:/Users/user/Desktop/random/CS/CS Works/Task 3/src",
+      "program": "c:/Users/user/Desktop/random/CS/CS Works/Task 3/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

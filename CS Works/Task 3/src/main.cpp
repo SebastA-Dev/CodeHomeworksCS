@@ -1,7 +1,9 @@
 #include <iostream>
 #include <vector>
+#include <random>
 #include <cstdio>
-#include "../include/SortingAlgorithm.h"
+#include <algorithm>
+#include "../include/SearchingAlgorithms.h"
 // Timing helpers (inlined per request)
 #include <array>
 #include <sstream>
@@ -38,29 +40,29 @@ static inline double get_cpu_freq_ghz() {
 }
 
 template<typename Obj, typename M>
-static inline unsigned long long time_chrono(M m, Obj& obj, std::vector<int>& data) {
+static inline unsigned long long time_chrono(M m, Obj& obj, std::vector<size_t>& data, int target = NULL) {
     using namespace std::chrono;
     auto start = high_resolution_clock::now();
-    (obj.*m)(data);
+    (obj.*m)(data, target);
     auto end = high_resolution_clock::now();
     return static_cast<unsigned long long>(duration_cast<nanoseconds>(end - start).count());
 }
 
 template<typename Obj, typename M>
-static inline unsigned long long time_qpc(M m, Obj& obj, std::vector<int>& data) {
+static inline unsigned long long time_qpc(M m, Obj& obj, std::vector<size_t>& data, int target = NULL) {
     LARGE_INTEGER freq, start, end;
     QueryPerformanceFrequency(&freq);
     QueryPerformanceCounter(&start);
-    (obj.*m)(data);
+    (obj.*m)(data, target);
     QueryPerformanceCounter(&end);
     double ns = (end.QuadPart - start.QuadPart) * 1e9 / freq.QuadPart;
     return static_cast<unsigned long long>(ns);
 }
 
 template<typename Obj, typename M>
-static inline unsigned long long time_rdtsc(M m, Obj& obj, std::vector<int>& data) {
+static inline unsigned long long time_rdtsc(M m, Obj& obj, std::vector<size_t>& data, int target = NULL) {
     unsigned long long start = __rdtsc();
-    (obj.*m)(data);
+    (obj.*m)(data, target);
     unsigned long long end = __rdtsc();
     unsigned long long cycles = end - start;
     double ghz = get_cpu_freq_ghz();
@@ -71,15 +73,15 @@ static inline unsigned long long time_rdtsc(M m, Obj& obj, std::vector<int>& dat
 }
 
 template<typename Obj, typename M>
-static inline unsigned long long time_precise(M m, Obj& obj, std::vector<int>& data) {
+static inline unsigned long long time_precise(M m, Obj& obj, std::vector<size_t>& data, int target = NULL) {
     using GetSystemTimePreciseAsFileTime_t = VOID (WINAPI*)(LPFILETIME);
     HMODULE hKernel = GetModuleHandleW(L"kernel32.dll");
     GetSystemTimePreciseAsFileTime_t pPrecise = nullptr;
     if (hKernel) pPrecise = (GetSystemTimePreciseAsFileTime_t)GetProcAddress(hKernel, "GetSystemTimePreciseAsFileTime");
-    if (!pPrecise) return time_chrono(m, obj, data);
+    if (!pPrecise) return time_chrono(m, obj, data, target);
     FILETIME ftStart, ftEnd;
     pPrecise(&ftStart);
-    (obj.*m)(data);
+    (obj.*m)(data, target);
     pPrecise(&ftEnd);
     ULARGE_INTEGER uStart, uEnd;
     uStart.LowPart = ftStart.dwLowDateTime; uStart.HighPart = ftStart.dwHighDateTime;
@@ -90,46 +92,52 @@ static inline unsigned long long time_precise(M m, Obj& obj, std::vector<int>& d
 
 
 // Generates a vector of N random integers
-std::vector<int> generateRandomVector(int N) {
-    std::vector<int> arr(N);
-    for (int& x : arr) {
+std::vector<size_t> generateRandomVector(int N) {
+    std::vector<size_t> arr(N);
+    for (size_t& x : arr) {
         x = rand() % 1000;
     }
     return arr;
 }
 
 int main() {
-    int N = 1000;     
-    std::vector<int> arr = generateRandomVector(N);
-    SortingAlgorithm sorter;
-    // Helper typedef for member function pointer
-    using MethodPtr = void (SortingAlgorithm::*)(std::vector<int>&);
+    long N = 1e6;         
+    std::vector<size_t> arr = generateRandomVector(N);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(0, arr.size() - 1);
+    SearchingAlgorithms search;
+    // Helper typedef for member function pointer: methods return int and take (const vector<int>&, int)
+    using MethodPtr = int (SearchingAlgorithms::*)(std::vector<size_t>&, int);
 
-    // --- Run tests and print grouped output ----------------------
+    // // --- Run tests and print grouped output ----------------------
     struct AlgoInfo { MethodPtr ptr; const char* name; } algos[] = {
-        { &SortingAlgorithm::InsertionAlgorithm, "Insertion" },
-        { &SortingAlgorithm::SelectionAlgorithm, "Selection" },
-        { &SortingAlgorithm::BubbleAlgorithm,    "Bubble"    },
-        { &SortingAlgorithm::ShellAlgorithm,     "Shell"     }
+        { &SearchingAlgorithms::LinearSearch1, "LinearSearch1" },
+        { &SearchingAlgorithms::LinearSearch2, "LinearSearch2" },
+        { &SearchingAlgorithms::BinarySearch, "BinarySearch" },
+        { &SearchingAlgorithms::ShellAlgorithm, "ShellAlgorithm" }
     };
 
     for (auto &a : algos) {
-        std::cout << "=== " << a.name << " Algorithm ===" << std::endl;
+        int indice = distrib(gen);
+        int target = arr[indice];
+        std::cout << "=== " << a.name << std::endl;
         auto copy = arr;
-    unsigned long long t1 = time_chrono(a.ptr, sorter, copy);
-    std::cout << "  Tool 1 (chrono): " << format_ns(t1) << std::endl;
+        if(a.name == "BinarySearch"){
+            std::sort(arr.begin(), arr.end());
+            copy = arr;
+        }         
+        unsigned long long t1 = time_chrono(a.ptr, search, copy, target);
+        std::cout << "  Tool 1 (chrono): " << format_ns(t1) << std::endl;
 
-        copy = arr;
-    unsigned long long t2 = time_qpc(a.ptr, sorter, copy);
-    std::cout << "  Tool 2 (QPC):    " << format_ns(t2) << std::endl;
+        unsigned long long t2 = time_qpc(a.ptr, search, copy, target);
+        std::cout << "  Tool 2 (QPC):    " << format_ns(t2) << std::endl;
+        
+        unsigned long long t3 = time_rdtsc(a.ptr, search, copy, target);
+        std::cout << "  Tool 3 (RDTSC):  " << format_ns(t3) << std::endl;
 
-        copy = arr;
-    unsigned long long t3 = time_rdtsc(a.ptr, sorter, copy);
-    std::cout << "  Tool 3 (RDTSC):  " << format_ns(t3) << std::endl;
-
-        copy = arr;
-        unsigned long long t4 = time_precise(a.ptr, sorter, copy);
-        std::cout << "  Tool 4 (Precise):" << format_ns(t4) << std::endl;
+        unsigned long long t4 = time_precise(a.ptr, search, copy, target);
+        std::cout << "  Tool 4 (Precise):" << format_ns(t4) << std::endl;        
     }
 
     return 0;
