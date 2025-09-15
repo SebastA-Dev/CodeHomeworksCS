@@ -56,10 +56,14 @@
   "C_Cpp_Runner.showCompilationTime": false,
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
+  "C_Cpp.errorSquiggles": "disabled",
   "files.associations": {
+    "ostream": "cpp",
+    "iostream": "cpp",
     "array": "cpp",
     "atomic": "cpp",
     "cctype": "cpp",
+    "chrono": "cpp",
     "clocale": "cpp",
     "cmath": "cpp",
     "cstdarg": "cpp",
@@ -67,6 +71,7 @@
     "cstdint": "cpp",
     "cstdio": "cpp",
     "cstdlib": "cpp",
+    "ctime": "cpp",
     "cwchar": "cpp",
     "cwctype": "cpp",
     "deque": "cpp",
@@ -80,6 +85,7 @@
     "memory_resource": "cpp",
     "numeric": "cpp",
     "random": "cpp",
+    "ratio": "cpp",
     "string": "cpp",
     "system_error": "cpp",
     "tuple": "cpp",
@@ -87,24 +93,15 @@
     "utility": "cpp",
     "fstream": "cpp",
     "initializer_list": "cpp",
+    "iomanip": "cpp",
     "iosfwd": "cpp",
-    "iostream": "cpp",
     "istream": "cpp",
     "limits": "cpp",
     "new": "cpp",
-    "ostream": "cpp",
     "sstream": "cpp",
     "stdexcept": "cpp",
     "streambuf": "cpp",
-    "typeinfo": "cpp",
-    "chrono": "cpp",
-    "ctime": "cpp",
-    "ratio": "cpp",
-<<<<<<< HEAD:CS Works/.vscode/settings.json
-    "iomanip": "cpp",
-    "thread": "cpp"
-=======
-    "iomanip": "cpp"
->>>>>>> 8d94a8fade8d53e7ce3725de96cfd79fe431500f:First Homework/.vscode/settings.json
+    "thread": "cpp",
+    "typeinfo": "cpp"
   }
 }
