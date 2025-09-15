@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <random>
 #include <cstdio>
@@ -92,24 +93,29 @@ static inline unsigned long long time_precise(M m, Obj& obj, std::vector<size_t>
 
 
 // Generates a vector of N random integers
-std::vector<size_t> generateRandomVector(int N) {
+std::vector<size_t> generateSteppedVector(int N) {
     std::vector<size_t> arr(N);
-    for (size_t& x : arr) {
-        x = rand() % 1000;
+    for (int i = 0; i < N; ++i) {
+        arr[i] = i * 10;
     }
     return arr;
 }
 
 int main() {
-    long N = 1e6;         
-    std::vector<size_t> arr = generateRandomVector(N);
+	int maxN = 1000;
+	std::vector<size_t> baseArray = generateSteppedVector(maxN);
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(0, arr.size() - 1);
+    
+    // std::uniform_int_distribution<> distrib(0, arr.size() - 1);
+    
     SearchingAlgorithms search;
+    
     // Helper typedef for member function pointer: methods return int and take (const vector<int>&, int)
+    
     using MethodPtr = int (SearchingAlgorithms::*)(std::vector<size_t>&, int);
-
+    
+/*
     // // --- Run tests and print grouped output ----------------------
     struct AlgoInfo { MethodPtr ptr; const char* name; } algos[] = {
         { &SearchingAlgorithms::LinearSearch1, "LinearSearch1" },
@@ -141,4 +147,43 @@ int main() {
     }
 
     return 0;
+    
+    */
+    
+    struct AlgoInfo { MethodPtr ptr; const char* name; } algos[] = {
+        { &SearchingAlgorithms::BinarySearch, "BinarySearch" },
+        { &SearchingAlgorithms::ShellAlgorithm, "ShellAlgorithm" }
+    };
+
+    std::ofstream outFile("resultados.txt");
+
+    for (int N = 10; N <= maxN; N += 10) {
+        std::vector<size_t> subArray(baseArray.begin(), baseArray.begin() + N);
+        int target = -1; // worst binary search case
+
+        outFile << "N=" << N << std::endl;
+
+        for (auto &a : algos) {
+            std::vector<size_t> arrCopy = subArray;
+
+            if (a.name == std::string("ShellAlgorithm")) {
+                // worst shell case
+                std::shuffle(arrCopy.begin(), arrCopy.end(), gen);
+                target = arrCopy[gen() % N]; 
+            } else if (a.name == std::string("BinarySearch")) {
+                
+                std::sort(arrCopy.begin(), arrCopy.end());
+                target = -1; 
+            }
+
+            unsigned long long t = time_qpc(a.ptr, search, arrCopy, target);
+            outFile << a.name << "\t" << format_ns(t) << std::endl;
+        }
+    }
+
+    outFile.close();
+    return 0;
 }
+
+
+
