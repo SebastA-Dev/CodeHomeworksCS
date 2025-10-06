@@ -1,0 +1,36 @@
+# Project: task4
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = src/main.o src/OrdenamientoRecursivo.o src/RandomVector.o $(RES)
+LINKOBJ  = src/main.o src/OrdenamientoRecursivo.o src/RandomVector.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib"  
+INCS =  -I"C:/Dev-Cpp/include"  -I"include" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"include" 
+BIN  = bin/task4_exec.exe/task4.exe
+CXXFLAGS = $(CXXINCS)   -fno-access-control
+CFLAGS = $(INCS)   -fno-access-control
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before bin/task4_exec.exe/task4.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "bin\task4_exec.exe\task4.exe" $(LIBS)
+
+src/main.o: src/main.cpp
+	$(CPP) -c src/main.cpp -o src/main.o $(CXXFLAGS)
+
+src/OrdenamientoRecursivo.o: src/OrdenamientoRecursivo.cpp
+	$(CPP) -c src/OrdenamientoRecursivo.cpp -o src/OrdenamientoRecursivo.o $(CXXFLAGS)
+
+src/RandomVector.o: src/RandomVector.cpp
+	$(CPP) -c src/RandomVector.cpp -o src/RandomVector.o $(CXXFLAGS)

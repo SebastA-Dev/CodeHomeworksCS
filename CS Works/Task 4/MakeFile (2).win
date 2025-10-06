@@ -1,0 +1,46 @@
+# Project: task4
+# Makefile fixed for Dev-C++ 4.9.9.2 environment
+
+CPP       = g++.exe
+CC        = gcc.exe
+WINDRES   = windres.exe
+RES       = 
+OBJ       = src/main.o src/OrdenamientoRecursivo.o src/RandomVector.o $(RES)
+LINKOBJ   = $(OBJ)
+LIBS      = -L"C:/Dev-Cpp/lib"
+INCS      = -I"C:/Dev-Cpp/include" -I"include"
+CXXINCS   = -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include" \
+            -I"C:/Dev-Cpp/include/c++/3.4.2/backward" \
+            -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32" \
+            -I"C:/Dev-Cpp/include/c++/3.4.2" \
+            -I"C:/Dev-Cpp/include" \
+            -I"include"
+
+# 🔹 El ejecutable real (ya sin error de carpeta con .exe)
+BIN       = bin/task4_exec.exe
+
+CXXFLAGS  = $(CXXINCS)
+CFLAGS    = $(INCS)
+RM        = rm -f
+
+.PHONY: all clean
+
+all: $(BIN)
+
+# 🔹 Regla principal de compilación
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "$(BIN)" $(LIBS)
+
+# 🔹 Compilación de cada archivo fuente
+src/main.o: src/main.cpp
+	$(CPP) -c src/main.cpp -o src/main.o $(CXXFLAGS)
+
+src/OrdenamientoRecursivo.o: src/OrdenamientoRecursivo.cpp
+	$(CPP) -c src/OrdenamientoRecursivo.cpp -o src/OrdenamientoRecursivo.o $(CXXFLAGS)
+
+src/RandomVector.o: src/RandomVector.cpp
+	$(CPP) -c src/RandomVector.cpp -o src/RandomVector.o $(CXXFLAGS)
+
+# 🔹 Limpieza
+clean:
+	$(RM) $(OBJ) $(BIN)
