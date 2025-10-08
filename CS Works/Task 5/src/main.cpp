@@ -1,13 +1,14 @@
-// Librerías estándar
-#include <iostream>      // Para cout, cin, etc.
-#include <vector>        // Para std::vector
-#include <iomanip>       // Para manipuladores como std::setw, std::setprecision
 
-// Encabezados de tu proyecto
+#include <iostream>     
+#include <vector>       
+#include <iomanip>      
+#include <string>
+#include <sstream>
+
 #include "../include/RandomVector.h"
 #include "../include/Radix.h"
+#include "../include/Bases.h"
 
-// API de Windows (solo si realmente usas funciones del sistema)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -23,30 +24,14 @@ void print_vec(const std::vector<int>& v, const char* title) {
 }
 
 int main(int argc, char** argv) {
-	
-	
-	for (size_t i = 0; i < 10000000; i+=50000)
-	{
-		std::vector<int> array_peor_caso = make_random_vector_big_numbers(i);
+		
+	std::vector<std::string> radix_times;
+	std::vector<std::string> bases_times;
+	std::vector<size_t> Ns;
 
-		{
-			LARGE_INTEGER freq, start, end;
-			QueryPerformanceFrequency(&freq);
-			QueryPerformanceCounter(&start);
-			radixSort(array_peor_caso);
-			QueryPerformanceCounter(&end);
-			unsigned long long ticks = static_cast<unsigned long long>(end.QuadPart - start.QuadPart);
-			unsigned long long ns = static_cast<unsigned long long>(ticks * 1000000000ULL / static_cast<unsigned long long>(freq.QuadPart));
-			unsigned long long minutes = ns / 60000000000ULL;
-			unsigned long long seconds = (ns / 1000000000ULL) % 60ULL;
-			unsigned long long msecs = (ns / 1000000ULL) % 1000ULL;
-			unsigned long long nsrem = ns % 1000000ULL;
-			std::cout << "Tiempo radixSort Peor Caso: " << std::setfill('0') << std::setw(2) << minutes << ":" << std::setw(2) << seconds << ":" << std::setw(3) << msecs << ":" << std::setw(6) << nsrem << "\n\n";
-		}
-	}
-
-	for (size_t i = 0; i < 10000000; i+=50000)
+	for (size_t i = 0; i < 10000; i+=50)
 	{
+		Ns.push_back(i);
 		std::vector<int> array_normal = make_random_vector(i);
 
 		{
@@ -61,8 +46,54 @@ int main(int argc, char** argv) {
 			unsigned long long seconds = (ns / 1000000000ULL) % 60ULL;
 			unsigned long long msecs = (ns / 1000000ULL) % 1000ULL;
 			unsigned long long nsrem = ns % 1000000ULL;
-			std::cout << "Tiempo radixSort Mejor Caso: " << std::setfill('0') << std::setw(2) << minutes << ":" << std::setw(2) << seconds << ":" << std::setw(3) << msecs << ":" << std::setw(6) << nsrem << "\n\n";
+			unsigned long long usecs = nsrem / 1000ULL;
+			unsigned long long nsecs = nsrem % 1000ULL;
+			std::ostringstream oss;
+			oss << std::setfill('0') << std::setw(2) << minutes << ":"
+				<< std::setw(2) << seconds << ":"
+				<< std::setw(3) << msecs << ":"
+				<< std::setw(3) << usecs << ":"
+				<< std::setw(3) << nsecs;
+			radix_times.push_back(oss.str());
 		}
+	}
+
+	for (size_t i = 0; i < 10000; i+=50)
+	{
+		std::vector<int> array_normal = make_random_vector(i);
+
+		{
+			LARGE_INTEGER freq, start, end;
+			QueryPerformanceFrequency(&freq);
+			QueryPerformanceCounter(&start);
+			basesSort(array_normal);
+			QueryPerformanceCounter(&end);
+			unsigned long long ticks = static_cast<unsigned long long>(end.QuadPart - start.QuadPart);
+			unsigned long long ns = static_cast<unsigned long long>(ticks * 1000000000ULL / static_cast<unsigned long long>(freq.QuadPart));
+			unsigned long long minutes = ns / 60000000000ULL;
+			unsigned long long seconds = (ns / 1000000000ULL) % 60ULL;
+			unsigned long long msecs = (ns / 1000000ULL) % 1000ULL;
+			unsigned long long nsrem = ns % 1000000ULL;
+			unsigned long long usecs = nsrem / 1000ULL;
+			unsigned long long nsecs = nsrem % 1000ULL;
+			std::ostringstream oss;
+			oss << std::setfill('0') << std::setw(2) << minutes << ":"
+				<< std::setw(2) << seconds << ":"
+				<< std::setw(3) << msecs << ":"
+				<< std::setw(3) << usecs << ":"
+				<< std::setw(3) << nsecs;
+			bases_times.push_back(oss.str());
+		}
+	}
+
+	std::cout << "\nRadixSort (Bytes): Tiempos\n";
+	for (size_t idx = 0; idx < radix_times.size() && idx < Ns.size(); ++idx) {
+		std::cout << "N=" << Ns[idx] << " -> " << radix_times[idx] << " ns\n";
+	}
+
+	std::cout << "\nBasesSort (Bases): Tiempos\n";
+	for (size_t idx = 0; idx < bases_times.size() && idx < Ns.size(); ++idx) {
+		std::cout << "N=" << Ns[idx] << " -> " << bases_times[idx] << " ns\n";
 	}
 
 	return 0;
