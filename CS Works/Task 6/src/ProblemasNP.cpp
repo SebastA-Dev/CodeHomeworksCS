@@ -1,5 +1,6 @@
 #include "../include/ProblemasNP.h"
 #include <cmath>
+#include <memory>
 #include <algorithm>
 #include <numeric>
 #include <random>
@@ -24,7 +25,7 @@ void ProblemasNP::createSudoku(size_t size) {
     boardSize = subGridSize * subGridSize;
 
     
-    sudokuBoard = std::make_unique<int[]>(boardSize * boardSize);
+    sudokuBoard = std::unique_ptr<int[]>(new int[boardSize * boardSize]);
     std::fill_n(sudokuBoard.get(), boardSize * boardSize, 0);
 }
 
@@ -156,7 +157,7 @@ bool ProblemasNP::verifySudokuSolution() {
 
 bool ProblemasNP::hasSolution() {
 
-    auto tempBoard = std::make_unique<int[]>(boardSize * boardSize);
+    auto tempBoard = std::unique_ptr<int[]>(new int[boardSize * boardSize]);
     std::copy_n(sudokuBoard.get(), boardSize * boardSize, tempBoard.get());
     bool solvable = solveSudokuBacktrack();
     std::copy_n(tempBoard.get(), boardSize * boardSize, sudokuBoard.get());
