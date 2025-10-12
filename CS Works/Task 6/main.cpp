@@ -48,21 +48,13 @@ int main() {
             << std::setw(3) << usecs << ":"
             << std::setw(3) << nsecs;
 
-        archivoNQueens << "N=" << n << "    " << oss.str() << "\n";
+        archivoNQueens << oss.str() << "\n";
         archivoNQueens.flush();
         std::cout << "Tiempo NQueens (N=" << n << "): " << oss.str() << std::endl;
-
-        // Puedes imprimir la solución si quieres:
-//      solver.printBoard();
-//      std::cout << std::endl;
-
         ++n;
     }
 
     archivoNQueens.close();
-    std::cout << "\n=== PRUEBAS COMPLETADAS ===\n";
-    std::cout << "Los tiempos han sido guardados en: tiempos_nqueens.txt\n";
-
     return 0;
 }
 
