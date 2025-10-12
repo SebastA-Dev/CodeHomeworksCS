@@ -1,0 +1,37 @@
+# Project: Task5
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+OBJ      = src/main.o src/Radix.o src/RandomVector.o src/Bases.o
+LINKOBJ  = src/main.o src/Radix.o src/RandomVector.o src/Bases.o
+LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
+INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"include"
+CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++" -I"include"
+BIN      = Task5.exe
+CXXFLAGS = $(CXXINCS) -ansi -pedantic -std=c++14 -std=c++11
+CFLAGS   = $(INCS) -ansi -pedantic -std=c++14
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+src/main.o: src/main.cpp
+	$(CPP) -c src/main.cpp -o src/main.o $(CXXFLAGS)
+
+src/Radix.o: src/Radix.cpp
+	$(CPP) -c src/Radix.cpp -o src/Radix.o $(CXXFLAGS)
+
+src/RandomVector.o: src/RandomVector.cpp
+	$(CPP) -c src/RandomVector.cpp -o src/RandomVector.o $(CXXFLAGS)
+
+src/Bases.o: src/Bases.cpp
+	$(CPP) -c src/Bases.cpp -o src/Bases.o $(CXXFLAGS)
