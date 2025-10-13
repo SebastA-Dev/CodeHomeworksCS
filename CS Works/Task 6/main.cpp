@@ -5,9 +5,10 @@
 #include <windows.h>
 #include <chrono>
 #include "NQueens.h"
+#include "TorreHanoi.h"
 
 int main() {
-    std::ofstream archivoNQueens("tiempos_nqueens.txt");
+    std::ofstream archivoNQueens("tiempos_hanoi.txt");
     if (!archivoNQueens) {
         std::cerr << "Error al crear archivo de tiempos\n";
         return 1;
@@ -15,16 +16,16 @@ int main() {
 
     auto tiempoInicio = std::chrono::steady_clock::now();
     auto limite24h = tiempoInicio + std::chrono::hours(24);
-    size_t n = 4;
+    size_t n = 1;
 
-    while (std::chrono::steady_clock::now() < limite24h) {
-        NQueens solver(n);
+    while (n < 20) {
+        TorreHanoi torre(n);
 
         LARGE_INTEGER freq, start, end;
         QueryPerformanceFrequency(&freq);
         QueryPerformanceCounter(&start);
 
-        solver.findSolution();
+        torre.resolver();
 
         QueryPerformanceCounter(&end);
         unsigned long long ticks = static_cast<unsigned long long>(end.QuadPart - start.QuadPart);
@@ -50,8 +51,8 @@ int main() {
 
         archivoNQueens << oss.str() << "\n";
         archivoNQueens.flush();
-        std::cout << "Tiempo NQueens (N=" << n << "): " << oss.str() << std::endl;
-        ++n;
+        std::cout << "Tiempo Torre Hanoi (N=" << n << "): " << oss.str() << std::endl;
+        n++;
     }
 
     archivoNQueens.close();
