@@ -5,7 +5,7 @@ TorreHanoi::TorreHanoi(int n) : numDiscos(n) {}
 
 // Método público que inicia la solución
 void TorreHanoi::resolver() const {
-    std::cout << "Resolviendo Torre de Hanoi con " << numDiscos << " discos:\n";
+   // std::cout << "Resolviendo Torre de Hanoi con " << numDiscos << " discos:\n";
     moverDisco(numDiscos, 'A', 'C', 'B');
 }
 
@@ -16,6 +16,6 @@ void TorreHanoi::moverDisco(int n, char origen, char destino, char auxiliar) con
     }
     
     moverDisco(n - 1, origen, auxiliar, destino);
-    std::cout << "Mover disco " << n << " de " << origen << " a " << destino << "\n";
+    //std::cout << "Mover disco " << n << " de " << origen << " a " << destino << "\n";
     moverDisco(n - 1, auxiliar, destino, origen);
 }
