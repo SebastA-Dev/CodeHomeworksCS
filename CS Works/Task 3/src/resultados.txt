@@ -1,300 +1,300 @@
 N=10
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:000600
+ShellAlgorithm	00:000:000400
 N=20
-BinarySearch	00:000:000100
+BinarySearch	00:000:000000
 ShellAlgorithm	00:000:001000
 N=30
-BinarySearch	00:000:000000
-ShellAlgorithm	00:000:001600
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:001200
 N=40
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:002500
+ShellAlgorithm	00:000:002300
 N=50
 BinarySearch	00:000:000100
 ShellAlgorithm	00:000:002700
 N=60
 BinarySearch	00:000:000000
-ShellAlgorithm	00:000:003900
+ShellAlgorithm	00:000:003700
 N=70
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:005100
+ShellAlgorithm	00:000:004700
 N=80
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:006000
+ShellAlgorithm	00:000:005700
 N=90
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:007100
+ShellAlgorithm	00:000:006200
 N=100
-BinarySearch	00:000:000000
-ShellAlgorithm	00:000:008400
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:007400
 N=110
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:009300
+ShellAlgorithm	00:000:008100
 N=120
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:009400
+ShellAlgorithm	00:000:008800
 N=130
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:011300
+ShellAlgorithm	00:000:010400
 N=140
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:012400
+ShellAlgorithm	00:000:011000
 N=150
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:012700
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:012000
 N=160
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:016600
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:015000
 N=170
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:015100
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:014100
 N=180
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:017700
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:015000
 N=190
-BinarySearch	00:000:000000
-ShellAlgorithm	00:000:018100
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:016800
 N=200
-BinarySearch	00:000:000000
-ShellAlgorithm	00:000:019700
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:017900
 N=210
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:020300
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:018000
 N=220
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:020400
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:019000
 N=230
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:021800
+ShellAlgorithm	00:000:020600
 N=240
-BinarySearch	00:000:000000
-ShellAlgorithm	00:000:024000
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:022100
 N=250
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:025000
+ShellAlgorithm	00:000:021900
 N=260
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:026800
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:026400
 N=270
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:027900
+ShellAlgorithm	00:000:025900
 N=280
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:028000
-N=290
 BinarySearch	00:000:000000
-ShellAlgorithm	00:000:031600
+ShellAlgorithm	00:000:026300
+N=290
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:030300
 N=300
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:047400
+ShellAlgorithm	00:000:028400
 N=310
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:046300
+ShellAlgorithm	00:000:030000
 N=320
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:056000
+ShellAlgorithm	00:000:036200
 N=330
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:052400
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:032400
 N=340
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:051600
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:034000
 N=350
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:053900
+ShellAlgorithm	00:000:034900
 N=360
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:067600
+ShellAlgorithm	00:000:036000
 N=370
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:058100
+ShellAlgorithm	00:000:035900
 N=380
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:064000
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:035600
 N=390
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:067700
+ShellAlgorithm	00:000:042700
 N=400
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:063300
+ShellAlgorithm	00:000:048700
 N=410
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:064600
+ShellAlgorithm	00:000:047400
 N=420
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:067400
+ShellAlgorithm	00:000:043200
 N=430
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:073200
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:043200
 N=440
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:067300
+ShellAlgorithm	00:000:044400
 N=450
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:073400
+ShellAlgorithm	00:000:048700
 N=460
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:068100
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:049100
 N=470
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:082600
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:052600
 N=480
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:083700
+ShellAlgorithm	00:000:052400
 N=490
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:076400
+ShellAlgorithm	00:000:051900
 N=500
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:084900
+ShellAlgorithm	00:000:054400
 N=510
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:083200
+ShellAlgorithm	00:000:055600
 N=520
-BinarySearch	00:000:000200
-ShellAlgorithm	00:000:091200
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:060500
 N=530
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:088700
+ShellAlgorithm	00:000:060900
 N=540
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:087800
+ShellAlgorithm	00:000:058200
 N=550
-BinarySearch	00:000:000200
-ShellAlgorithm	00:000:088400
-N=560
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:085100
+ShellAlgorithm	00:000:059800
+N=560
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:061300
 N=570
-BinarySearch	00:000:000200
-ShellAlgorithm	00:000:088200
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:062000
 N=580
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:092400
+ShellAlgorithm	00:000:066000
 N=590
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:092900
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:067200
 N=600
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:090400
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:065300
 N=610
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:098300
+ShellAlgorithm	00:000:068200
 N=620
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:091500
+ShellAlgorithm	00:000:073600
 N=630
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:092900
+ShellAlgorithm	00:000:070100
 N=640
-BinarySearch	00:000:000200
-ShellAlgorithm	00:000:106900
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:084700
 N=650
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:097200
+ShellAlgorithm	00:000:077000
 N=660
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:102200
+ShellAlgorithm	00:000:075600
 N=670
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:098900
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:076300
 N=680
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:101500
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:078700
 N=690
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:107500
+ShellAlgorithm	00:000:079000
 N=700
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:129700
+ShellAlgorithm	00:000:082600
 N=710
-BinarySearch	00:000:000200
-ShellAlgorithm	00:000:138500
-N=720
-BinarySearch	00:000:000200
-ShellAlgorithm	00:000:133500
-N=730
-BinarySearch	00:000:000200
-ShellAlgorithm	00:000:139100
-N=740
-BinarySearch	00:000:000200
-ShellAlgorithm	00:000:102600
-N=750
 BinarySearch	00:000:000000
-ShellAlgorithm	00:000:103100
+ShellAlgorithm	00:000:086400
+N=720
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:083000
+N=730
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:084700
+N=740
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:086900
+N=750
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:083600
 N=760
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:111100
+ShellAlgorithm	00:000:086400
 N=770
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:124000
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:105800
 N=780
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:115700
+ShellAlgorithm	00:000:098400
 N=790
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:113300
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:098300
 N=800
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:112400
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:102000
 N=810
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:118100
+ShellAlgorithm	00:000:095700
 N=820
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:108600
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:098400
 N=830
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:103000
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:099200
 N=840
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:111000
+ShellAlgorithm	00:000:101000
 N=850
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:107300
+ShellAlgorithm	00:000:100900
 N=860
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:113600
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:102100
 N=870
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:149700
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:104700
 N=880
-BinarySearch	00:000:000200
-ShellAlgorithm	00:000:115600
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:105500
 N=890
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:107000
+ShellAlgorithm	00:000:105300
 N=900
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:118500
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:116900
 N=910
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:113500
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:113100
 N=920
-BinarySearch	00:000:000000
-ShellAlgorithm	00:000:120100
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:110800
 N=930
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:117000
-N=940
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:123000
-N=950
 BinarySearch	00:000:000000
-ShellAlgorithm	00:000:118300
+ShellAlgorithm	00:000:115100
+N=940
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:114100
+N=950
+BinarySearch	00:000:000100
+ShellAlgorithm	00:000:114200
 N=960
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:126800
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:128400
 N=970
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:118100
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:116000
 N=980
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:118700
+ShellAlgorithm	00:000:118100
 N=990
 BinarySearch	00:000:000100
-ShellAlgorithm	00:000:121100
+ShellAlgorithm	00:000:118200
 N=1000
-BinarySearch	00:000:000100
-ShellAlgorithm	00:000:131000
+BinarySearch	00:000:000000
+ShellAlgorithm	00:000:120700

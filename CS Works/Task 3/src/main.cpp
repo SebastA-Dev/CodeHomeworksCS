@@ -15,9 +15,9 @@
 #include <x86intrin.h>
 
 static inline std::string format_ns(unsigned long long ns) {
-    unsigned long long s = ns / 1'000'000'000ULL;
-    unsigned long long ms = (ns / 1'000'000ULL) % 1000ULL;
-    unsigned long long rem_ns = ns % 1'000'000ULL;
+    unsigned long long s = ns / 1000000000ULL;
+    unsigned long long ms = (ns / 1000000ULL) % 1000ULL;
+    unsigned long long rem_ns = ns % 1000000ULL;
     std::ostringstream ss;
     ss << std::setfill('0') << std::setw(2) << s << ":"
        << std::setfill('0') << std::setw(3) << ms << ":"
