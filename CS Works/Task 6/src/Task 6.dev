@@ -1,20 +1,10 @@
-[Unit1]
-FileName=task4.dev
-Folder=
-Compile=0
-Link=0
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Project]
-UnitCount=6
-FileName=task4.dev
-Name=task4
+FileName=Task 6.dev
+Name=NQueens
 Type=1
 Ver=2
-ObjFiles=""
-Includes=include
+ObjFiles=
+Includes=
 Libs=
 PrivateResource=
 ResourceIncludes=
@@ -24,43 +14,54 @@ CppCompiler=
 Linker=
 IsCpp=1
 Icon=
-ExeOutput=bin\task4_exec.exe
+ExeOutput=
 ObjectOutput=
+LogOutput=
+LogOutputEnabled=0
 OverrideOutput=0
-OverrideOutputName=task4.exe
+OverrideOutputName=Task 6.exe
 HostApplication=
-Folders=
+UseCustomMakefile=0
+CustomMakefile=
 CommandLine=
-UseCustomMakefile=1
-CustomMakefile=MakeFile (2).win
+Folders=
 IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=0001000000000000000000000
-LogOutput=
-LogOutputEnabled=0
+CompilerSettings=00000000c0000000000000000
+UnitCount=5
 
 [VersionInfo]
-Major=0
-Minor=1
-Release=1
-Build=1
+Major=1
+Minor=0
+Release=0
+Build=0
 LanguageID=1033
 CharsetID=1252
 CompanyName=
-FileVersion=0.1.1.1
+FileVersion=1.0.0.0
 FileDescription=Developed using the Dev-C++ IDE
 InternalName=
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=
 ProductName=
-ProductVersion=
+ProductVersion=1.0.0.0
 AutoIncBuildNr=0
-SyncProduct=0
+SyncProduct=1
+
+[Unit1]
+FileName=NQueens.h
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
 
 [Unit2]
-FileName=src\main.cpp
+FileName=NQueens.cpp
 CompileCpp=1
 Folder=
 Compile=1
@@ -70,7 +71,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit3]
-FileName=src\OrdenamientoRecursivo.cpp
+FileName=main.cpp
 CompileCpp=1
 Folder=
 Compile=1
@@ -80,7 +81,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit4]
-FileName=src\RandomVector.cpp
+FileName=TorreHanoi.cpp
 CompileCpp=1
 Folder=
 Compile=1
@@ -90,22 +91,12 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit5]
-FileName=include\OrdenamientoRecursivo.h
-Compile=0
-Link=0
-Priority=2000
+FileName=TorreHanoi.h
 CompileCpp=1
 Folder=
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit6]
-FileName=include\RandomVector.h
-Compile=0
-Link=0
-Priority=2000
-CompileCpp=1
-Folder=
+Compile=1
+Link=1
+Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 

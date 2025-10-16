@@ -2,7 +2,6 @@
 #include <vector>
 #include <cstdio>
 #include "../include/SortingAlgorithm.h"
-// Timing helpers (inlined per request)
 #include <array>
 #include <sstream>
 #include <chrono>
@@ -11,10 +10,12 @@
 #include <windows.h>
 #include <x86intrin.h>
 
+// Formatea nanosegundos a "ss:mmm:nnnnnn"
 static inline std::string format_ns(unsigned long long ns) {
-    unsigned long long s = ns / 1'000'000'000ULL;
-    unsigned long long ms = (ns / 1'000'000ULL) % 1000ULL;
-    unsigned long long rem_ns = ns % 1'000'000ULL;
+    unsigned long long s = ns / 1000000000ULL;
+    unsigned long long ms = (ns / 1000000ULL) % 1000ULL;
+    unsigned long long rem_ns = ns % 1000000ULL;
+
     std::ostringstream ss;
     ss << std::setfill('0') << std::setw(2) << s << ":"
        << std::setfill('0') << std::setw(3) << ms << ":"
@@ -22,6 +23,7 @@ static inline std::string format_ns(unsigned long long ns) {
     return ss.str();
 }
 
+// Obtiene la frecuencia de la CPU en GHz
 static inline double get_cpu_freq_ghz() {
     std::array<char, 128> buffer;
     std::string result;
@@ -85,11 +87,10 @@ static inline unsigned long long time_precise(M m, Obj& obj, std::vector<int>& d
     uStart.LowPart = ftStart.dwLowDateTime; uStart.HighPart = ftStart.dwHighDateTime;
     uEnd.LowPart = ftEnd.dwLowDateTime; uEnd.HighPart = ftEnd.dwHighDateTime;
     unsigned long long diff100ns = (uEnd.QuadPart - uStart.QuadPart);
-    return diff100ns * 100ULL; // to ns
+    return diff100ns * 100ULL; // convertir a ns
 }
 
-
-// Generates a vector of N random integers
+// Genera un vector aleatorio de N enteros
 std::vector<int> generateRandomVector(int N) {
     std::vector<int> arr(N);
     for (int& x : arr) {
@@ -102,10 +103,10 @@ int main() {
     int N = 1000;     
     std::vector<int> arr = generateRandomVector(N);
     SortingAlgorithm sorter;
-    // Helper typedef for member function pointer
+
+    // Alias para puntero a método de SortingAlgorithm
     using MethodPtr = void (SortingAlgorithm::*)(std::vector<int>&);
 
-    // --- Run tests and print grouped output ----------------------
     struct AlgoInfo { MethodPtr ptr; const char* name; } algos[] = {
         { &SortingAlgorithm::InsertionAlgorithm, "Insertion" },
         { &SortingAlgorithm::SelectionAlgorithm, "Selection" },
@@ -115,22 +116,24 @@ int main() {
 
     for (auto &a : algos) {
         std::cout << "=== " << a.name << " Algorithm ===" << std::endl;
+
         auto copy = arr;
-    unsigned long long t1 = time_chrono(a.ptr, sorter, copy);
-    std::cout << "  Tool 1 (chrono): " << format_ns(t1) << std::endl;
+        unsigned long long t1 = time_chrono(a.ptr, sorter, copy);
+        std::cout << "  Tool 1 (chrono):  " << format_ns(t1) << std::endl;
 
         copy = arr;
-    unsigned long long t2 = time_qpc(a.ptr, sorter, copy);
-    std::cout << "  Tool 2 (QPC):    " << format_ns(t2) << std::endl;
+        unsigned long long t2 = time_qpc(a.ptr, sorter, copy);
+        std::cout << "  Tool 2 (QPC):     " << format_ns(t2) << std::endl;
 
         copy = arr;
-    unsigned long long t3 = time_rdtsc(a.ptr, sorter, copy);
-    std::cout << "  Tool 3 (RDTSC):  " << format_ns(t3) << std::endl;
+        unsigned long long t3 = time_rdtsc(a.ptr, sorter, copy);
+        std::cout << "  Tool 3 (RDTSC):   " << format_ns(t3) << std::endl;
 
         copy = arr;
         unsigned long long t4 = time_precise(a.ptr, sorter, copy);
-        std::cout << "  Tool 4 (Precise):" << format_ns(t4) << std::endl;
+        std::cout << "  Tool 4 (Precise): " << format_ns(t4) << std::endl;
     }
 
     return 0;
 }
+
