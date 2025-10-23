@@ -1,7 +1,43 @@
 #include <iostream>
+#include "Listas.h"
+using namespace std;
 
-/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+int main() {
+    Lista<int> lista;
 
-int main(int argc, char** argv) {
-	return 0;
+    lista.insertar_inicio(10);
+    lista.insertar_inicio(20);
+    lista.insertar_inicio(30);
+	
+	cout << "Mostrando elementos:\n";
+    for (int i = 0; i < lista.getTam(); i++) {
+        cout << "Pos " << i << ": " << lista.obtener_info(i) << endl;
+    }
+	
+    lista.insertar_final(40);
+    lista.insertar_final(50);
+	
+	cout << "Mostrando elementos:\n";
+    for (int i = 0; i < lista.getTam(); i++) {
+        cout << "Pos " << i << ": " << lista.obtener_info(i) << endl;
+    }
+    
+    lista.insertar_pos(25, 2);
+
+    cout << "Mostrando elementos:\n";
+    for (int i = 0; i < lista.getTam(); i++) {
+        cout << "Pos " << i << ": " << lista.obtener_info(i) << endl;
+    }
+
+
+    lista.eliminar(3);
+
+    cout << "Mostrando elementos:\n";
+    for (int i = 0; i < lista.getTam(); i++) {
+        cout << "Pos " << i << ": " << lista.obtener_info(i) << endl;
+    }
+
+    cout << "\n¿Lista vacía?: " << (lista.lista_vacia() ? "Sí" : "No") << endl;
+
+    return 0;
 }
