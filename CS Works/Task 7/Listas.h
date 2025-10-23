@@ -6,58 +6,46 @@
 template<class T>
 
 struct Nodo{
-
-      T info;
-      
-            Nodo<T>*sig;
-            
-            }
+    T info;     
+    Nodo<T>*sig;
+    }
             
 
 template <CLass T>
 Class Lista  {
 
       Nodo<T> *cab;
-      int tam;
-                        
-      
-      
+      int tam;                              
       Public:
       
-            Lista() {
+        Lista() {        
+            cab = nullptr
+            tam = 0                    
+            }                     
             
-                  cab = NULL
-                  tam = 0
-                        
-                        }
-                        
-            
-            void insertar_inicio(T dato);
-            void insertar_final(T dato);
-            void insertar_pos(T dato, int pos);
-            bool eliminar(int pos);
-            T obtener_info (int pos);
-            bool lista_vacia();
-            
+        void insertar_inicio(T dato);
+        void insertar_final(T dato);
+        void insertar_pos(T dato, int pos);
+ 
+        // PENDIENTES
+        bool eliminar(int pos);
+        T obtener_info (int pos);
+        bool lista_vacia();        
 };
 
 
 // Insertar  inicio
 template <Class T>
-void Lista<T>::insertar_inicio(T dato){
-      
-      
-      Nodo<T>*nuevo;
+void Lista<T>::insertar_inicio(T dato){            
+      Nodo<T> *nuevo;
       nuevo = new Nodo<T>;
       nuevo-> info = dato;
-      nuevo->sig = cabeza;
+      nuevo->sig = cab;
       cab = nuevo;
-      tam++;
-      
+      tam++;      
 };
 
 // Insertar final
-
 template<class T>
 void Lista<T>::insertar_final(T dato){
     Nodo<T>*nuevo;
@@ -65,20 +53,21 @@ void Lista<T>::insertar_final(T dato){
     nuevo->info = dato;
     nuevo->sig = NULL;
     
-    // Si la lista está vacia
+    // Si la lista estï¿½ vacia
     
     if(cab == NULL){
         cab = nuevo;
+        tam++;
+        return;
     }
-    else{
-    	
-        // Recorr hasta el último dato
-        Nodo<T>*aux = cab;
-        while(aux->sig != NULL){
-            aux = aux->sig;
-        }
-        aux->sig = nuevo;
+
+    // Recorr hasta el ï¿½ltimo dato
+    Nodo<T>*aux = cab;
+    while(aux->sig != NULL){
+        aux = aux->sig;
     }
+
+    aux->sig = nuevo;
     tam++;
 }
 
@@ -88,11 +77,17 @@ template<class T>
 void Lista<T>::insertar_pos(T dato, int pos){
 	
 	
-    // PENDIENTE, definir para validar la posición, en caso que la posición ingresada sea < 0 o > tamaño de la lista
+    // Para una lista mayor al tamano de la lista
+    if(pos > tam || (pos * -1) > tam){
+        return;
+    }
 
+    // En caso de que sea negativa, se acopla a su valor positivo para no iterar de manera positiva o generar un nodo "cola"
+    if(0 > pos){
+        pos = tam - pos
+    }
     
-    // Si es posición 0, insertar al inicio
-    
+    // Si es posiciï¿½n 0, insertar al inicio
     if(pos == 0){
         insertar_inicio(dato);
         return;
@@ -117,11 +112,5 @@ void Lista<T>::insertar_pos(T dato, int pos){
     tam++;
     
 }
-
-
-
-
-
-
 
 #endif
