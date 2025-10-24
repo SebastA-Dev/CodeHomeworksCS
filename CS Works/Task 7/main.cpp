@@ -35,9 +35,13 @@ int main() {
     cout << "Mostrando elementos:\n";
     for (int i = 0; i < lista.getTam(); i++) {
         cout << "Pos " << i << ": " << lista.obtener_info(i) << endl;
+    }    
+
+    lista[1] = 12312;
+    
+    cout << "Mostrando elementos:\n";
+    for (int i = 0; i < lista.getTam(); i++) {
+        cout << "Pos " << i << ": " << lista.obtener_info(i) << endl;
     }
-
-    cout << "\n¿Lista vacía?: " << (lista.lista_vacia() ? "Sí" : "No") << endl;
-
     return 0;
 }

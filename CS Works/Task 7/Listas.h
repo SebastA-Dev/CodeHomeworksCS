@@ -33,6 +33,8 @@ public:
     T obtener_info(int pos);
     bool lista_vacia();     
     int getTam();
+
+    T& operator[](int pos);                 
 };
 
 // Insertar al inicio
@@ -113,6 +115,14 @@ bool Lista<T>::eliminar(int pos) {
     delete aux_1;
     tam--;
     return true;
+}
+
+template<class T>
+T& Lista<T>::operator[](int pos) {
+    if (!validar_tam(pos))
+        throw std::out_of_range("Posición inválida");
+
+    return obtener_nodo_pos(pos)->info;
 }
 
 // Obtener información en posición
