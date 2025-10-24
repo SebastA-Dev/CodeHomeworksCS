@@ -16,7 +16,7 @@ private:
     Nodo<T>* cab;
     int tam;
 
-    // Métodos auxiliares internos
+    // metodos auxiliares internos
     bool validar_tam(int pos);
     Nodo<T>* obtener_nodo_pos(int pos);
 
@@ -65,7 +65,7 @@ void Lista<T>::insertar_final(T dato) {
     tam++;
 }
 
-// Insertar por posición
+// Insertar por posicion
 template<class T>
 void Lista<T>::insertar_pos(T dato, int pos) {
     if (!validar_tam(pos))
@@ -85,13 +85,13 @@ void Lista<T>::insertar_pos(T dato, int pos) {
     tam++;
 }
 
-// Eliminar nodo en posición
+// Eliminar nodo en posicion
 template<class T>
 bool Lista<T>::eliminar(int pos) {
     if (!validar_tam(pos))
         return false;
 
-    // Caso especial: eliminar el primer nodo
+    // Eliminar el nodo 1
     if (pos == 0) {
         Nodo<T>* aux = cab;
         cab = cab->sig;
@@ -120,28 +120,28 @@ bool Lista<T>::eliminar(int pos) {
 template<class T>
 T& Lista<T>::operator[](int pos) {
     if (!validar_tam(pos))
-        throw std::out_of_range("Posición inválida");
+        throw std::out_of_range("Posicion inv�lida");
 
     return obtener_nodo_pos(pos)->info;
 }
 
-// Obtener información en posición
+// Obtener informaci�n en posicion
 template<class T>
 T Lista<T>::obtener_info(int pos) {
     if (!validar_tam(pos))
-        throw std::out_of_range("Posición inválida");
+        throw std::out_of_range("Posicion inv�lida");
 
     Nodo<T>* aux = obtener_nodo_pos(pos);
     return aux->info;
 }
 
-// Verificar si la lista está vacía
+// Verificar si la lista est� vac�a
 template<class T>
 bool Lista<T>::lista_vacia() {
     return tam == 0;
 }
 
-// Validar tamaño
+// Validar tama�o
 template<class T>
 bool Lista<T>::validar_tam(int pos) {
     if (pos < 0 || pos >= tam)
@@ -149,7 +149,7 @@ bool Lista<T>::validar_tam(int pos) {
     return true;
 }
 
-// Obtener nodo en posición
+// Obtener en posicision
 template<class T>
 Nodo<T>* Lista<T>::obtener_nodo_pos(int pos) {
     Nodo<T>* aux = cab;
