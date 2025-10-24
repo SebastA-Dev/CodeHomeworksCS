@@ -1,171 +1,175 @@
 #ifndef LISTA_H
 #define LISTA_H
-#include <stdlib.h>
+
+#include <cstdlib>
 #include <stdexcept> // Para std::out_of_range
 
 template<class T>
 struct Nodo {
-    T info;     
-    Nodo<T>* sig;
+    T id = T();  // Valor por defecto del tipo T
+    T info;
+    Nodo<T>* siguiente;
 };
 
 template <class T>
 class Lista {
 
 private:
-    Nodo<T>* cab;
+    Nodo<T>* cabeza;
     int tam;
 
-    // metodos auxiliares internos
-    bool validar_tam(int pos);
-    Nodo<T>* obtener_nodo_pos(int pos);
+    // Mï¿½todos auxiliares internos
+    bool _validarPosicion(int pos);
+    Nodo<T>* _obtenerNodoPos(int pos);
 
 public:
-    Lista() {
-        cab = nullptr;
-        tam = 0;
-    }
+    Lista() : cabeza(nullptr), tam(0) {}
+    ~Lista(); // âœ… Destructor agregado
 
-    void insertar_inicio(T dato);
-    void insertar_final(T dato);
-    void insertar_pos(T dato, int pos);
-    bool eliminar(int pos);
-    T obtener_info(int pos);
-    bool lista_vacia();     
-    int getTam();
-
-    T& operator[](int pos);                 
+    void insertarInicio(T dato);
+    void insertarFinal(T dato);
+    void insertarPosicion(T dato, int pos);
+    bool eliminarPosicion(int pos);
+    T obtenerInfo(int pos);
+    bool estaVacia();
+    int obtenerTam();
+    T& operator[](int pos);
 };
+
+
+template <class T>
+Lista<T>::~Lista() {
+    Nodo<T>* actual = cabeza;
+    while (actual != nullptr) {
+        Nodo<T>* temp = actual;
+        actual = actual->siguiente;
+        delete temp;
+    }
+    cabeza = nullptr;
+    tam = 0;
+}
 
 // Insertar al inicio
 template <class T>
-void Lista<T>::insertar_inicio(T dato) {
+void Lista<T>::insertarInicio(T dato) {
     Nodo<T>* nuevo = new Nodo<T>;
     nuevo->info = dato;
-    nuevo->sig = cab;
-    cab = nuevo;
+    nuevo->siguiente = cabeza;
+    cabeza = nuevo;
     tam++;
 }
 
 // Insertar al final
 template<class T>
-void Lista<T>::insertar_final(T dato) {
+void Lista<T>::insertarFinal(T dato) {
     Nodo<T>* nuevo = new Nodo<T>;
     nuevo->info = dato;
-    nuevo->sig = nullptr;
+    nuevo->siguiente = nullptr;
 
-    if (cab == nullptr) {
-        cab = nuevo;
+    if (cabeza == nullptr) {
+        cabeza = nuevo;
         tam++;
         return;
     }
 
-    Nodo<T>* aux = obtener_nodo_pos(tam - 1);
-    aux->sig = nuevo;
+    Nodo<T>* aux = _obtenerNodoPos(tam - 1);
+    aux->siguiente = nuevo;
     tam++;
 }
 
-// Insertar por posicion
+// Insertar por posiciï¿½n
 template<class T>
-void Lista<T>::insertar_pos(T dato, int pos) {
-    if (!validar_tam(pos))
+void Lista<T>::insertarPosicion(T dato, int pos) {
+    if (!_validarPosicion(pos))
         return;
 
     if (pos == 0) {
-        insertar_inicio(dato);
+        insertarInicio(dato);
         return;
     }
 
     Nodo<T>* nuevo = new Nodo<T>;
     nuevo->info = dato;
 
-    Nodo<T>* aux = obtener_nodo_pos(pos - 1);
-    nuevo->sig = aux->sig;
-    aux->sig = nuevo;
+    Nodo<T>* anterior = _obtenerNodoPos(pos - 1);
+    nuevo->siguiente = anterior->siguiente;
+    anterior->siguiente = nuevo;
     tam++;
 }
 
-// Eliminar nodo en posicion
+// Eliminar nodo en posiciï¿½n
 template<class T>
-bool Lista<T>::eliminar(int pos) {
-    if (!validar_tam(pos))
+bool Lista<T>::eliminarPosicion(int pos = obtenerTam()-1) {
+    if (!_validarPosicion(pos))
         return false;
 
-    // Eliminar el nodo 1
     if (pos == 0) {
-        Nodo<T>* aux = cab;
-        cab = cab->sig;
+        Nodo<T>* aux = cabeza;
+        cabeza = cabeza->siguiente;
         delete aux;
-        aux = nullptr;
         tam--;
         return true;
     }
 
-    Nodo<T>* aux_1 = obtener_nodo_pos(pos);
-    Nodo<T>* aux_2 = obtener_nodo_pos(pos - 1);
+    Nodo<T>* nodoEliminar = _obtenerNodoPos(pos);
+    Nodo<T>* anterior = _obtenerNodoPos(pos - 1);
 
-    if (aux_1->sig == nullptr) {
-        aux_2->sig = nullptr;
-        delete aux_1;
-        tam--;
-        return true;
-    }
-
-    aux_2->sig = aux_1->sig;
-    delete aux_1;
+    anterior->siguiente = nodoEliminar->siguiente;
+    delete nodoEliminar;
     tam--;
     return true;
 }
 
+// Operador []
 template<class T>
 T& Lista<T>::operator[](int pos) {
-    if (!validar_tam(pos))
-        throw std::out_of_range("Posicion inválida");
+    if (!_validarPosicion(pos))
+        throw std::out_of_range("Posiciï¿½n invï¿½lida");
 
-    return obtener_nodo_pos(pos)->info;
+    return _obtenerNodoPos(pos)->info;
 }
 
-// Obtener información en posicion
+// Obtener informaciï¿½n en posiciï¿½n
 template<class T>
-T Lista<T>::obtener_info(int pos) {
-    if (!validar_tam(pos))
-        throw std::out_of_range("Posicion inválida");
+T Lista<T>::obtenerInfo(int pos) {
+    if (!_validarPosicion(pos))
+        throw std::out_of_range("Posiciï¿½n invï¿½lida");
 
-    Nodo<T>* aux = obtener_nodo_pos(pos);
+    Nodo<T>* aux = _obtenerNodoPos(pos);
     return aux->info;
 }
 
-// Verificar si la lista está vacía
+// Verificar si la lista estï¿½ vacï¿½a
 template<class T>
-bool Lista<T>::lista_vacia() {
+bool Lista<T>::estaVacia() {
     return tam == 0;
 }
 
-// Validar tamaño
+// Validar posiciï¿½n
 template<class T>
-bool Lista<T>::validar_tam(int pos) {
-    if (pos < 0 || pos >= tam)
-        return false;
-    return true;
+bool Lista<T>::_validarPosicion(int pos) {
+    return pos >= 0 && pos < tam;
 }
 
-// Obtener en posicision
+// Obtener nodo en posiciï¿½n
 template<class T>
-Nodo<T>* Lista<T>::obtener_nodo_pos(int pos) {
-    Nodo<T>* aux = cab;
+Nodo<T>* Lista<T>::_obtenerNodoPos(int pos) {
+    Nodo<T>* aux = cabeza;
     int contador = 0;
 
     while (contador < pos && aux != nullptr) {
-        aux = aux->sig;
+        aux = aux->siguiente;
         contador++;
     }
 
     return aux;
 }
 
+// Obtener tamaï¿½o
 template<class T>
-int Lista<T>::getTam() {
+int Lista<T>::obtenerTam() {
     return tam;
 }
 
 #endif
+
