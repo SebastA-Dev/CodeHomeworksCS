@@ -19,7 +19,7 @@ struct Persona {
     Persona(int cod, string nom, string ape,string tel, string dir)
         : codigo(cod), nombre(nom), apellido(ape), direccion(dir),telefono(tel) {}
 
-    // para comparaciÃ³n
+    // para comparación
     bool operator<(const Persona& otra) const {
         return codigo < otra.codigo;
     }
@@ -28,6 +28,20 @@ struct Persona {
         return codigo > otra.codigo;
     }
 };
+
+//=============================== Declaraciones (Prototipos) =============================
+
+template<class T>
+void imprimirListaAscendente(Lista<T>& lista);
+
+template<class T>
+void imprimirListaDescendente(Lista<T>& lista);
+
+bool buscarPorCodigo(Lista<Persona>& lista, int codigo);
+
+bool buscarPorApellido(Lista<Persona>& lista, const string& apellido);
+
+Lista<Persona> leerArchivoPersonas(const string& direccion, bool ord);
 
 //=============================== Funciones =============================
 
@@ -59,6 +73,40 @@ void imprimirListaDescendente(Lista<T>& lista) {
     cout << string(50, '-') << endl;
 }
 
+// Buscar por codigo
+bool buscarPorCodigo(Lista<Persona>& lista, int codigo) {
+    for (int i = 0; i < lista.obtenerTam(); i++) {
+        if (lista[i].codigo == codigo) {
+            cout << "\n=== PERSONA ENCONTRADA ===" << endl;
+            cout << "Codigo: " << lista[i].codigo << endl;
+            cout << "Apellido: " << lista[i].apellido << endl;
+            cout << "Nombre: " << lista[i].nombre << endl;
+            cout << "Telefono: " << lista[i].telefono << endl;
+            cout << "Direccion: " << lista[i].direccion << endl;
+            cout << "========================\n" << endl;
+            return true;
+        }
+    }
+    return false;
+}
+
+// Buscar por apellido
+bool buscarPorApellido(Lista<Persona>& lista, const string& apellido) {
+    for (int i = 0; i < lista.obtenerTam(); i++) {
+        if (lista[i].apellido == apellido) {
+            cout << "\n=== PERSONA ENCONTRADA ===" << endl;
+            cout << "Codigo: " << lista[i].codigo << endl;
+            cout << "Apellido: " << lista[i].apellido << endl;
+            cout << "Nombre: " << lista[i].nombre << endl;
+            cout << "Telefono: " << lista[i].telefono << endl;
+            cout << "Direccion: " << lista[i].direccion << endl;
+            cout << "========================\n" << endl;
+            return true;
+        }
+    }
+    return false;
+}
+
 Lista<Persona> leerArchivoPersonas(const string& direccion, bool ord = false) {
     ifstream archivo(direccion);
     string linea;
@@ -80,17 +128,17 @@ Lista<Persona> leerArchivoPersonas(const string& direccion, bool ord = false) {
                 size_t posTelEnd = linea.find(' ', posPlus);
                 string telefono = linea.substr(posPlus, posTelEnd - posPlus);
 
-                // Buscar siguiente nÃºmero (cÃ³digo)
+                // Buscar siguiente número (código)
                 size_t posCodigoInicio = linea.find_first_not_of(' ', posTelEnd);
                 size_t posCodigoFin = linea.find(' ', posCodigoInicio);
                 string codigoStr = linea.substr(posCodigoInicio, posCodigoFin - posCodigoInicio);
 
-                // Validar si realmente es nÃºmero antes de stoi
+                // Validar si realmente es número antes de stoi
                 int codigo = 0;
                 try { codigo = stoi(codigoStr); } 
-                catch (...) { continue; } // si no es nÃºmero, salta la lÃ­nea
+                catch (...) { continue; } // si no es número, salta la línea
 
-                string direccion = linea.substr(posCodigoFin + 1); // resto de la lÃ­nea
+                string direccion = linea.substr(posCodigoFin + 1); // resto de la línea
                 Persona p(codigo, nombre, apellido, telefono, direccion);
             
                 if(!ord)
@@ -101,23 +149,20 @@ Lista<Persona> leerArchivoPersonas(const string& direccion, bool ord = false) {
         }
     }
 
-
     archivo.close();
     return listaOriginal;
 }
-
 
 // ============= Main =========================
 
 int main() {
 
-    
     Lista<Lista<Persona>> listaDoble;
 
-    //Appellido
+    //Apellido (clave = apellido)
     listaDoble.insertarFinal(leerArchivoPersonas("datos_dummy_Lista1.txt", true));
 
-    //Codigo
+    //Codigo (clave = codigo)
     listaDoble.insertarFinal(leerArchivoPersonas("datos_dummy_Lista2.txt"));
     
     // ASCENDENTE
@@ -128,21 +173,88 @@ int main() {
     };
 
     // DESCENDENTE
-    cout << "\n\nIMPRESION EN DESCENTENDE (APELLIDOS | CODIGO)\n";
+    cout << "\n\nIMPRESION EN DESCENDENTE (APELLIDOS | CODIGO)\n";
     for(int i=0; i<listaDoble.obtenerTam(); i++){
         Lista<Persona> subLista = listaDoble[i];
         imprimirListaDescendente(subLista);
     };
 
-    // ESTO DE ACA ELIMINA, ENTONCES, PIDE EL PARAMETRO, EL VALOR, LUEGO EL DATO ABSTRACTO Y LA COLUMNA DE LA CUAL TOMARA LA ELIMINACION
-    // INSERCION VA IGUAL
-    listaDoble[0].eliminarElemento<string>("GÃ³mez", [](const Persona& per) { return per.apellido; });
-    listaDoble[0].eliminarElemento<string>("ASFASFDAS", [](const Persona& per) { return per.apellido; });
+    // ELIMINACION LISTA 1 
+    
+    cout << "\n\nELIMINACION EN LISTA 1\n";
+    cout << "Eliminando 'Gomez' de Lista 1...\n";
+    bool eliminado1 = listaDoble[0].eliminarElemento<string>("Gómez", [](const Persona& per) { return per.apellido; });
+    
+    if (eliminado1) {
+        cout << "Elemento eliminado exitosamente!\n";
+    } else {
+        cout << "AVISO: El elemento no se encuentra en la lista.\n";
+    }
+    
+    cout << "\nLista 1 despues de eliminacion (ASCENDENTE):\n";
+    Lista<Persona> subLista1 = listaDoble[0];
+    imprimirListaAscendente(subLista1);
 
-    for(int i=0; i<listaDoble.obtenerTam(); i++){
-        Lista<Persona> subLista = listaDoble[i];
-        cout << subLista.obtenerTam()<<"\n\n";
-    };
+    // INTENTO ELIMINACION LISTA 2 
+    cout << "\n\nELIMINACION EN LISTA 2 (elemento inexistente)\n";
+    cout << "Intentando eliminar elemento con codigo 99999\n";
+    
+    
+    bool eliminado2 = listaDoble[1].eliminarElemento<int>(99999, [](const Persona& per) { return per.codigo; });
+    
+    if (eliminado2) {
+        cout << "Elemento eliminado\n";
+    } else {
+        cout << "AVISO: El elemento con codigo 99999 no se encuentra en la lista.\n";
+    }
+    
+    cout << "\nLista 2 despues de intento (DESCENDENTE):\n";
+    Lista<Persona> subLista2 = listaDoble[1];
+    imprimirListaDescendente(subLista2);
+
+    // BUSQUEDA APELLIDO
+    
+    cout << "\n\nBUSQUEDA EN LISTA 1 (clave = apellido)\n";
+    
+    cout << "Buscando apellido Lopez\n";
+    
+    if (!buscarPorApellido(listaDoble[0], "López")) {
+    
+        cout << "AVISO: No se encontro persona con apellido Lopez.\n";
+        
+    }
+
+    // BUSQUEDA POR CODIGO
+    
+    
+    cout << "\n\nBUSQUEDA EN LISTA 2 (clave = codigo)\n";
+    
+    cout << "Buscando codigo 105 \n";
+    
+    if (!buscarPorCodigo(listaDoble[1], 105)) {
+    	
+    	
+        cout << "AVISO: No se encontro persona con codigo 105.\n";
+        
+    }
+
+    // BUSQUEDA FALLIDA LISTA 1
+    
+    
+    cout << "\n\nBUSQUEDA FALLIDA EN LISTA 1\n";
+    
+    cout << "Buscando codigo 999 (que no existe)...\n";
+    
+    if (!buscarPorCodigo(listaDoble[0], 999)) {
+    	
+        cout << "AVISO: No se encontro persona con codigo 999.\n";
+        
+    }
+
+    cout << "\n\nPROGRAMA FINALIZADO\n";
+    cout << "Lista 1: " << listaDoble[0].obtenerTam() << " elementos\n";
+    cout << "Lista 2: " << listaDoble[1].obtenerTam() << " elementos\n";
 
     return 0;
 }
+
