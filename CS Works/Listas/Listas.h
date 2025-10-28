@@ -218,7 +218,6 @@ bool Lista<T>::eliminarElemento(CampoOrden valorBuscado, Extractor extraerCampo)
 }
 
 
-
 template<class T>
 void Lista<T>::insertarOrden(T dato, bool asc) {
     Nodo<T>* nuevo = new Nodo<T>;

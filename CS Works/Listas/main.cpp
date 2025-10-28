@@ -19,7 +19,7 @@ struct Persona {
     Persona(int cod, string nom, string ape,string tel, string dir)
         : codigo(cod), nombre(nom), apellido(ape), direccion(dir),telefono(tel) {}
 
-    // para comparación
+    // para comparaciï¿½n
     bool operator<(const Persona& otra) const {
         return codigo < otra.codigo;
     }
@@ -128,17 +128,17 @@ Lista<Persona> leerArchivoPersonas(const string& direccion, bool ord = false) {
                 size_t posTelEnd = linea.find(' ', posPlus);
                 string telefono = linea.substr(posPlus, posTelEnd - posPlus);
 
-                // Buscar siguiente número (código)
+                // Buscar siguiente nï¿½mero (cï¿½digo)
                 size_t posCodigoInicio = linea.find_first_not_of(' ', posTelEnd);
                 size_t posCodigoFin = linea.find(' ', posCodigoInicio);
                 string codigoStr = linea.substr(posCodigoInicio, posCodigoFin - posCodigoInicio);
 
-                // Validar si realmente es número antes de stoi
+                // Validar si realmente es nï¿½mero antes de stoi
                 int codigo = 0;
                 try { codigo = stoi(codigoStr); } 
-                catch (...) { continue; } // si no es número, salta la línea
+                catch (...) { continue; } // si no es nï¿½mero, salta la lï¿½nea
 
-                string direccion = linea.substr(posCodigoFin + 1); // resto de la línea
+                string direccion = linea.substr(posCodigoFin + 1); // resto de la lï¿½nea
                 Persona p(codigo, nombre, apellido, telefono, direccion);
             
                 if(!ord)
@@ -182,8 +182,8 @@ int main() {
     // ELIMINACION LISTA 1 
     
     cout << "\n\nELIMINACION EN LISTA 1\n";
-    cout << "Eliminando 'Gomez' de Lista 1...\n";
-    bool eliminado1 = listaDoble[0].eliminarElemento<string>("Gómez", [](const Persona& per) { return per.apellido; });
+    cout << "Eliminando 'GÃ³mez' de Lista 1...\n";
+    bool eliminado1 = listaDoble[0].eliminarElemento<string>("GÃ³mez", [](const Persona& per) { return per.apellido; });
     
     if (eliminado1) {
         cout << "Elemento eliminado exitosamente!\n";
@@ -218,7 +218,7 @@ int main() {
     
     cout << "Buscando apellido Lopez\n";
     
-    if (!buscarPorApellido(listaDoble[0], "López")) {
+    if (!buscarPorApellido(listaDoble[0], "LÃ³pez")) {
     
         cout << "AVISO: No se encontro persona con apellido Lopez.\n";
         
@@ -231,11 +231,8 @@ int main() {
     
     cout << "Buscando codigo 105 \n";
     
-    if (!buscarPorCodigo(listaDoble[1], 105)) {
-    	
-    	
-        cout << "AVISO: No se encontro persona con codigo 105.\n";
-        
+    if (!buscarPorCodigo(listaDoble[1], 105)) {    	    	
+        cout << "AVISO: No se encontro persona con codigo 105.\n";        
     }
 
     // BUSQUEDA FALLIDA LISTA 1
