@@ -128,5 +128,14 @@ int main() {
         imprimirListaDescendente(subLista);
     };
 
+    listaDoble[0].eliminarElemento<string>("Gómez", [](const Persona& per) { return per.apellido; });
+
+    // DESCENDENTE
+    cout << "\n\nIMPRESION EN DESCENTENDE (APELLIDOS | CODIGO)\n";
+    for(int i=0; i<listaDoble.obtenerTam(); i++){
+        Lista<Persona> subLista = listaDoble[i];
+        cout << subLista.obtenerTam()<<"\n\n";
+    };
+
     return 0;
 }

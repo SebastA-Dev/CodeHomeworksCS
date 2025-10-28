@@ -42,7 +42,8 @@ public:
     bool eliminarPosicion(int pos);
 
     template<class CampoOrden, class Extractor>
-    bool eliminarPosicion(T dato, Extractor extraerCampo);
+    bool eliminarElemento(CampoOrden dato, Extractor extraerCampo);
+
     T obtenerInfo(int pos);
     bool estaVacia();
     int obtenerTam();
@@ -178,6 +179,44 @@ bool Lista<T>::eliminarPosicion(int pos) {
     tam--;
     return true;
 }
+
+
+// ==================== ELIMINAR ELEMENTO POR CAMPO ====================
+template<class T>
+template<class CampoOrden, class Extractor>
+bool Lista<T>::eliminarElemento(CampoOrden valorBuscado, Extractor extraerCampo) {
+    if (cabeza == nullptr)
+        return false;
+
+    Nodo<T>* actual = cabeza;
+    Nodo<T>* anterior = nullptr;
+
+    while (actual != nullptr) {
+        CampoOrden valorActual = extraerCampo(actual->info);
+
+        // Si encontramos el valor
+        if (valorActual == valorBuscado) {
+            if (anterior == nullptr) {
+                // Eliminar la cabeza
+                cabeza = actual->siguiente;
+            } else {
+                // Eliminar nodo intermedio o final
+                anterior->siguiente = actual->siguiente;
+            }
+
+            delete actual;
+            tam--;
+            return true;
+        }
+
+        // Avanzar al siguiente nodo
+        anterior = actual;
+        actual = actual->siguiente;
+    }
+
+    return false; // No se encontró el elemento
+}
+
 
 
 template<class T>
