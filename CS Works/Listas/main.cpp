@@ -12,11 +12,12 @@ struct Persona {
     int codigo;
     string nombre;
     string apellido;
+    string direccion;
     string telefono;
 
-    Persona() : codigo(0), nombre(""), apellido("") ,telefono("") {}
-    Persona(int cod, string nom, string ape,string tel)
-        : codigo(cod), nombre(nom), apellido(ape),telefono(tel) {}
+    Persona() : codigo(0), nombre(""), apellido(""), direccion("") ,telefono("") {}
+    Persona(int cod, string nom, string ape,string tel, string dir)
+        : codigo(cod), nombre(nom), apellido(ape), direccion(dir),telefono(tel) {}
 
     // para comparación
     bool operator<(const Persona& otra) const {
@@ -38,7 +39,8 @@ void imprimirListaAscendente(Lista<T>& lista) {
         cout << "Codigo: " << lista[i].codigo
              << " - Apellido: " << lista[i].apellido
              << " - Nombre: " << lista[i].nombre
-             << " - Telefono: " << lista[i].telefono << endl;
+             << " - Telefono: " << lista[i].telefono 
+             << " - Direccion: " << lista[i].direccion << endl;
     }
     cout << string(50, '-') << endl;
 }
@@ -51,7 +53,8 @@ void imprimirListaDescendente(Lista<T>& lista) {
         cout << "Codigo: " << lista[i].codigo
              << " - Apellido: " << lista[i].apellido
              << " - Nombre: " << lista[i].nombre
-             << " - Telefono: " << lista[i].telefono << endl;
+             << " - Telefono: " << lista[i].telefono 
+             << " - Direccion: " << lista[i].direccion << endl;
     }
     cout << string(50, '-') << endl;
 }
@@ -70,31 +73,34 @@ Lista<Persona> leerArchivoPersonas(const string& direccion, bool ord = false) {
         if (!linea.empty()) {           
             size_t posPlus = linea.find("+57");
             if (posPlus != string::npos) {
-
                 size_t coma = linea.find(',');
-                string apellido = "";
-                string nombre = "";
-                if (coma != string::npos) {
-                    apellido = linea.substr(0, coma);
-                    nombre = linea.substr(coma + 1, posPlus - coma - 1);
-                } else {
-                    nombre = linea.substr(0, posPlus);
-                }
+                string apellido = coma != string::npos ? linea.substr(0, coma) : "";
+                string nombre = coma != string::npos ? linea.substr(coma + 1, posPlus - coma - 1) : linea.substr(0, posPlus);
 
-                size_t ultimoEspacio = linea.rfind(' ');
-                string telefono = linea.substr(posPlus, ultimoEspacio - posPlus);
-                string codigoStr = linea.substr(ultimoEspacio + 1);
-                int codigo = stoi(codigoStr);
-                Persona p(codigo, nombre, apellido, telefono);
+                size_t posTelEnd = linea.find(' ', posPlus);
+                string telefono = linea.substr(posPlus, posTelEnd - posPlus);
+
+                // Buscar siguiente número (código)
+                size_t posCodigoInicio = linea.find_first_not_of(' ', posTelEnd);
+                size_t posCodigoFin = linea.find(' ', posCodigoInicio);
+                string codigoStr = linea.substr(posCodigoInicio, posCodigoFin - posCodigoInicio);
+
+                // Validar si realmente es número antes de stoi
+                int codigo = 0;
+                try { codigo = stoi(codigoStr); } 
+                catch (...) { continue; } // si no es número, salta la línea
+
+                string direccion = linea.substr(posCodigoFin + 1); // resto de la línea
+                Persona p(codigo, nombre, apellido, telefono, direccion);
             
-                if(!ord){
-                    listaOriginal.insertarOrdenStruct<int>(p, [](const Persona& per) { return per.codigo; },true);  
-                }else{
-                    listaOriginal.insertarOrdenStruct<string>(p, [](const Persona& per) { return per.apellido; },true);
-                }                
+                if(!ord)
+                    listaOriginal.insertarOrdenStruct<int>(p, [](const Persona& per){ return per.codigo; }, true);
+                else
+                    listaOriginal.insertarOrdenStruct<string>(p, [](const Persona& per){ return per.apellido; }, true);
             }
         }
     }
+
 
     archivo.close();
     return listaOriginal;
@@ -128,10 +134,11 @@ int main() {
         imprimirListaDescendente(subLista);
     };
 
+    // ESTO DE ACA ELIMINA, ENTONCES, PIDE EL PARAMETRO, EL VALOR, LUEGO EL DATO ABSTRACTO Y LA COLUMNA DE LA CUAL TOMARA LA ELIMINACION
+    // INSERCION VA IGUAL
     listaDoble[0].eliminarElemento<string>("Gómez", [](const Persona& per) { return per.apellido; });
+    listaDoble[0].eliminarElemento<string>("ASFASFDAS", [](const Persona& per) { return per.apellido; });
 
-    // DESCENDENTE
-    cout << "\n\nIMPRESION EN DESCENTENDE (APELLIDOS | CODIGO)\n";
     for(int i=0; i<listaDoble.obtenerTam(); i++){
         Lista<Persona> subLista = listaDoble[i];
         cout << subLista.obtenerTam()<<"\n\n";

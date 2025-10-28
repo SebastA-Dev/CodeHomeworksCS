@@ -1,10 +1,10 @@
-Gómez, Juan    +57-312-000-0001    10023100
-Martínez, María    +57-312-000-0002    102000023
-Rodríguez, Carlos    +57-312-000-0003    100003
-López, Ana    +57-312-000-0004    1006530423
-Pérez, Andrés    +57-312-000-0005    1045005443
-Sánchez, Laura    +57-312-000-0006    10066061
-Torres, Diego    +57-312-000-0007    220007333
-Ramírez, Paula    +57-312-000-0008    100220812
-Vargas, Nicolás    +57-312-000-0009    55600092
-Castillo, Isabel    +57-312-000-0010    112300101
+Gómez, Juan    +57-312-000-0001    10023100    Calle 45 #12-18, Bogotá
+Martínez, María    +57-312-000-0002    102000023    Carrera 22 #7-34, Medellín
+Rodríguez, Carlos    +57-312-000-0003    100003    Avenida 15 #8-50, Cali
+López, Ana    +57-312-000-0004    1006530423    Calle 9 #5-27, Barranquilla
+Pérez, Andrés    +57-312-000-0005    1045005443    Carrera 10 #11-45, Bucaramanga
+Sánchez, Laura    +57-312-000-0006    10066061    Calle 3 #6-12, Cartagena
+Torres, Diego    +57-312-000-0007    220007333    Avenida 68 #23-09, Bogotá
+Ramírez, Paula    +57-312-000-0008    100220812    Carrera 33 #19-22, Pereira
+Vargas, Nicolás    +57-312-000-0009    55600092    Calle 7 #21-43, Manizales
+Castillo, Isabel    +57-312-000-0010    112300101    Carrera 8 #9-30, Ibagué

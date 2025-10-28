@@ -1,10 +1,10 @@
-Moreno, Valentina    +57-312-458-9231    10001245
-Fernández, Camilo    +57-312-764-5120    10001376
-Rojas, Daniela    +57-312-991-6843    10001587
-Gutiérrez, Mateo    +57-312-230-4789    10001654
-Navarro, Juliana    +57-312-317-9056    10001702
-Córdoba, Samuel    +57-312-862-1475    10001839
-Patiño, Sofía    +57-312-459-7328    100001944
-Quintero, Esteban    +57-312-378-2514    10002053
-León, Gabriela    +57-312-641-5092    10002198
-Bermúdez, Tomás    +57-312-708-3461    10002274
+Moreno, Valentina    +57-312-458-9231    10001245    Calle 12 #8-45, Bogotá
+Fernández, Camilo    +57-312-764-5120    10001376    Carrera 5 #10-22, Medellín
+Rojas, Daniela    +57-312-991-6843    10001587    Avenida 30 #7-60, Cali
+Gutiérrez, Mateo    +57-312-230-4789    10001654    Calle 19 #4-32, Barranquilla
+Navarro, Juliana    +57-312-317-9056    10001702    Carrera 14 #9-27, Pereira
+Córdoba, Samuel    +57-312-862-1475    10001839    Calle 25 #11-15, Cartagena
+Patiño, Sofía    +57-312-459-7328    100001944    Carrera 6 #23-40, Bucaramanga
+Quintero, Esteban    +57-312-378-2514    10002053    Avenida 68 #17-55, Bogotá
+León, Gabriela    +57-312-641-5092    10002198    Calle 10 #6-28, Manizales
+Bermúdez, Tomás    +57-312-708-3461    10002274    Carrera 8 #5-19, Ibagué
