@@ -6,5 +6,9 @@ struct nodo {
     nodo *sig;
 };
 
+template <typename T>
+struct nodoT{
+    T dato;
+    nodoT<T>* sig;
+};
 #endif
-
