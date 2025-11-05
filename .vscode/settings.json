@@ -45,7 +45,11 @@
     "streambuf": "cpp",
     "typeinfo": "cpp",
     "set": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "bitset": "cpp",
+    "cstring": "cpp",
+    "map": "cpp",
+    "regex": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
