@@ -1,0 +1,5 @@
+Region_Andina: Bogotá, Tunja, Bucaramanga, Medellín, Manizales, Armenia, Pereira
+Region_Caribe: Barranquilla, Cartagena, Santa Marta, Valledupar, Sincelejo, Montería
+Region_Pacifica: Cali, Popayán, Pasto, Quibdó
+Region_Orinoquia: Villavicencio, Yopal, Arauca
+Region_Amazonia: Leticia, Mitú, San José del Guaviare

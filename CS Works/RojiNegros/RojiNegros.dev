@@ -1,6 +1,6 @@
 [Project]
-FileName=Final.dev
-Name=Final
+FileName=RojiNegros.dev
+Name=RojiNegros
 Type=1
 Ver=2
 ObjFiles=
@@ -24,7 +24,7 @@ HostApplication=
 UseCustomMakefile=0
 CustomMakefile=
 CommandLine=
-Folders=include,src
+Folders=
 IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
@@ -50,20 +50,20 @@ ProductVersion=
 AutoIncBuildNr=0
 SyncProduct=1
 
-[Unit1]
-FileName=main.cpp
+[Unit2]
+FileName=BlackRedTree.h
 CompileCpp=1
-Folder=src
+Folder=
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit2]
-FileName=EstructuraElectoral.h
+[Unit1]
+FileName=main.cpp
 CompileCpp=1
-Folder=include
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -71,9 +71,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit3]
-FileName=..\..\CS Works\Multilistas\Lista.h
+FileName=RedBlack.cpp
 CompileCpp=1
-Folder=include
+Folder=
 Compile=1
 Link=1
 Priority=1000
