@@ -1,8 +1,6 @@
 #ifndef PILA1_H     
 #define PILA1_H    
 
-#include <string>      
-#include <cctype>      
 #include <iostream>
 #include "estructura1.h"
 
@@ -51,9 +49,8 @@ void pila::CargarDesdeString(const std::string &texto) {
     for (char c : texto) {
         Push(c);
     }
-}
 
-std::string pila::ToString() const {
+std::string pila::ToString(){
     std::string resultado;
     nodo *t = cab;
     while (t != NULL) {

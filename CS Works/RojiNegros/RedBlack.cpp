@@ -1,4 +1,6 @@
 #include "BlackRedTree.h"
+#include "pila1.h"
+#include "estructura1.h"
 
 // ---------------- ROTACIONES ----------------
 
@@ -44,7 +46,9 @@ void RedBlackTree::RIGHT_ROTATE(Node* x) {
 
 // ---------------- INSERCIÓN ----------------
 
-void RedBlackTree::RB_INSERT(Node* z) {
+void RedBlackTree::RB_INSERT(int clave, string info) {
+    Node* z = new Node(clave, info);
+
     Node* y = nil;
     Node* x = root;
 
@@ -67,7 +71,7 @@ void RedBlackTree::RB_INSERT(Node* z) {
 
     z->left = nil;
     z->right = nil;
-    z->color = RED;   // ahora es int = 1
+    z->color = RED;
 
     RB_INSERT_FIXUP(z);
 }
@@ -132,18 +136,30 @@ Node* RedBlackTree::TREE_MINIMUM(Node* x) {
     return x;
 }
 
-void RedBlackTree::RB_DELETE(Node* z) {
+void RedBlackTree::RB_DELETE(int clave) {
+    Node* z = SEARCH(root, clave);
+    if (z == nil) return;
+
+    // Marca lógica
+    z->info = "[BORRADO]";
+
+    RB_DELETE_INTERNAL(z);
+}
+
+void RedBlackTree::RB_DELETE_INTERNAL(Node* z) {
     Node* y = z;
     Node* x;
-    int y_original = y->color;   // antes Color, ahora int
+    bool y_original = y->color;
 
     if (z->left == nil) {
         x = z->right;
         RB_TRANSPLANT(z, z->right);
-    } else if (z->right == nil) {
+    } 
+    else if (z->right == nil) {
         x = z->left;
         RB_TRANSPLANT(z, z->left);
-    } else {
+    } 
+    else {
         y = TREE_MINIMUM(z->right);
         y_original = y->color;
         x = y->right;
@@ -181,7 +197,8 @@ void RedBlackTree::RB_DELETE_FIXUP(Node* x) {
             if (w->left->color == BLACK && w->right->color == BLACK) {
                 w->color = RED;
                 x = x->parent;
-            } else {
+            } 
+            else {
                 if (w->right->color == BLACK) {
                     w->left->color = BLACK;
                     w->color = RED;
@@ -195,7 +212,8 @@ void RedBlackTree::RB_DELETE_FIXUP(Node* x) {
                 LEFT_ROTATE(x->parent);
                 x = root;
             }
-        } else {
+        } 
+        else {
             Node* w = x->parent->left;
 
             if (w->color == RED) {
@@ -208,7 +226,8 @@ void RedBlackTree::RB_DELETE_FIXUP(Node* x) {
             if (w->right->color == BLACK && w->left->color == BLACK) {
                 w->color = RED;
                 x = x->parent;
-            } else {
+            } 
+            else {
                 if (w->left->color == BLACK) {
                     w->right->color = BLACK;
                     w->color = RED;
@@ -235,10 +254,72 @@ Node* RedBlackTree::SEARCH(Node* x, int key) {
     return SEARCH(x->right, key);
 }
 
-void RedBlackTree::INORDER(Node* x) {
-    if (x != nil) {
-        INORDER(x->left);
-        cout << x->key << " ";
-        INORDER(x->right);
+bool RedBlackTree::MODIFY(int key, const string& newInfo) {
+    Node* n = SEARCH(root, key);   // buscar nodo
+    
+    if (n == nil) {
+        return false;              // clave no encontrada
+    }
+
+    n->info = newInfo;             // modificar informaci�n
+    return true;
+}
+
+void RedBlackTree::INORDER(Node* root) {
+    if (root == nil) return;
+
+    pila<Node*> P;
+    Node* current = root;
+
+    while (current != nil || !P.PilaVacia()) {
+
+        while (current != nil) {
+            P.Push(current);
+            current = current->left;
+        }
+
+        current = P.Pop();
+
+        std::cout << "(" << current->key << ", " << current->info << ")\n" ;
+
+        current = current->right;
     }
 }
+
+void RedBlackTree::PREORDER(Node* root) {
+    if (root == nil) return;
+
+    pila<Node*> P;
+    P.Push(root);
+
+    while (!P.PilaVacia()) {
+        Node* x = P.Pop();
+
+        std::cout << "(" << x->key << ", " << x->info << ")\n";
+
+        if (x->right != nil) P.Push(x->right);
+        if (x->left  != nil) P.Push(x->left);
+    }
+}
+
+void RedBlackTree::POSTORDER(Node* root) {
+    if (root == nil) return;
+
+    pila<Node*> P1, P2;
+    P1.Push(root);
+
+    while (!P1.PilaVacia()) {
+        Node* x = P1.Pop();
+        P2.Push(x);
+
+        if (x->left  != nil) P1.Push(x->left);
+        if (x->right != nil) P1.Push(x->right);
+    }
+
+    while (!P2.PilaVacia()) {
+        Node* t = P2.Pop();
+        std::cout << "(" << t->key << ", " << t->info << ")\n";
+    }
+}
+
+

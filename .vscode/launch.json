@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/user/Desktop/random/CS/CS Works/Pilas y Colas",
-      "program": "c:/Users/user/Desktop/random/CS/CS Works/Pilas y Colas/build/Debug/outDebug",
+      "cwd": "c:/Users/user/Desktop/Universidad/Cuarto Semestre/CS/Final Project/Final",
+      "program": "c:/Users/user/Desktop/Universidad/Cuarto Semestre/CS/Final Project/Final/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

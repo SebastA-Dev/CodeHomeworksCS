@@ -1,38 +1,55 @@
-#ifndef SISTEMA_ELECTORAL_H
-#define SISTEMA_ELECTORAL_H
+#ifndef ESTRUCTURA_ELECTORAL_H
+#define ESTRUCTURA_ELECTORAL_H
 
 #include <string>
-#include "Lista.h"   // Ahora correctamente incluido
+#include "Lista.h"   // usa tu implementaciï¿½n de Lista<T>
 
-struct Ciudad;     // Declaraciones adelantadas internas
+struct Ciudad;
 struct Region;
 struct Partido;
 struct Candidato;
+struct Pais;
 
 // ---------------------------------------------------------------------------
-// REGIÓN
+// PAIS
+// ---------------------------------------------------------------------------
+struct Pais {
+    std::string codigo;
+    std::string nombre;        
+    Lista<Lista<Candidato*>> candidatosPresidencia;
+};
+
+// ---------------------------------------------------------------------------
+// REGIï¿½N
 // ---------------------------------------------------------------------------
 struct Region {
+    std::string codigo;
     std::string nombre;
-    Lista<Ciudad*> ciudades;   // Cambiado de vector a Lista
+    Lista<Ciudad*> ciudades;
+    Lista<Candidato*> candidatosAlcaldias;
     int censoElectoral = 0;
+    Pais* pais = nullptr;
 };
 
 // ---------------------------------------------------------------------------
 // CIUDAD
 // ---------------------------------------------------------------------------
 struct Ciudad {
-    std::string nombre;
+    std::string codigo;
+    std::string nombre;    
     Region* region = nullptr;
+    Lista<Candidato*> candidatosAlcaldia;
     int censoElectoral = 0;
 };
 
 // ---------------------------------------------------------------------------
-// PARTIDO POLÍTICO
+// PARTIDO POLï¿½TICO
 // ---------------------------------------------------------------------------
 struct Partido {
-    std::string nombre;
+    std::string codigo;
+    std::string nombre;    
     std::string representanteLegal;
+    bool legal = false;
 };
 
 // ---------------------------------------------------------------------------
@@ -41,9 +58,9 @@ struct Partido {
 struct Candidato {
     std::string nombre;
     std::string apellido;
-    std::string identificacion;
+    std::string codigo; // Es la identficacion de la persona
 
-    char sexo;                       
+    char sexo;
     std::string estadoCivil;
 
     std::string fechaNacimiento;
@@ -59,4 +76,3 @@ struct Candidato {
 };
 
 #endif
-

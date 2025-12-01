@@ -3,9 +3,6 @@
 #include <string>
 
 void abrirArchivo(const std::string& url) {
-	//TODO: Lista para guardar
-	
-	//TODO: Abrir una multilista para guardar la informacion	
     std::ifstream archivo(url);
 
     if (!archivo.is_open()) {
