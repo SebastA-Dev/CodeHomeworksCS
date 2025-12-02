@@ -16,7 +16,8 @@ struct Pais;
 struct Pais {
     std::string codigo;
     std::string nombre;        
-    Lista<Lista<Candidato*>> candidatosPresidencia;
+    Lista<Candidato*> candidatosPresidencia;
+    Lista<Candidato*> candidatosVicepresidencia;
 };
 
 // ---------------------------------------------------------------------------
@@ -58,20 +59,17 @@ struct Partido {
 struct Candidato {
     std::string nombre;
     std::string apellido;
-    std::string codigo; // Es la identficacion de la persona
+    std::string codigo; // Es la identficacion de la persona    
 
     char sexo;
-    std::string estadoCivil;
+    int estadoCivil;
 
     std::string fechaNacimiento;
     Ciudad* ciudadNacimiento = nullptr;
     Ciudad* ciudadResidencia = nullptr;
 
     Partido* partido = nullptr;
-
-    bool esAlcaldia = false;
-    bool esPresidencia = false;
-
+    
     Candidato* formulaVicepresidencial = nullptr;
 };
 

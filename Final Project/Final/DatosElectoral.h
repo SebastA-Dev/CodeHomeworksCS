@@ -23,9 +23,10 @@ public:
     DatosElectoral();
     ~DatosElectoral();
     
-    Pais* crearPais(const std::string& nombre, Lista<Lista<Candidato*>> candidatosPresidencia);
+    Pais* crearPais(const std::string& nombre, Lista<Candidato*> candidatosPresidencia, Lista<Candidato*> candidatosViicepresidencia);
     Region* crearRegion(const std::string& nombre, Lista<Ciudad*> ciudades, Pais* padre);
     Ciudad* crearCiudad(const std::string& nombre, Region* regionPadre, Lista<Candidato*> candidatos);
+    Candidato* crearCandidato(std::string& nombre, std::string& apellido, std::string& codigo, Candidato* presidente, char sexo, int estadoCivil, Lista<Ciudad*> ciudades, Partido* partido);
 
     void agregarCandidatoACiudad(Candidato* candidato, Ciudad* ciudad, Region* region);
 

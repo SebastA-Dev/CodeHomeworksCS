@@ -10,7 +10,6 @@ DatosElectoral::DatosElectoral() {}
 DatosElectoral::~DatosElectoral() {
 }
 
-// Helper: suma ascii de string
 unsigned long DatosElectoral::calcularPesoAscii(const std::string& texto) const {
     unsigned long suma = 0;
     for (unsigned char c : texto) {
@@ -28,11 +27,12 @@ std::string DatosElectoral::pesoHex(const std::string& texto) const {
 }
 
  // Crear Pais (se inserta ordenado por peso)
- Pais* DatosElectoral::crearPais(const std::string& nombre, Lista<Lista<Candidato*>> candidatosPresidencia) {
+ Pais* DatosElectoral::crearPais(const std::string& nombre, Lista<Candidato*> candidatosPresidencia, Lista<Candidato*> candidatosViicepresidencia) {
      Pais* p = new Pais();
      p->nombre = nombre;
      p->codigo = parses.stringToHex(nombre);
      p->candidatosPresidencia = candidatosPresidencia;
+     p->candidatosVicepresidencia = candidatosViicepresidencia;
 
      paises.insertarOrden(p, true);
      return p;
@@ -72,6 +72,27 @@ Ciudad* DatosElectoral::crearCiudad(const std::string& nombre, Region* regionPad
     ciudades.insertarOrden(c, true);
 
     return c;
+}
+
+Candidato* crearCandidato(std::string& nombre, std::string& apellido, std::string& codigo, char sexo, int estadoCivil, Lista<Ciudad*> ciudades, Partido* partido, Candidato* presidente = nullptr){
+    Candidato* candidato = new Candidato();
+
+    candidato->nombre = nombre;
+    candidato->apellido = apellido;
+    candidato->codigo = codigo;
+    candidato->sexo = sexo;
+    candidato->estadoCivil = estadoCivil;
+    candidato->ciudadNacimiento = ciudades[0];
+    candidato->ciudadResidencia = ciudades[1];
+    candidato->partido = partido;
+
+    // TODO: agregar a la lista de vicepresidencia
+    if(presidente != nullptr){
+        presidente->formulaVicepresidencial = candidato;
+        return candidato;
+    }
+
+    return candidato;
 }
 
 // Agregar candidato a ciudad (ordenado por identificacion -> parse int)
@@ -159,17 +180,21 @@ std::vector<std::pair<Candidato*, Candidato*>> DatosElectoral::candidatosPreside
     int np = paises.obtenerTam();
     for (int i = 0; i < np; ++i) {
         Pais* p = paises.obtenerInfo(i);
-        int nlistas = p->candidatosPresidencia.obtenerTam();
-        for (int j = 0; j < nlistas; ++j) {
-            Lista<Candidato*> listaFormula = p->candidatosPresidencia.obtenerInfo(j);
-            if (listaFormula.obtenerTam() >= 2) {
-                Candidato* pres = listaFormula.obtenerInfo(0);
-                Candidato* vice = listaFormula.obtenerInfo(1);
-                res.push_back({pres, vice});
-            } else if (listaFormula.obtenerTam() == 1) {
-                Candidato* pres = listaFormula.obtenerInfo(0);
-                res.push_back({pres, nullptr});
-            }
+        int nPresidentes = p->candidatosPresidencia.obtenerTam();
+        int nVicepresidentes = p->candidatosVicepresidencia.obtenerTam();
+        
+        // Emparejar presidentes con vicepresidentes
+        int minSize = (nPresidentes < nVicepresidentes) ? nPresidentes : nVicepresidentes;
+        for (int j = 0; j < minSize; ++j) {
+            Candidato* pres = p->candidatosPresidencia.obtenerInfo(j);
+            Candidato* vice = p->candidatosVicepresidencia.obtenerInfo(j);
+            res.push_back({pres, vice});
+        }
+        
+        // Si hay presidentes sin vicepresidente
+        for (int j = minSize; j < nPresidentes; ++j) {
+            Candidato* pres = p->candidatosPresidencia.obtenerInfo(j);
+            res.push_back({pres, nullptr});
         }
     }
     return res;
@@ -214,15 +239,17 @@ std::pair<Candidato*, Candidato*> DatosElectoral::candidatosPresidenciaPorPartid
     int np = paises.obtenerTam();
     for (int i = 0; i < np; ++i) {
         Pais* p = paises.obtenerInfo(i);
-        int nlistas = p->candidatosPresidencia.obtenerTam();
-        for (int j = 0; j < nlistas; ++j) {
-            Lista<Candidato*> listaFormula = p->candidatosPresidencia.obtenerInfo(j);
-            if (listaFormula.obtenerTam() >= 1) {
-                Candidato* pres = listaFormula.obtenerInfo(0);
-                Candidato* vice = (listaFormula.obtenerTam() >= 2) ? listaFormula.obtenerInfo(1) : nullptr;
-                if (pres->partido == partido) {
-                    return {pres, vice};
+        int nPresidentes = p->candidatosPresidencia.obtenerTam();
+        
+        for (int j = 0; j < nPresidentes; ++j) {
+            Candidato* pres = p->candidatosPresidencia.obtenerInfo(j);
+            if (pres->partido == partido) {
+                // Buscar el vicepresidente correspondiente
+                Candidato* vice = nullptr;
+                if (j < p->candidatosVicepresidencia.obtenerTam()) {
+                    vice = p->candidatosVicepresidencia.obtenerInfo(j);
                 }
+                return {pres, vice};
             }
         }
     }
