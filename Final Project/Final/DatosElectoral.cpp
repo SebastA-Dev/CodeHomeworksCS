@@ -138,7 +138,7 @@ Candidato* DatosElectoral::crearCandidato(Persona* persona, Partido* partido, Ca
 
     // Si se pasa un presidente, asociarlo como su vicepresidente (formula)
     if (presidente != nullptr) {
-        presidente->formulaVicepresidencial = std::make_shared<Candidato>(*candidato);        
+        presidente->vicepresidente = std::make_shared<Candidato>(*candidato);        
     }
 
     return candidato;

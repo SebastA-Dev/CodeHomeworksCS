@@ -30,7 +30,7 @@ struct Region {
     std::string nombre;
     std::vector<Ciudad*> ciudades;
     std::vector<Candidato*> candidatosAlcaldias;
-    int censoElectoral = 0;
+    int censoElectoral = 0; // Suma del censo electoral de cada ciudad
     Pais* pais = nullptr;
 };
 
@@ -80,11 +80,11 @@ struct Candidato {
     std::shared_ptr<Persona> inf;
     std::string codigo;
     std::shared_ptr<Partido> partido;
-    std::shared_ptr<Candidato> formulaVicepresidencial;
+    std::shared_ptr<Candidato> vicepresidente = nullptr; // Siempre y cuando este el Presidente
     
-    // RECTIFICAR EL TIPO DE CANDIDATO (ALCALDE O PRESIDENTE)
-    enum class TipoCandidato { ALCALDIA, PRESIDENCIA };
-    TipoCandidato tipo = TipoCandidato::ALCALDIA;
+    // RECTIFICAR EL TIPO DE CANDIDATO (ALCALDE, PRESIDENTE, VICEPRESIDENTE)
+    enum class TipoCandidato {NADA, ALCALDE, PRESIDENTE, VICEPRESIDENTE};
+    TipoCandidato tipo = TipoCandidato::NADA;
     Ciudad* ciudadAspirante = nullptr;  // Para alcaldes
 };
 #endif

@@ -34,12 +34,14 @@ int UtilidadesAnalisis::calcularEdad(const std::tm& fechaNacimiento) {
     return edad;
 }
 
+// Genera el codigo dependiendo del nombre o el campo que este dentro de datoselectoral
 unsigned long long UtilidadesAnalisis::hashToULL(const std::string &input) {
     std::hash<std::string> hasher;
     auto h = hasher(input);
     return static_cast<unsigned long long>(h);
 }
 
+// Genera el codigo dependiendo del nombre o el campo que este dentro de datoselectoral
 std::string UtilidadesAnalisis::hashToHex(const std::string &input) {
     unsigned long long v = hashToULL(input);
     std::ostringstream oss;

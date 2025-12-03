@@ -1,0 +1,10 @@
+Partido Liberal Colombiano,true
+Partido Conservador Colombiano,true
+Centro Democratico,true
+Partido de la U,true
+Partido Verde,true
+Cambio Radical,true
+Pacto Historico,true
+Movimiento Independiente,false
+Renovacion Nacional,false
+Union Ciudadana,false

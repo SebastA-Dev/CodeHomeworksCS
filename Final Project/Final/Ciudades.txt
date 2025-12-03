@@ -1,27 +1,31 @@
-Bogotá: Nombre=Bogotá, Región=Andina, Poblacion=1,234,567
-Tunja: Nombre=Tunja, Región=Andina, Poblacion=345,678
-Bucaramanga: Nombre=Bucaramanga, Región=Andina, Poblacion=456,789
-Medellín: Nombre=Medellín, Región=Andina, Poblacion=987,654
-Manizales: Nombre=Manizales, Región=Andina, Poblacion=234,567
-Armenia: Nombre=Armenia, Región=Andina, Poblacion=123,456
-Pereira: Nombre=Pereira, Región=Andina, Poblacion=345,678
-
-Barranquilla: Nombre=Barranquilla, Región=Caribe, Poblacion=567,890
-Cartagena: Nombre=Cartagena, Región=Caribe, Poblacion=456,123
-Santa Marta: Nombre=Santa Marta, Región=Caribe, Poblacion=234,567
-Valledupar: Nombre=Valledupar, Región=Caribe, Poblacion=345,678
-Sincelejo: Nombre=Sincelejo, Región=Caribe, Poblacion=123,456
-Montería: Nombre=Montería, Región=Caribe, Poblacion=234,567
-
-Cali: Nombre=Cali, Región=Pacifica, Poblacion=876,543
-Popayán: Nombre=Popayán, Región=Pacifica, Poblacion=234,567
-Pasto: Nombre=Pasto, Región=Pacifica, Poblacion=345,678
-Quibdó: Nombre=Quibdó, Región=Pacifica, Poblacion=123,456
-
-Villavicencio: Nombre=Villavicencio, Región=Orinoquia, Poblacion=345,678
-Yopal: Nombre=Yopal, Región=Orinoquia, Poblacion=123,456
-Arauca: Nombre=Arauca, Región=Orinoquia, Poblacion=98,765
-
-Leticia: Nombre=Leticia, Región=Amazonia, Poblacion=45,678
-Mitú: Nombre=Mitú, Región=Amazonia, Poblacion=34,567
-San José del Guaviare: Nombre=San José del Guaviare, Región=Amazonia, Poblacion=56,789
+Bogota, Andina, 1,234,567
+Tunja, Andina, 345,678
+Bucaramanga, Andina, 456,789
+Medellin, Andina, 987,654
+Manizales, Andina, 234,567
+Armenia, Andina, 123,456
+Pereira, Andina, 345,678
+Barranquilla, Caribe, 567,890
+Cartagena, Caribe, 456,123
+Santa Marta, Caribe, 234,567
+Valledupar, Caribe, 345,678
+Sincelejo, Caribe, 123,456
+Monteria, Caribe, 234,567
+Cali, Pacifica, 876,543
+Popayan, Pacifica, 234,567
+Pasto, Pacifica, 345,678
+Quibdo, Pacifica, 123,456
+Villavicencio, Orinoquia, 345,678
+Yopal, Orinoquia, 123,456
+Arauca, Orinoquia, 98,765
+Leticia, Amazonia, 45,678
+Mitu, Amazonia, 34,567
+San Jose del Guaviare, Amazonia, 56,789
+Neiva, Andina, 289,012
+Florencia, Amazonia, 145,678
+Ibague, Andina, 567,890
+Cucuta, Andina, 789,123
+Monteria, Caribe, 234,567
+Riohacha, Caribe, 198,765
+Inirida, Amazonia, 23,456
+Mocoa, Amazonia, 89,012
