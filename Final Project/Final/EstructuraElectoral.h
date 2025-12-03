@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 #include <ctime>
-#include "Lista.h"   // usa tu implementaci�n de Lista<T>
+#include <vector>
 
 struct Ciudad;
 struct Region;
@@ -18,8 +18,8 @@ struct Pais;
 struct Pais {
     std::string codigo;
     std::string nombre;        
-    Lista<Candidato*> candidatosPresidencia;
-    Lista<Candidato*> candidatosVicepresidencia;
+    std::vector<Candidato*> candidatosPresidencia;
+    std::vector<Candidato*> candidatosVicepresidencia;
 };
 
 // ---------------------------------------------------------------------------
@@ -28,8 +28,8 @@ struct Pais {
 struct Region {
     std::string codigo;
     std::string nombre;
-    Lista<Ciudad*> ciudades;
-    Lista<Candidato*> candidatosAlcaldias;
+    std::vector<Ciudad*> ciudades;
+    std::vector<Candidato*> candidatosAlcaldias;
     int censoElectoral = 0;
     Pais* pais = nullptr;
 };
@@ -41,7 +41,7 @@ struct Ciudad {
     std::string codigo;
     std::string nombre;    
     Region* region = nullptr;
-    Lista<Candidato*> candidatosAlcaldia;
+    std::vector<Candidato*> candidatosAlcaldia;
     int censoElectoral = 0;
 };
 

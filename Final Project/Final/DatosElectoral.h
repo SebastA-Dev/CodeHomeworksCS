@@ -1,7 +1,6 @@
 #ifndef DATOS_ELECTORAL_H
 #define DATOS_ELECTORAL_H
 
-#include "Lista.h"
 #include "EstructuraElectoral.h"
 #include "UtilidadesAnalisis.h"
 
@@ -12,28 +11,27 @@ class DatosElectoral {
 private:
     UtilidadesAnalisis parses;
 
-    Lista<Pais*> paises;
-    Lista<Region*> regiones;  
-    Lista<Ciudad*> ciudades;      
-    Lista<Candidato*> candidatosPresidenciaLista;
-    Lista<Candidato*> candidatosRegionales;
+    std::vector<Pais*> paises;
+    std::vector<Region*> regiones;
+    std::vector<Ciudad*> ciudades;
+    std::vector<Candidato*> candidatosPresidenciaLista;
+    std::vector<Candidato*> candidatosRegionales;
 
-
-    Lista<Candidato*> candidatosAlcaldia;    
+    std::vector<Candidato*> candidatosAlcaldia;
 
     unsigned long calcularPesoAscii(const std::string& texto) const;
     std::string pesoHex(const std::string& texto) const;
 
 public:
-    Lista<Partido*> partidos;  
+    std::vector<Partido*> partidos; 
     DatosElectoral();
     ~DatosElectoral();
     
-    Pais* crearPais(std::string& nombre, Lista<Candidato*> candidatosPresidencia, Lista<Candidato*> candidatosViicepresidencia);
-    Region* crearRegion(std::string nombre, Lista<Ciudad*> ciudades, Pais* padre);
-    Ciudad* crearCiudad(std::string nombre, Region* regionPadre, Lista<Candidato*> candidatos);
-    Candidato* crearCandidato(Persona* persona, Partido* partido, Candidato* presidencia = nullptr);
-    Partido* crearPartido(std::string nombre, Persona* persona, bool legal = false);
+    Pais* crearPais(std::string& nombre, std::vector<Candidato*> candidatosPresidencia, std::vector<Candidato*> candidatosViicepresidencia); // Funciona
+    Region* crearRegion(std::string nombre, std::vector<Ciudad*> ciudades, Pais* padre); // Funciona
+    Ciudad* crearCiudad(std::string nombre, Region* regionPadre, std::vector<Candidato*> candidatos); // Funciona
+    Candidato* crearCandidato(Persona* persona, Partido* partido, Candidato* presidencia = nullptr); 
+    Partido* crearPartido(std::string nombre, Persona* persona, bool legal = false); // Funciona
 
     void agregarCandidatoACiudad(Candidato* candidato, Ciudad* ciudad, Region* region);
 
@@ -46,7 +44,7 @@ public:
 
     // 3. Todos los candidatos a la alcald�a de cada una de las ciudades.
     //    Devuelve vector de pares (Ciudad*, Lista<Candidato*>&) -> aqu� uso vector de tuplas simples.
-    std::vector<std::pair<Ciudad*, Lista<Candidato*>*>> candidatosPorCiudad();
+    std::vector<std::pair<Ciudad*, std::vector<Candidato*>*>> candidatosPorCiudad();
 
     // 4. Todos los candidatos a la presidencia y vicepresidencia
     std::vector<std::pair<Candidato*, Candidato*>> candidatosPresidenciales(); // par: (presidente, vicepresidente)
@@ -59,9 +57,9 @@ public:
     std::pair<Candidato*, Candidato*> candidatosPresidenciaPorPartido(Partido* partido);
 
     // Accesores directos (si los necesitas)
-    Lista<Pais*>& obtenerListaPaises();
-    Lista<Region*>& obtenerListaRegiones();
-    Lista<Ciudad*>& obtenerListaCiudades();
+    std::vector<Pais*>& obtenerListaPaises();
+    std::vector<Region*>& obtenerListaRegiones();
+    std::vector<Ciudad*>& obtenerListaCiudades();
 };
 
 #endif
