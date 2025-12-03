@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <stdexcept>
 #include <type_traits>
+#include <iostream>
 
 // ==========================
 //     Nodo<T>
@@ -162,33 +163,11 @@ void Lista<T>::insertarPosicion(T dato, int pos) {
 template<class T>
 void Lista<T>::insertarOrden(T dato, bool asc) {
 
-    auto convertirPeso = [&](const std::string& p) -> unsigned long {
-        unsigned long valor = 0;
-        std::stringstream ss(p);
-        ss >> std::hex >> valor;
-        if (ss.fail())
-            throw std::invalid_argument("Peso invalido: no es hexadecimal");
-        return valor;
-    };
-
-    unsigned long valorNuevo = convertirPeso(dato->codigo);
-
     // Crear nodo
     Nodo<T>* nuevo = new Nodo<T>;
     nuevo->info = dato;
     nuevo->siguiente = nullptr;
     nuevo->id = dato->codigo;
-
-    // ====== Función para extraer el peso del nodo (desde HEX guardado) ======
-    auto extraerPesoNodo = [&](Nodo<T>* nodo) -> unsigned long {
-        if (!nodo || nodo->id.empty()) return 0;
-        unsigned long v = 0;
-        std::stringstream ss;
-        ss << std::hex << nodo->id;
-        ss >> v;
-        return v;
-    };
-
 
     // ====== INSERTAR EN LISTA VACÍA ======
     if (cabeza == nullptr) {
@@ -197,26 +176,32 @@ void Lista<T>::insertarOrden(T dato, bool asc) {
         return;
     }
 
-    unsigned long valorCabeza = extraerPesoNodo(cabeza);
-
-
     // ====== INSERTAR AL PRINCIPIO ======
-    if ((asc && valorNuevo < valorCabeza) || (!asc && valorNuevo > valorCabeza)) {
+    // Comparar hex strings directamente (lexicographically)
+    bool debeIrAlPrincipio = false;
+    if (asc) {
+        debeIrAlPrincipio = (dato->codigo < cabeza->id);
+    } else {
+        debeIrAlPrincipio = (dato->codigo > cabeza->id);
+    }
+
+    if (debeIrAlPrincipio) {
         nuevo->siguiente = cabeza;
         cabeza = nuevo;
         tam++;
         return;
     }
 
-
     // ====== RECORRER E INSERTAR EN LA POSICIÓN CORRECTA ======
     Nodo<T>* actual = cabeza;
 
     while (actual->siguiente != nullptr) {
-        unsigned long valorSiguiente = extraerPesoNodo(actual->siguiente);
-
-        bool debeInsertar =
-            (asc && valorNuevo < valorSiguiente) || (!asc && valorNuevo > valorSiguiente);
+        bool debeInsertar = false;
+        if (asc) {
+            debeInsertar = (dato->codigo < actual->siguiente->id);
+        } else {
+            debeInsertar = (dato->codigo > actual->siguiente->id);
+        }
 
         if (debeInsertar) break;
 

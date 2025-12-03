@@ -1,4 +1,5 @@
 #include "DatosElectoral.h"
+#include "Lista.h"
 
 #include <iostream>
 #include <fstream>
@@ -80,7 +81,7 @@ int main(int argc, char** argv) {
     persona4->sexo = Sexo::Femenino;
     persona4->estadoCivil = EstadoCivil::Soltero;
     std::tm fecha4 = {};
-    fecha4.tm_year = 95; // 1995
+    fecha4.tm_year = 95; // 1995 
     fecha4.tm_mon = 11;  // Diciembre
     fecha4.tm_mday = 5;
     persona4->fechaNacimiento = fecha4;
@@ -99,6 +100,30 @@ int main(int argc, char** argv) {
     fecha5.tm_mday = 20;
     persona5->fechaNacimiento = fecha5;
     std::cout << "Persona 5 creada: " << persona5->nombre << " " << persona5->apellido << std::endl;
+
+    Partido* conservador = sistema.crearPartido("Conservador", persona2, true);
+    Partido* liberal = sistema.crearPartido("Liberal", persona1, true);    
+    Partido* as = sistema.crearPartido("4", persona3, true);
+    Partido* ea = sistema.crearPartido("32", persona4, true);
+    Partido* afd = sistema.crearPartido("1", persona5, true);
+
+    // ============================================================================
+    // MOSTRANDO PARTIDOS EN LA LISTA PÚBLICA DEL SISTEMA
+    // ============================================================================
+    std::cout << "\n=== PARTIDOS EN sistema.partidos ===" << std::endl;
+    std::cout << "Total de partidos en la lista: " << sistema.partidos.obtenerTam() << std::endl;
+    
+    for (int i = 0; i < sistema.partidos.obtenerTam(); ++i) {
+        Partido* p = sistema.partidos.obtenerInfo(i);
+        std::cout << "\nPartido " << (i + 1) << ":" << std::endl;
+        std::cout << "  Nombre: " << p->nombre << std::endl;
+        std::cout << "  Codigo: " << p->codigo << std::endl;
+        std::cout << "  Legal: " << (p->legal ? "Si" : "No") << std::endl;
+        if (p->representanteLegal) {
+            std::cout << "  Representante Legal: " << p->representanteLegal->nombre 
+                      << " " << p->representanteLegal->apellido << std::endl;
+        }
+    }
 
     return 0;
 }

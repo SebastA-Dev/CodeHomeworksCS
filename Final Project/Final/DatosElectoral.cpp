@@ -32,7 +32,7 @@ std::string DatosElectoral::pesoHex(const std::string& texto) const {
 // ============================================================================
 
  // Crear Pais (se inserta ordenado por peso)
- Pais* DatosElectoral::crearPais(const std::string& nombre, Lista<Candidato*> candidatosPresidencia, Lista<Candidato*> candidatosViicepresidencia) {
+ Pais* DatosElectoral::crearPais(std::string& nombre, Lista<Candidato*> candidatosPresidencia, Lista<Candidato*> candidatosViicepresidencia) {
      Pais* p = new Pais();
      p->nombre = nombre;
      p->codigo = parses.stringToHex(nombre);
@@ -44,7 +44,7 @@ std::string DatosElectoral::pesoHex(const std::string& texto) const {
  }
 
 // Crear Region; si paisPadre != nullptr, la agregamos a ese pais tambien
-Region* DatosElectoral::crearRegion(const std::string& nombre, Lista<Ciudad*> ciudades, Pais* padre) {
+Region* DatosElectoral::crearRegion(std::string nombre, Lista<Ciudad*> ciudades, Pais* padre) {
     if(padre == nullptr){
         return new Region();
     }
@@ -61,7 +61,7 @@ Region* DatosElectoral::crearRegion(const std::string& nombre, Lista<Ciudad*> ci
 }
 
 // Crear Ciudad; si regionPadre o paisPadre se pasan, se asocian
-Ciudad* DatosElectoral::crearCiudad(const std::string& nombre, Region* regionPadre, Lista<Candidato*> candidatos) {
+Ciudad* DatosElectoral::crearCiudad(std::string nombre, Region* regionPadre, Lista<Candidato*> candidatos) {
 
     if(regionPadre == nullptr){
         return new Ciudad();
@@ -95,14 +95,14 @@ Candidato* DatosElectoral::crearCandidato(Persona* persona, Partido* partido, Ca
     return candidato;
 }
 
-Partido* DatosElectoral::crearPartido(std::string& nombre, std::string& representanteLegal, bool legal) {
-    if(representanteLegal == "")
+Partido* DatosElectoral::crearPartido(std::string nombre, Persona* persona, bool legal) {
+    if(persona == nullptr)
         return new Partido();
     
     Partido* p = new Partido();
     p->nombre = nombre;
     p->codigo = parses.stringToHex(nombre);
-    p->representanteLegal=representanteLegal;
+    p->representanteLegal=std::make_shared<Persona>(*persona);
     p->legal = legal;
 
     partidos.insertarOrden(p, true);

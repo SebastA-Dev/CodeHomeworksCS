@@ -46,17 +46,7 @@ struct Ciudad {
 };
 
 // ---------------------------------------------------------------------------
-// PARTIDO POL�TICO
-// ---------------------------------------------------------------------------
-struct Partido {
-    std::string codigo;
-    std::string nombre;    
-    std::string representanteLegal;
-    bool legal = false;
-};
-
-// ---------------------------------------------------------------------------
-// CANDIDATO
+// PERSONA
 // ---------------------------------------------------------------------------
 
 enum class Sexo { Masculino, Femenino, Otro };
@@ -71,6 +61,20 @@ struct Persona {
     Ciudad* ciudadNacimiento = nullptr;
     Ciudad* ciudadResidencia = nullptr;
 };
+
+// ---------------------------------------------------------------------------
+// PARTIDO POL�TICO
+// ---------------------------------------------------------------------------
+struct Partido {
+    std::string codigo;
+    std::string nombre;    
+    std::shared_ptr<Persona> representanteLegal;
+    bool legal = false;
+};
+
+// ---------------------------------------------------------------------------
+// CANDIDATO
+// ---------------------------------------------------------------------------
 
 struct Candidato {
     std::shared_ptr<Persona> inf;

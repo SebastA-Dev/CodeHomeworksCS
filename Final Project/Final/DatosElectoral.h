@@ -14,8 +14,7 @@ private:
 
     Lista<Pais*> paises;
     Lista<Region*> regiones;  
-    Lista<Ciudad*> ciudades;
-    Lista<Partido*> partidos;    
+    Lista<Ciudad*> ciudades;      
     Lista<Candidato*> candidatosPresidenciaLista;
     Lista<Candidato*> candidatosRegionales;
 
@@ -26,14 +25,15 @@ private:
     std::string pesoHex(const std::string& texto) const;
 
 public:
+    Lista<Partido*> partidos;  
     DatosElectoral();
     ~DatosElectoral();
     
-    Pais* crearPais(const std::string& nombre, Lista<Candidato*> candidatosPresidencia, Lista<Candidato*> candidatosViicepresidencia);
-    Region* crearRegion(const std::string& nombre, Lista<Ciudad*> ciudades, Pais* padre);
-    Ciudad* crearCiudad(const std::string& nombre, Region* regionPadre, Lista<Candidato*> candidatos);
+    Pais* crearPais(std::string& nombre, Lista<Candidato*> candidatosPresidencia, Lista<Candidato*> candidatosViicepresidencia);
+    Region* crearRegion(std::string nombre, Lista<Ciudad*> ciudades, Pais* padre);
+    Ciudad* crearCiudad(std::string nombre, Region* regionPadre, Lista<Candidato*> candidatos);
     Candidato* crearCandidato(Persona* persona, Partido* partido, Candidato* presidencia = nullptr);
-    Partido* crearPartido(std::string& nombre, std::string& representanteLegal, bool legal = false);
+    Partido* crearPartido(std::string nombre, Persona* persona, bool legal = false);
 
     void agregarCandidatoACiudad(Candidato* candidato, Ciudad* ciudad, Region* region);
 
