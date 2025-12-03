@@ -11,10 +11,16 @@
 class DatosElectoral {
 private:
     UtilidadesAnalisis parses;
+
     Lista<Pais*> paises;
     Lista<Region*> regiones;  
-    Lista<Ciudad*> ciudades;  
-    Lista<Candidato*> candidatos;
+    Lista<Ciudad*> ciudades;
+    Lista<Partido*> partidos;    
+    Lista<Candidato*> candidatosPresidenciaLista;
+    Lista<Candidato*> candidatosRegionales;
+
+
+    Lista<Candidato*> candidatosAlcaldia;    
 
     unsigned long calcularPesoAscii(const std::string& texto) const;
     std::string pesoHex(const std::string& texto) const;
@@ -26,7 +32,8 @@ public:
     Pais* crearPais(const std::string& nombre, Lista<Candidato*> candidatosPresidencia, Lista<Candidato*> candidatosViicepresidencia);
     Region* crearRegion(const std::string& nombre, Lista<Ciudad*> ciudades, Pais* padre);
     Ciudad* crearCiudad(const std::string& nombre, Region* regionPadre, Lista<Candidato*> candidatos);
-    Candidato* crearCandidato(std::string& nombre, std::string& apellido, std::string& codigo, Candidato* presidente, char sexo, int estadoCivil, Lista<Ciudad*> ciudades, Partido* partido);
+    Candidato* crearCandidato(Persona* persona, Partido* partido, Candidato* presidencia = nullptr);
+    Partido* crearPartido(std::string& nombre, std::string& representanteLegal, bool legal = false);
 
     void agregarCandidatoACiudad(Candidato* candidato, Ciudad* ciudad, Region* region);
 

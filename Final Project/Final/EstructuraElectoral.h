@@ -2,6 +2,8 @@
 #define ESTRUCTURA_ELECTORAL_H
 
 #include <string>
+#include <memory>
+#include <ctime>
 #include "Lista.h"   // usa tu implementaci�n de Lista<T>
 
 struct Ciudad;
@@ -56,21 +58,25 @@ struct Partido {
 // ---------------------------------------------------------------------------
 // CANDIDATO
 // ---------------------------------------------------------------------------
-struct Candidato {
+
+enum class Sexo { Masculino, Femenino, Otro };
+enum class EstadoCivil { Soltero, Casado, Divorciado, Viudo };
+struct Persona {
     std::string nombre;
     std::string apellido;
-    std::string codigo; // Es la identficacion de la persona    
-
-    char sexo;
-    int estadoCivil;
-
-    std::string fechaNacimiento;
+    std::string identificacion;
+    std::tm fechaNacimiento;
+    Sexo sexo;
+    EstadoCivil estadoCivil;
     Ciudad* ciudadNacimiento = nullptr;
     Ciudad* ciudadResidencia = nullptr;
+};
 
-    Partido* partido = nullptr;
-    
-    Candidato* formulaVicepresidencial = nullptr;
+struct Candidato {
+    std::shared_ptr<Persona> inf;
+    std::string codigo;
+    std::shared_ptr<Partido> partido;
+    std::shared_ptr<Candidato> formulaVicepresidencial;
 };
 
 #endif
