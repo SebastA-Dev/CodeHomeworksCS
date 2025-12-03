@@ -63,9 +63,9 @@ Region* DatosElectoral::crearRegion(std::string nombre, Lista<Ciudad*> ciudades,
 // Crear Ciudad; si regionPadre o paisPadre se pasan, se asocian
 Ciudad* DatosElectoral::crearCiudad(std::string nombre, Region* regionPadre, Lista<Candidato*> candidatos) {
 
-    if(regionPadre == nullptr){
-        return new Ciudad();
-    }
+   // if(regionPadre == nullptr){
+       // return new Ciudad();        ------>> Si no tiene región, pq la ciudad queda vacía??
+    //}
 
     Ciudad* c = new Ciudad();
     c->nombre = nombre;
@@ -155,7 +155,7 @@ std::vector<Partido*> DatosElectoral::obtenerPartidosLegales() {
         if (!p) return;
         if (!p->legal) return;
         Partido* ptr = p.get();
-        for (auto &pp : encontrados) if (pp == ptr) return;
+        for (auto &pp : encontrados) if (pp == ptr) return;   //------>> Se puede optimizar con otro tipo de busqueda
         encontrados.push_back(ptr);
     };
 

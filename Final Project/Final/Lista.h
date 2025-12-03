@@ -117,7 +117,7 @@ void Lista<T>::insertarInicio(T dato) {
     Nodo<T>* nuevo = new Nodo<T>;
     nuevo->info = dato;
     nuevo->siguiente = cabeza;
-    nuevo->id = "";
+    nuevo->id = dato -> codigo; //Corrección, al usar el método SeEncuentra retorna falso. Pues los códigos nunca serán iguales por lo que retornaba falso.
     cabeza = nuevo;
     tam++;
 }
@@ -127,7 +127,7 @@ void Lista<T>::insertarFinal(T dato) {
     Nodo<T>* nuevo = new Nodo<T>;
     nuevo->info = dato;
     nuevo->siguiente = nullptr;
-    nuevo->id = "";
+    nuevo->id = dato -> codigo; //Corrección, al usar el método SeEncuentra retorna falso. Pues los códigos nunca serán iguales por lo que retornaba falso.
 
     if (cabeza == nullptr) {
         cabeza = nuevo;
@@ -269,10 +269,13 @@ bool Lista<T>::eliminarElemento(CampoOrden valorBuscado, Extractor extraerCampo)
 // Busca si el elemento actual esta dentro de la lista
 template<class T>
 bool Lista<T>::seEncuentra(T dato){
+    if (!dato) return false;
+    
     Nodo<T>* actual = cabeza;
-    while(actual->siguiente != nullptr){
+    while(actual != nullptr){  // Se corrige error, no recorria hasta el último nodo
         if(actual->id == dato->codigo)
             return true;
+        actual = actual->siguiente; // Avanza al siguiente nodo
     }
     return false;
 }

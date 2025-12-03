@@ -12,3 +12,22 @@ std::string UtilidadesAnalisis::stringToHex(const std::string &input) {
     return oss.str();
 }
 
+
+int UtilidadesAnalisis::calcularEdad(const std::tm& fechaNacimiento) {
+    time_t ahora = std::time(nullptr);
+    std::tm* fechaActual = std::localtime(&ahora);
+    
+    int edad = fechaActual->tm_year - fechaNacimiento.tm_year;
+    
+    // En caso que no hay  cumplido años
+    if (fechaActual->tm_mon < fechaNacimiento.tm_mon ||
+        (fechaActual->tm_mon == fechaNacimiento.tm_mon && 
+        
+         fechaActual->tm_mday < fechaNacimiento.tm_mday)) {
+         	
+        edad--;
+    }
+    
+    return edad;
+}
+

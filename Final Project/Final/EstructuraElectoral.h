@@ -81,6 +81,10 @@ struct Candidato {
     std::string codigo;
     std::shared_ptr<Partido> partido;
     std::shared_ptr<Candidato> formulaVicepresidencial;
+    
+    // RECTIFICAR EL TIPO DE CANDIDATO (ALCALDE O PRESIDENTE)
+    enum class TipoCandidato { ALCALDIA, PRESIDENCIA };
+    TipoCandidato tipo = TipoCandidato::ALCALDIA;
+    Ciudad* ciudadAspirante = nullptr;  // Para alcaldes
 };
-
 #endif
