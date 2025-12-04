@@ -39,7 +39,6 @@ struct Region {
     std::string codigo;
     std::string nombre;
     std::vector<Ciudad*> ciudades;
-    std::vector<Candidato*> candidatosAlcaldias;
     int censoElectoral = 0; // Suma del censo electoral de cada ciudad
     Pais* pais = nullptr;
 };
@@ -60,8 +59,9 @@ struct Ciudad {
 // ---------------------------------------------------------------------------
 struct Partido {
     std::string codigo;
-    std::string nombre;    
+    std::string nombre; 
     std::string representanteLegal;
+    std::bool legal;
 };
 
 // ---------------------------------------------------------------------------

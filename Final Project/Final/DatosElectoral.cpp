@@ -17,7 +17,7 @@ DatosElectoral::~DatosElectoral() {
     for (auto p : partidos) delete p;
 }
 
-nsigned long DatosElectoral::calcularPesoAscii(const std::string& texto) const {
+unsigned long DatosElectoral::calcularPesoAscii(const std::string& texto) const {
     unsigned long suma = 0;
     for (unsigned char c : texto) {
         suma += static_cast<unsigned long>(c);
