@@ -1,6 +1,7 @@
 #include "DatosElectoral.h"
 #include "CargarDatos.h"
 #include "UtilidadesAnalisis.h"
+#include "SimulacionElectoral.h"
 #include <iostream>
 #include <limits>
 #include <ctime>
@@ -242,7 +243,6 @@ void modificarCandidato(DatosElectoral& sistema) {
     
     if (!candidato) {
         std::cout << "\n? Candidato no encontrado." << std::endl;
-        return;
     }
     
     std::cout << "\n¿Qué modificar?\n1. Nombre\n2. Apellido\n3. Sexo\n4. Estado Civil\n5. Volver\nOpción: ";
@@ -455,9 +455,18 @@ void menuPrincipal(DatosElectoral& sistema, Pais* pais) {
             case 2:
                 menuGestionCandidatos(sistema);
                 break;
-            case 3:
-                std::cout << "\nSimulación no disponible en esta fase." << std::endl;
-                break;
+            case 3: {
+    			std::cout << "\n¿Esta seguro de que desea iniciar la simulacion?" << std::endl;
+    			std::cout << "(No podra agregar/eliminar candidatos despues) [S/N]: ";
+    			char confirm;
+    			std::cin >> confirm;
+    			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    
+    			if (confirm == 'S' || confirm == 's') {
+        			SimulacionElectoral::simularElecciones(sistema, pais);
+    			}
+    			break;
+}
             case 0:
                 std::cout << "\n¡Hasta luego!" << std::endl;
                 break;
