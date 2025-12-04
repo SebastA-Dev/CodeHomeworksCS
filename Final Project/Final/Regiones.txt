@@ -1,5 +1,6 @@
-Andina: Bogota, Tunja, Bucaramanga, Medellin, Manizales, Armenia, Pereira
-Caribe: Barranquilla, Cartagena, Santa Marta, Valledupar, Sincelejo, Monteria
-Pacifica: Cali, Popayan, Pasto, Quibdo
-Orinoquia: Villavicencio, Yopal, Arauca
-Amazonia: Leticia, Mitu, San Jose del Guaviare
+Andina: Bogota, Tunja, Bucaramanga, Medellin, Manizales, Armenia, Pereira, Neiva, Ibague, Cucuta, Censo Total: 5374414
+Caribe: Barranquilla, Cartagena, Santa Marta, Valledupar, Sincelejo, Monteria, Riohacha, Censo Total: 2161046
+Pacifica: Cali, Popayan, Pasto, Quibdo, Censo Total: 1580244
+Orinoquia: Villavicencio, Yopal, Arauca, Puerto Carreno, Censo Total: 644442
+Amazonia: Leticia, Mitu, San Jose del Guaviare, Florencia, Inirida, Mocoa, Censo Total: 395180
+Insular: San Andres, Censo Total: 56203

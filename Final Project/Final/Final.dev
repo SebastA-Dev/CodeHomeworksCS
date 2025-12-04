@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 CompilerSettings=00000000c0000000000000000
-UnitCount=7
+UnitCount=6
 
 [VersionInfo]
 Major=1
@@ -81,9 +81,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit5]
-FileName=Lista.h
+FileName=UtilidadesAnalisis.h
 CompileCpp=1
-Folder=include
+Folder=utilities
 Compile=1
 Link=1
 Priority=1000
@@ -91,7 +91,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit6]
-FileName=UtilidadesAnalisis.h
+FileName=UtilidadesAnalisis.cpp
 CompileCpp=1
 Folder=utilities
 Compile=1

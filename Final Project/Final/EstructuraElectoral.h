@@ -12,6 +12,15 @@ struct Partido;
 struct Candidato;
 struct Pais;
 
+
+// ---------------------------------------------------------------------------
+// CLASES ENUM
+// ---------------------------------------------------------------------------
+
+enum class Sexo { Masculino, Femenino };
+enum class EstadoCivil { Soltero, Casado, Divorciado, UnionLibre };
+enum class TipoCandidato {ALCALDE, PRESIDENTE, VICEPRESIDENTE };
+
 // ---------------------------------------------------------------------------
 // PAIS
 // ---------------------------------------------------------------------------
@@ -20,6 +29,7 @@ struct Pais {
     std::string nombre;        
     std::vector<Candidato*> candidatosPresidencia;
     std::vector<Candidato*> candidatosVicepresidencia;
+    std::vector<Region*> regiones;
 };
 
 // ---------------------------------------------------------------------------
@@ -46,30 +56,12 @@ struct Ciudad {
 };
 
 // ---------------------------------------------------------------------------
-// PERSONA
-// ---------------------------------------------------------------------------
-
-enum class Sexo { Masculino, Femenino, Otro };
-enum class EstadoCivil { Soltero, Casado, Divorciado, Viudo };
-struct Persona {
-    std::string nombre;
-    std::string apellido;
-    std::string identificacion;
-    std::tm fechaNacimiento;
-    Sexo sexo;
-    EstadoCivil estadoCivil;
-    Ciudad* ciudadNacimiento = nullptr;
-    Ciudad* ciudadResidencia = nullptr;
-};
-
-// ---------------------------------------------------------------------------
 // PARTIDO POL�TICO
 // ---------------------------------------------------------------------------
 struct Partido {
     std::string codigo;
     std::string nombre;    
-    std::shared_ptr<Persona> representanteLegal;
-    bool legal = false;
+    std::string representanteLegal;
 };
 
 // ---------------------------------------------------------------------------
@@ -77,14 +69,53 @@ struct Partido {
 // ---------------------------------------------------------------------------
 
 struct Candidato {
-    std::shared_ptr<Persona> inf;
-    std::string codigo;
-    std::shared_ptr<Partido> partido;
-    std::shared_ptr<Candidato> vicepresidente = nullptr; // Siempre y cuando este el Presidente
+    // Identificacion personal
+    std::string nombre;
+    std::string apellido;
+    std::string identificacion;
+    std::tm fechaNacimiento;
+    Sexo sexo;
+    EstadoCivil estadoCivil;
     
-    // RECTIFICAR EL TIPO DE CANDIDATO (ALCALDE, PRESIDENTE, VICEPRESIDENTE)
-    enum class TipoCandidato {NADA, ALCALDE, PRESIDENTE, VICEPRESIDENTE};
-    TipoCandidato tipo = TipoCandidato::NADA;
+    // Ubicacion geografica 
+    Ciudad* ciudadNacimiento = nullptr;
+    Ciudad* ciudadResidencia = nullptr;
+    
+    // Informacion electoral
+    
+    std::shared_ptr<Partido> partido;
+    TipoCandidato tipo; 
     Ciudad* ciudadAspirante = nullptr;  // Para alcaldes
+    std::shared_ptr<Candidato> vicepresidente = nullptr; // Solo para el presidente
+
+    // Validaciones
+    bool esValido() const {
+    	
+        // El candidato debe tener un nombre, apellido y identificacion
+        if (nombre.empty() || apellido.empty() || identificacion.empty())
+            return false;
+        
+        // El candidato debe tener partido
+        if (!partido)
+            return false;
+        
+        // El alcalde debe vivir en su ciudad
+        if (tipo == TipoCandidato::ALCALDE) {
+            if (!ciudadAspirante || ciudadResidencia != ciudadAspirante)
+                return false;
+        }
+        
+        // El presidente debe tener a un vicepresidente asociado
+        if (tipo == TipoCandidato::PRESIDENTE) {
+            if (!vicepresidente)
+                return false;
+            
+            // El presidente y Vicepresidente pertenecen al mismo partid
+            if (vicepresidente->partido != partido)
+                return false;
+        }
+        
+        return true;
+    }
 };
 #endif

@@ -9,9 +9,15 @@
 DatosElectoral::DatosElectoral() {}
 
 DatosElectoral::~DatosElectoral() {
+    for (auto p : paises) delete p;
+    for (auto r : regiones) delete r;
+    for (auto c : ciudades) delete c;
+    for (auto cand : candidatosAlcaldia) delete cand;
+    for (auto cand : candidatosPresidenciaLista) delete cand;
+    for (auto p : partidos) delete p;
 }
 
-unsigned long DatosElectoral::calcularPesoAscii(const std::string& texto) const {
+nsigned long DatosElectoral::calcularPesoAscii(const std::string& texto) const {
     unsigned long suma = 0;
     for (unsigned char c : texto) {
         suma += static_cast<unsigned long>(c);
@@ -81,201 +87,251 @@ static void insertOrdered(std::vector<T>& vec, T item, bool asc = true) {
 }
 
 // ============================================================================
-// MÃ‰TODOS DE CREACIÃ“N (crear...)
+// MÉTODOS DE CREACIÓN (crear...)
 // ============================================================================
 
-// Crear Pais (se inserta ordenado por peso)
-Pais* DatosElectoral::crearPais(std::string& nombre, std::vector<Candidato*> candidatosPresidencia, std::vector<Candidato*> candidatosVicepresidencia) {
+// Crear País
+// Crea un nuevo país y lo agrega a la lista de países
+// Parámetros: nombre, candidatos a presidencia, candidatos a vicepresidencia
+// Retorna: puntero al País creado
+Pais* DatosElectoral::crearPais(std::string& nombre, 
+                                 std::vector<Candidato*> candidatosPresidencia, 
+                                 std::vector<Candidato*> candidatosVicepresidencia) {
     Pais* p = new Pais();
     p->nombre = nombre;
     p->codigo = parses.hashToHex(nombre);
     p->candidatosPresidencia = candidatosPresidencia;
     p->candidatosVicepresidencia = candidatosVicepresidencia;
-
-    insertOrdered(paises, p, true);
+    paises.push_back(p);
     return p;
 }
 
-// Crear Region; si paisPadre != nullptr, la agregamos a ese pais tambien
-Region* DatosElectoral::crearRegion(std::string nombre, std::vector<Ciudad*> ciudades, Pais* padre) {
-    if(padre == nullptr){
+// Crear Región
+// Crea una nueva región asociada a un país padre
+// Parámetros: nombre, lista de ciudades, país padre
+// Retorna: puntero a la Región creada
+Region* DatosElectoral::crearRegion(std::string nombre, 
+                                     std::vector<Ciudad*> ciudades, 
+                                     Pais* padre) {
+    if (padre == nullptr) {
         return new Region();
     }
-
+    
     Region* r = new Region();
     r->nombre = nombre;
     r->codigo = parses.hashToHex(nombre);
     r->ciudades = ciudades;
     r->censoElectoral = 0;
+    r->pais = padre;
     
-    insertOrdered(regiones, r,true);
-
+    padre->regiones.push_back(r);
+    regiones.push_back(r);
     return r;
 }
 
-// Crear Ciudad; si regionPadre o paisPadre se pasan, se asocian
-Ciudad* DatosElectoral::crearCiudad(std::string nombre, Region* regionPadre, std::vector<Candidato*> candidatos) {
-
+// Crear Ciudad
+// Crea una nueva ciudad asociada a una región padre
+// Parámetros: nombre, región padre, candidatos a alcaldía
+// Retorna: puntero a la Ciudad creada
+Ciudad* DatosElectoral::crearCiudad(std::string nombre, 
+                                     Region* regionPadre, 
+                                     std::vector<Candidato*> candidatos) {
     Ciudad* c = new Ciudad();
     c->nombre = nombre;
     c->codigo = parses.hashToHex(nombre);
     c->region = regionPadre;
     c->candidatosAlcaldia = candidatos;
     c->censoElectoral = 0;
-
-    insertOrdered(ciudades, c, true);
-
+    
+    ciudades.push_back(c);
     return c;
 }
 
-// Implementar como miembro para coincidir con la declaraciÃ³n en el header
-Candidato* DatosElectoral::crearCandidato(Persona* persona, Partido* partido, Candidato* presidente) {
-	
+// Crear Candidato
+// Crea un nuevo candidato con todos sus datos personales y electorales
+// Valida automáticamente que el candidato sea válido
+// Parámetros: datos personales, ubicación, información electoral
+// Retorna: puntero al Candidato (nullptr si es inválido)
+Candidato* DatosElectoral::crearCandidato(std::string nombre, 
+                                           std::string apellido,
+                                           std::string identificacion,
+                                           Sexo sexo,
+                                           EstadoCivil estadoCivil,
+                                           std::tm fechaNacimiento,
+                                           Ciudad* ciudadNacimiento,
+                                           Ciudad* ciudadResidencia,
+                                           std::shared_ptr<Partido> partido,
+                                           TipoCandidato tipo,
+                                           Ciudad* ciudadAspirante,
+                                           std::shared_ptr<Candidato> vicepresidente) {
+    
     Candidato* candidato = new Candidato();
-    candidato->inf = std::make_shared<Persona>(*persona);
-    candidato->codigo = parses.hashToHex(persona->identificacion); // 64-bit hash hex of identificacion
-    candidato->partido = std::make_shared<Partido>(*partido);
-
-    // Si se pasa un presidente, asociarlo como su vicepresidente (formula)
-    if (presidente != nullptr) {
-        presidente->vicepresidente = std::make_shared<Candidato>(*candidato);        
+    
+    // Datos personales
+    candidato->nombre = nombre;
+    candidato->apellido = apellido;
+    candidato->identificacion = identificacion;
+    candidato->sexo = sexo;
+    candidato->estadoCivil = estadoCivil;
+    candidato->fechaNacimiento = fechaNacimiento;
+    
+    // Ubicación geográfica
+    candidato->ciudadNacimiento = ciudadNacimiento;
+    candidato->ciudadResidencia = ciudadResidencia;
+    
+    // Información electoral
+    candidato->codigo = parses.hashToHex(identificacion);
+    candidato->partido = partido;
+    candidato->tipo = tipo;
+    candidato->ciudadAspirante = ciudadAspirante;
+    candidato->vicepresidente = vicepresidente;
+    
+    // Validar integridad del candidato
+    if (!candidato->esValido()) {
+        delete candidato;
+        return nullptr;
     }
-
+    
     return candidato;
 }
 
-Partido* DatosElectoral::crearPartido(std::string nombre, Persona* persona, bool legal) {
-    if(persona == nullptr)
-        return new Partido();
-    
+// Crear Partido
+// Crea un nuevo partido político
+// Parámetros: nombre, representante legal, estado legal
+// Retorna: puntero al Partido creado
+Partido* DatosElectoral::crearPartido(std::string nombre, 
+                                       std::string representanteLegal, 
+                                       bool legal) {
     Partido* p = new Partido();
     p->nombre = nombre;
     p->codigo = parses.hashToHex(nombre);
-    p->representanteLegal=std::make_shared<Persona>(*persona);
+    p->representanteLegal = representanteLegal;
     p->legal = legal;
-
-    insertOrdered(partidos, p, true);
-
+    
+    partidos.push_back(p);
     return p;
 }
 
 // ============================================================================
-// MÃ‰TODOS DE AGREGACIÃ“N (agregar...)
+// MÉTODOS DE AGREGACIÓN (agregar...)
 // ============================================================================
 
-// Agregar candidato a ciudad (ordenado por identificacion -> parse int)
-//TODO: Manejar de mejor manera esos condicionales, que sean mas explicitos a la hora de devolver las cosas
-void DatosElectoral::agregarCandidatoACiudad(Candidato* candidato, Ciudad* ciudad, Region* region) {
-    // ensure city exists in global cities vector
-    if (std::find(ciudades.begin(), ciudades.end(), ciudad) == ciudades.end()) {
-        insertOrdered(ciudades, ciudad, true);
+// Agregar candidato a ciudad
+// Agrega un candidato a la lista de candidatos de una ciudad específica
+// Parámetros: candidato, ciudad, región
+void DatosElectoral::agregarCandidatoACiudad(Candidato* candidato, 
+                                              Ciudad* ciudad, 
+                                              Region* region) {
+    if (!candidato || !ciudad || !region) {
+        return;
     }
-
-    // ensure city is in region
-    if (std::find(region->ciudades.begin(), region->ciudades.end(), ciudad) == region->ciudades.end())
+    
+    // Asegurar que la ciudad existe en el vector global
+    if (std::find(ciudades.begin(), ciudades.end(), ciudad) == ciudades.end()) {
+        ciudades.push_back(ciudad);
+    }
+    
+    // Asegurar que la ciudad está en la región
+    if (std::find(region->ciudades.begin(), region->ciudades.end(), ciudad) == region->ciudades.end()) {
+        region->ciudades.push_back(ciudad);
+    }
+    
+    // Verificar si el candidato ya está presente
+    if (std::find(ciudad->candidatosAlcaldia.begin(), ciudad->candidatosAlcaldia.end(), candidato) 
+        != ciudad->candidatosAlcaldia.end()) {
         return;
-
-    // check if candidate already present
-    if (std::find(ciudad->candidatosAlcaldia.begin(), ciudad->candidatosAlcaldia.end(), candidato) != ciudad->candidatosAlcaldia.end())
-        return;
-
-    insertOrdered(ciudad->candidatosAlcaldia, candidato, true);
-    insertOrdered(region->candidatosAlcaldias, candidato, true);
+    }
+    
+    ciudad->candidatosAlcaldia.push_back(candidato);
 }
 
-
 // ============================================================================
-// MÃ‰TODOS DE CONSULTA (obtener... / consultar...)
+// MÉTODOS DE CONSULTA (obtener... / consultar...)
 // ============================================================================
 
-// 1. Ciudades para las cuales se realizarï¿½ el proceso electoral.
-//    Aquï¿½ devuelvo todas las ciudades registradas en la lista global.
+// 1. Obtener ciudades electorales
+// Devuelve todas las ciudades registradas en el sistema
 std::vector<Ciudad*> DatosElectoral::obtenerCiudadesElectorales() {
     std::vector<Ciudad*> res;
-    for (auto c : ciudades) res.push_back(c);
+    for (auto c : ciudades) {
+        res.push_back(c);
+    }
     return res;
 }
 
-// 2. Partidos legalmente reconocidos.
-//    Recorremos ciudades/regiones/paises buscando partidos (esto asume que los partidos estï¿½n almacenados en candidatos->partido)
+// 2. Obtener partidos legalmente reconocidos
+// Devuelve solo los partidos que tienen estatus legal = true
 std::vector<Partido*> DatosElectoral::obtenerPartidosLegales() {
     std::vector<Partido*> encontrados;
-    auto pushIfNuevo = [&](std::shared_ptr<Partido> p) {
-        if (!p) return;
-        if (!p->legal) return;
-        Partido* ptr = p.get();
-        for (auto &pp : encontrados) if (pp == ptr) return;   //------>> Se puede optimizar con otro tipo de busqueda
-        encontrados.push_back(ptr);
-    };
-
-    // Recorremos candidatos por ciudad
-    for (auto c : ciudades) {
-        for (auto cand : c->candidatosAlcaldia) pushIfNuevo(cand->partido);
+    
+    for (auto p : partidos) {
+        if (p->legal) {
+            encontrados.push_back(p);
+        }
     }
-
-    // Recorremos regiones
-    for (auto r : regiones) {
-        for (auto cand : r->candidatosAlcaldias) pushIfNuevo(cand->partido);
-    }
-
-    // Nota: Si mantienes una lista explï¿½cita de partidos, este mï¿½todo serï¿½a trivial.
+    
     return encontrados;
 }
 
-// 3. Todos los candidatos a la alcaldï¿½a de cada una de las ciudades.
+// 3. Obtener candidatos por ciudad
+// Retorna pares (Ciudad, vector de candidatos a alcaldía)
 std::vector<std::pair<Ciudad*, std::vector<Candidato*>*>> DatosElectoral::candidatosPorCiudad() {
     std::vector<std::pair<Ciudad*, std::vector<Candidato*>*>> res;
-    for (auto c : ciudades) res.push_back({c, &c->candidatosAlcaldia});
+    
+    for (auto c : ciudades) {
+        res.push_back({c, &c->candidatosAlcaldia});
+    }
+    
     return res;
 }
 
-// 4. Todos los candidatos a la presidencia y vicepresidencia
+// 4. Obtener candidatos presidenciales
+// Retorna pares (Presidente, Vicepresidente) de cada país
 std::vector<std::pair<Candidato*, Candidato*>> DatosElectoral::candidatosPresidenciales() {
     std::vector<std::pair<Candidato*, Candidato*>> res;
-    int np = static_cast<int>(paises.size());
-    for (int i = 0; i < np; ++i) {
-        Pais* p = paises[i];
+    
+    for (auto p : paises) {
         int nPresidentes = static_cast<int>(p->candidatosPresidencia.size());
         int nVicepresidentes = static_cast<int>(p->candidatosVicepresidencia.size());
         
         // Emparejar presidentes con vicepresidentes
         int minSize = (nPresidentes < nVicepresidentes) ? nPresidentes : nVicepresidentes;
+        
         for (int j = 0; j < minSize; ++j) {
             Candidato* pres = p->candidatosPresidencia[j];
             Candidato* vice = p->candidatosVicepresidencia[j];
             res.push_back({pres, vice});
         }
         
-        // Si hay presidentes sin vicepresidente
+        // Presidentes sin vicepresidente (si existen)
         for (int j = minSize; j < nPresidentes; ++j) {
             Candidato* pres = p->candidatosPresidencia[j];
             res.push_back({pres, nullptr});
         }
     }
+    
     return res;
 }
 
-// 5. Candidatos a cada una de las alcaldï¿½as, por partido.
+// 5. Obtener candidatos a alcaldía por partido
+// Retorna tuplas (Ciudad, Partido, vector de candidatos)
 std::vector<std::tuple<Ciudad*, Partido*, std::vector<Candidato*>>> DatosElectoral::candidatosAlcaldiaPorPartido() {
     std::vector<std::tuple<Ciudad*, Partido*, std::vector<Candidato*>>> res;
-
-    int nc = static_cast<int>(ciudades.size());
-    for (int i = 0; i < nc; ++i) {
-        Ciudad* ciudad = ciudades[i];
-        int numCand = static_cast<int>(ciudad->candidatosAlcaldia.size());
-        // mapa simple por partido (iteramos y agrupamos)
-        for (int j = 0; j < numCand; ++j) {
-            Candidato* cand = ciudad->candidatosAlcaldia[j];
-            Partido* p = cand->partido.get(); // Obtener raw pointer del shared_ptr
-            // Buscar si ya existe tupla (ciudad, p)
+    
+    for (auto ciudad : ciudades) {
+        for (auto cand : ciudad->candidatosAlcaldia) {
+            Partido* p = cand->partido.get();
+            
+            // Buscar si ya existe tupla (ciudad, partido)
             bool found = false;
-            for (auto &t : res) {
+            for (auto& t : res) {
                 if (std::get<0>(t) == ciudad && std::get<1>(t) == p) {
                     std::get<2>(t).push_back(cand);
                     found = true;
                     break;
                 }
             }
+            
             if (!found) {
                 std::vector<Candidato*> v;
                 v.push_back(cand);
@@ -283,42 +339,62 @@ std::vector<std::tuple<Ciudad*, Partido*, std::vector<Candidato*>>> DatosElector
             }
         }
     }
-
+    
     return res;
 }
 
-// 6. Candidato a la presidencia y vicepresidencia por un partido dado.
+// 6. Obtener candidatos presidenciales por partido
+// Retorna par (Presidente, Vicepresidente) de un partido específico
 std::pair<Candidato*, Candidato*> DatosElectoral::candidatosPresidenciaPorPartido(Partido* partido) {
     if (!partido) return {nullptr, nullptr};
+    
     for (auto p : paises) {
         int nPresidentes = static_cast<int>(p->candidatosPresidencia.size());
+        
         for (int j = 0; j < nPresidentes; ++j) {
             Candidato* pres = p->candidatosPresidencia[j];
+            
             if (pres->partido.get() == partido) {
                 Candidato* vice = nullptr;
+                
                 if (j < static_cast<int>(p->candidatosVicepresidencia.size())) {
                     vice = p->candidatosVicepresidencia[j];
                 }
+                
                 return {pres, vice};
             }
         }
     }
-
+    
     return {nullptr, nullptr};
 }
 
 // ============================================================================
-// MÃ‰TODOS ACCESORES (obtenerLista...)
+// MÉTODOS ACCESORES (obtenerLista...)
 // ============================================================================
 
-// Accesores
+// Obtener lista de países
 std::vector<Pais*>& DatosElectoral::obtenerListaPaises() {
     return paises;
 }
+
+// Obtener lista de regiones
 std::vector<Region*>& DatosElectoral::obtenerListaRegiones() {
     return regiones;
 }
+
+// Obtener lista de ciudades
 std::vector<Ciudad*>& DatosElectoral::obtenerListaCiudades() {
     return ciudades;
+}
+
+// Obtener lista de candidatos a alcaldía
+std::vector<Candidato*>& DatosElectoral::obtenerListaCandidatos() {
+    return candidatosAlcaldia;
+}
+
+// Obtener lista de partidos
+std::vector<Partido*>& DatosElectoral::obtenerListaPartidos() {
+    return partidos;
 }
 

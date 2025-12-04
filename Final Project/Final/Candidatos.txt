@@ -1,52 +1,46 @@
-P001,PRESIDENTE,
-P002,PRESIDENTE,
-P003,PRESIDENTE,
-P004,PRESIDENTE,
-P005,PRESIDENTE,
-P006,VICEPRESIDENTE,
-P007,VICEPRESIDENTE,
-P008,VICEPRESIDENTE,
-P009,VICEPRESIDENTE,
-P010,VICEPRESIDENTE,
-P001,ALCALDE,Bogota
-P002,ALCALDE,Medellin
-P003,ALCALDE,Cali
-P004,ALCALDE,Barranquilla
-P005,ALCALDE,Cartagena
-P006,ALCALDE,Bucaramanga
-P007,ALCALDE,Pereira
-P008,ALCALDE,Manizales
-P009,ALCALDE,Armenia
-P010,ALCALDE,Tunja
-P001,ALCALDE,Villavicencio
-P002,ALCALDE,Popayan
-P003,ALCALDE,Neiva
-P004,ALCALDE,Ibague
-P005,ALCALDE,Cucuta
-P006,ALCALDE,Santa Marta
-P007,ALCALDE,Valledupar
-P008,ALCALDE,Sincelejo
-P009,ALCALDE,Monteria
-P010,ALCALDE,Pasto
-P001,ALCALDE,Quibdo
-P002,ALCALDE,Yopal
-P003,ALCALDE,Arauca
-P004,ALCALDE,Leticia
-P005,ALCALDE,Mitu
-P006,ALCALDE,San Jose del Guaviare
-P007,ALCALDE,Florencia
-P008,ALCALDE,Riohacha
-P009,ALCALDE,Inirida
-P010,ALCALDE,Mocoa
-P004,ALCALDE,Leticia
-P002,ALCALDE,Medellin
-P003,ALCALDE,Cali
-P003,ALCALDE,Arauca
-P004,ALCALDE,Leticia
-P003,ALCALDE,Arauca
-P004,ALCALDE,Leticia
-P005,ALCALDE,Mitu
-P006,ALCALDE,San Jose del Guaviare
-P007,ALCALDE,Florencia
-P001,ALCALDE,Bogota
-P001,ALCALDE,Bogota
+Fernando,Moreno,50897619,M,Divorciado,07/12/1979,Cartagena,Bucaramanga,Partido Liberal Colombiano,PRESIDENTE
+Javier,Ruiz,83511941,M,Casado,29/06/1966,Barranquilla,Barranquilla,Partido de la U,PRESIDENTE
+Antonio,Acosta,11876614,M,Divorciado,13/03/1966,Bucaramanga,Pereira,Partido Liberal Colombiano,PRESIDENTE
+Daniela,Reyes,45522847,M,Divorciado,31/03/1979,Manizales,Pereira,Partido Verde,PRESIDENTE
+Gabriela,Flores,29471011,F,Divorciado,03/06/1957,Barranquilla,Manizales,Partido de la U,PRESIDENTE
+Juan,Garcia,14990308,F,Divorciado,22/10/1955,Cali,Medellin,Centro Democratico,VICEPRESIDENTE
+Ricardo,Navarro,45095162,F,Divorciado,25/01/1953,Barranquilla,Manizales,Centro Democratico,VICEPRESIDENTE
+Roberto,Sanchez,41533890,F,Casado,09/02/1959,Cartagena,Bucaramanga,Partido Liberal Colombiano,VICEPRESIDENTE
+Elena,Rodriguez,95210929,F,Union libre,25/11/1979,Pereira,Pereira,Partido de la U,VICEPRESIDENTE
+Andres,Sanchez,64487945,M,Union libre,28/03/1961,Medellin,San Andres,Partido Conservador Colombiano,VICEPRESIDENTE
+Fernando,Gutierrez,23249816,M,Casado,22/06/1984,Pereira,Bogota,Partido de la U,ALCALDE,Bogota
+Antonio,Reyes,37127919,M,Divorciado,31/10/1980,Medellin,Bogota,Partido Conservador Colombiano,ALCALDE,Bogota
+Martina,Martinez,17241574,F,Union libre,20/10/1978,Bucaramanga,Bogota,Partido Verde,ALCALDE,Bogota
+Luis,Morales,28623706,M,Soltero,13/12/1982,Cartagena,Bogota,Partido Liberal Colombiano,ALCALDE,Bogota
+Miguel,Vera,70102776,M,Divorciado,26/02/1966,San Andres,Medellin,Centro Democratico,ALCALDE,Medellin
+Luis,Morales,81516982,M,Divorciado,07/01/1982,Bogota,Medellin,Partido Conservador Colombiano,ALCALDE,Medellin
+Elena,Ramirez,18693224,M,Union libre,10/12/1975,Cartagena,Medellin,Partido Liberal Colombiano,ALCALDE,Medellin
+Lucia,Campos,60710713,M,Casado,24/05/1986,San Andres,Medellin,Partido de la U,ALCALDE,Medellin
+Lucia,Acosta,68283789,F,Casado,08/08/1969,Barranquilla,Cali,Partido Verde,ALCALDE,Cali
+Lucia,Serrano,81128507,F,Soltero,08/01/1967,Cali,Cali,Partido Conservador Colombiano,ALCALDE,Cali
+Antonio,Hernandez,36133094,M,Soltero,11/06/1979,San Andres,Cali,Partido de la U,ALCALDE,Cali
+Gabriela,Torres,89586217,M,Divorciado,23/06/1985,Medellin,Cali,Partido Liberal Colombiano,ALCALDE,Cali
+Jimena,Rodriguez,42168665,F,Soltero,04/11/1977,San Andres,Barranquilla,Partido Verde,ALCALDE,Barranquilla
+Maria,Rodriguez,81997475,M,Soltero,28/04/1974,Pereira,Barranquilla,Partido Verde,ALCALDE,Barranquilla
+Andres,Lopez,21429847,F,Union libre,16/08/1984,San Andres,Barranquilla,Partido Verde,ALCALDE,Barranquilla
+Lucia,Ruiz,34936386,M,Casado,08/11/1985,Bucaramanga,Barranquilla,Centro Democratico,ALCALDE,Barranquilla
+Diego,Garcia,24681832,F,Union libre,07/07/1979,San Andres,Cartagena,Partido Conservador Colombiano,ALCALDE,Cartagena
+Miguel,Dominguez,31550442,F,Union libre,11/11/1977,Bogota,Cartagena,Partido Conservador Colombiano,ALCALDE,Cartagena
+Elena,Morales,62084514,M,Soltero,23/10/1985,Bogota,Cartagena,Partido de la U,ALCALDE,Cartagena
+Juan,Nunez,20281104,M,Soltero,24/02/1968,Barranquilla,Cartagena,Partido de la U,ALCALDE,Cartagena
+Jimena,Martinez,38274722,F,Divorciado,01/12/1971,Pereira,Bucaramanga,Partido Verde,ALCALDE,Bucaramanga
+Daniela,Lopez,10541896,F,Divorciado,04/11/1968,Bucaramanga,Bucaramanga,Partido de la U,ALCALDE,Bucaramanga
+Lucia,Castillo,19042705,M,Divorciado,27/07/1981,Medellin,Bucaramanga,Centro Democratico,ALCALDE,Bucaramanga
+Diego,Ramirez,53115636,F,Union libre,23/01/1976,Barranquilla,Bucaramanga,Centro Democratico,ALCALDE,Bucaramanga
+Camila,Hernandez,53116625,F,Soltero,22/08/1986,Manizales,Pereira,Partido Conservador Colombiano,ALCALDE,Pereira
+Maria,Flores,49479907,M,Union libre,30/07/1980,Medellin,Pereira,Centro Democratico,ALCALDE,Pereira
+Valentina,Garcia,96628872,M,Divorciado,26/03/1968,Bucaramanga,Pereira,Centro Democratico,ALCALDE,Pereira
+Daniela,Vargas,26031427,F,Soltero,20/05/1976,Bucaramanga,Pereira,Partido de la U,ALCALDE,Pereira
+Carlos,Serrano,60482321,M,Divorciado,04/02/1985,Pereira,Manizales,Partido Verde,ALCALDE,Manizales
+Jimena,Gutierrez,76667062,M,Union libre,19/05/1984,Medellin,Manizales,Partido Liberal Colombiano,ALCALDE,Manizales
+Diego,Navarro,30467778,M,Union libre,30/10/1965,Bucaramanga,Manizales,Partido Conservador Colombiano,ALCALDE,Manizales
+Enrique,Rodriguez,64090566,F,Union libre,28/09/1981,Bogota,Manizales,Partido Verde,ALCALDE,Manizales
+Javier,Navarro,52686321,M,Casado,22/05/1974,Manizales,San Andres,Partido Conservador Colombiano,ALCALDE,San Andres
+Ricardo,Gutierrez,61879620,M,Divorciado,10/01/1977,Pereira,San Andres,Partido de la U,ALCALDE,San Andres
+Jose,Rodriguez,29367262,F,Union libre,01/03/1978,Barranquilla,San Andres,Partido de la U,ALCALDE,San Andres
+Carlos,Flores,95566777,M,Soltero,17/10/1966,Cartagena,San Andres,Partido de la U,ALCALDE,San Andres

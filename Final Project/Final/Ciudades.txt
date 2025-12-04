@@ -1,31 +1,32 @@
-Bogota, Andina, 1,234,567
-Tunja, Andina, 345,678
-Bucaramanga, Andina, 456,789
-Medellin, Andina, 987,654
-Manizales, Andina, 234,567
-Armenia, Andina, 123,456
-Pereira, Andina, 345,678
-Barranquilla, Caribe, 567,890
-Cartagena, Caribe, 456,123
-Santa Marta, Caribe, 234,567
-Valledupar, Caribe, 345,678
-Sincelejo, Caribe, 123,456
-Monteria, Caribe, 234,567
-Cali, Pacifica, 876,543
-Popayan, Pacifica, 234,567
-Pasto, Pacifica, 345,678
-Quibdo, Pacifica, 123,456
-Villavicencio, Orinoquia, 345,678
-Yopal, Orinoquia, 123,456
-Arauca, Orinoquia, 98,765
-Leticia, Amazonia, 45,678
-Mitu, Amazonia, 34,567
-San Jose del Guaviare, Amazonia, 56,789
-Neiva, Andina, 289,012
-Florencia, Amazonia, 145,678
-Ibague, Andina, 567,890
-Cucuta, Andina, 789,123
-Monteria, Caribe, 234,567
-Riohacha, Caribe, 198,765
-Inirida, Amazonia, 23,456
-Mocoa, Amazonia, 89,012
+Bogota,Andina,1234567
+Tunja,Andina,345678
+Bucaramanga,Andina,456789
+Medellin,Andina,987654
+Manizales,Andina,234567
+Armenia,Andina,123456
+Pereira,Andina,345678
+Barranquilla,Caribe,567890
+Cartagena,Caribe,456123
+Santa Marta,Caribe,234567
+Valledupar,Caribe,345678
+Sincelejo,Caribe,123456
+Monteria,Caribe,234567
+Cali,Pacifica,876543
+Popayan,Pacifica,234567
+Pasto,Pacifica,345678
+Quibdo,Pacifica,123456
+Puerto Carreno,Orinoquia,76543
+Villavicencio,Orinoquia,345678
+Yopal,Orinoquia,123456
+Arauca,Orinoquia,98765
+Leticia,Amazonia,45678
+Mitu,Amazonia,34567
+San Jose del Guaviare,Amazonia,56789
+Neiva,Andina,289012
+Florencia,Amazonia,145678
+Ibague,Andina,567890
+Cucuta,Andina,789123
+Riohacha,Caribe,198765
+Inirida,Amazonia,23456
+Mocoa,Amazonia,89012
+San Andres,Insular,56203
