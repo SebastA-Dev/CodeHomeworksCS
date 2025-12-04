@@ -1,10 +1,10 @@
-Partido Liberal Colombiano,1001234567,Fernando Garcia,true
-Partido Conservador Colombiano,1002345678,Maria Martinez,true
-Centro Democratico,1003456789,Carlos Rodriguez,false
-Partido de la U,1004567890,Lucia Hernandez,true
-Partido Verde,1005678901,Juan Lopez,false
-Cambio Radical,1006789012,Angela Gonzalez, true
-Pacto Historico,1007890123,Miguel Sanchez,true
-Movimiento Independiente,1008901234,Rosa Perez,true
-Renovacion Nacional,1009012345,Diego Ramirez,false
-Union Ciudadana,1010123456,Elena Torres,true
+Partido Liberal Colombiano,Fernando Garcia,true
+Partido Conservador Colombiano,Maria Martinez,true
+Centro Democratico,Carlos Rodriguez,false
+Partido de la U,Lucia Hernandez,true
+Partido Verde,Juan Lopez,false
+Cambio Radical,Angela Gonzalez,true
+Pacto Historico,Miguel Sanchez,true
+Movimiento Independiente,Rosa Perez,true
+Renovacion Nacional,Diego Ramirez,false
+Union Ciudadana,Elena Torres,true

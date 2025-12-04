@@ -5,20 +5,37 @@
 #include <ctime>
 #include <vector>
 #include <type_traits>
+#include "EstructuraElectoral.h"
+
+// Forward declarations
+struct Ciudad;
+struct Partido;
+struct Pais;
+struct Candidato;
+struct Region;
 
 class UtilidadesAnalisis {
 public:
+    // Funciones existentes
     static std::string stringToHex(const std::string &input);
     static int calcularEdad(const std::tm& fechaNacimiento);
     static unsigned long long hashToULL(const std::string &input);
     static std::string hashToHex(const std::string &input);
 
+    //Impresion
+    static void imprimirTarjetonAlcaldia(Ciudad* ciudad);
+    static void imprimirTarjetonPresidencia(Pais* pais);
+    static void imprimirCensoElectoral(const std::vector<Ciudad*>& ciudades);
+    static void imprimirCandidatosPartidoRegion(const std::vector<Candidato*>& candidatos, Partido* partido, Region* region);
+    static void imprimirCandidatosPartidoTodasCiudades(const std::vector<std::tuple<Ciudad*, std::string, Sexo, int>>& candidatos, Partido* partido);
+    static void imprimirCandidatosPorCiudadPorPartido(const std::vector<std::pair<Partido*, Candidato*>>& candidatos, Ciudad* ciudad);
+
+    //Busqueda binaria
     template<typename T>
     static int busquedaBinariaCodigo(const std::vector<T>& elementos, const std::string& buscado) {
         auto obtenerCodigo = [&](const T& item) -> std::string {
             return obtenerCodigoImpl(item, std::is_pointer<T>());
         };
-        // Compare numeric values of hex codes to ensure ascending numeric order
         auto hexToULL = [](const std::string &s) -> unsigned long long {
             if (s.empty()) return 0ULL;
             try {
@@ -47,7 +64,6 @@ public:
     }
 
 private:
-    // helpers for pointer/non-pointer extraction
     template<typename U>
     static std::string obtenerCodigoImpl(const U& v, std::false_type) {
         return v.codigo;
@@ -60,5 +76,4 @@ private:
     }
 };
 
-#endif // UTILIDADES_ANALISIS_H
-
+#endif

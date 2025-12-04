@@ -1,20 +1,32 @@
 #include "DatosElectoral.h"
 #include "UtilidadesAnalisis.h"
+#include <iostream>    
 
 #include <sstream>
 #include <memory>
 #include <tuple>
 #include <algorithm>
+#include <vector> 
 
 DatosElectoral::DatosElectoral() {}
 
 DatosElectoral::~DatosElectoral() {
-    for (auto p : paises) delete p;
-    for (auto r : regiones) delete r;
-    for (auto c : ciudades) delete c;
-    for (auto cand : candidatosAlcaldia) delete cand;
-    for (auto cand : candidatosPresidenciaLista) delete cand;
-    for (auto p : partidos) delete p;
+    for (auto p : paises) {
+        delete p;
+    }
+    for (auto r : regiones) {
+        delete r;
+    }
+    for (auto c : ciudades) {
+        delete c;
+    }
+    for (auto cand : candidatosAlcaldia) {
+        delete cand;
+    }
+    for (auto cand : candidatosPresidenciaLista) {
+        delete cand;
+    }
+
 }
 
 unsigned long DatosElectoral::calcularPesoAscii(const std::string& texto) const {
@@ -33,58 +45,6 @@ std::string DatosElectoral::pesoHex(const std::string& texto) const {
     return ss.str();
 }
 
-// Helper: insert into an ordered vector by ->codigo (numeric ascending by hex value)
-template<typename T>
-static void insertOrdered(std::vector<T>& vec, T item, bool asc = true) {
-    // Convert hex string to unsigned long long (base 16)
-    auto hexVal = [](const std::string &s) -> unsigned long long {
-        if (s.empty()) return 0ULL;
-        try {
-            return std::stoull(s, nullptr, 16);
-        } catch (...) {
-            return 0ULL;
-        }
-    };
-
-    auto ullToHex = [](unsigned long long v) -> std::string {
-        std::stringstream ss;
-        ss << std::hex << std::uppercase << v;
-        return ss.str();
-    };
-
-    // Ensure unique numeric code: if collision, add a single bit (1<<k) to make it unique
-    unsigned long long base = hexVal(item->codigo);
-    unsigned long long assigned = base;
-    unsigned int k = 0;
-    auto exists = [&](unsigned long long v) {
-        for (auto &e : vec) {
-            if (hexVal(e->codigo) == v) return true;
-        }
-        return false;
-    };
-
-    while (exists(assigned)) {
-        if (k < 63) assigned = base + (1ULL << k);
-        else assigned = base + (unsigned long long)(k + 1);
-        ++k;
-    }
-
-    // Update the item's codigo to the unique hex form
-    item->codigo = ullToHex(assigned);
-
-    // Comparator by numeric hex value
-    auto compAsc = [&](const T& a, const T& b) { return hexVal(a->codigo) < hexVal(b->codigo); };
-    auto compDesc = [&](const T& a, const T& b) { return hexVal(a->codigo) > hexVal(b->codigo); };
-
-    if (asc) {
-        // use upper_bound to keep existing equal (older) items before the new one
-        auto it = std::upper_bound(vec.begin(), vec.end(), item, compAsc);
-        vec.insert(it, item);
-    } else {
-        auto it = std::upper_bound(vec.begin(), vec.end(), item, compDesc);
-        vec.insert(it, item);
-    }
-}
 
 // ============================================================================
 // MÉTODOS DE CREACIÓN (crear...)
@@ -152,18 +112,9 @@ Ciudad* DatosElectoral::crearCiudad(std::string nombre,
 // Valida automáticamente que el candidato sea válido
 // Parámetros: datos personales, ubicación, información electoral
 // Retorna: puntero al Candidato (nullptr si es inválido)
-Candidato* DatosElectoral::crearCandidato(std::string nombre, 
-                                           std::string apellido,
-                                           std::string identificacion,
-                                           Sexo sexo,
-                                           EstadoCivil estadoCivil,
-                                           std::tm fechaNacimiento,
-                                           Ciudad* ciudadNacimiento,
-                                           Ciudad* ciudadResidencia,
-                                           std::shared_ptr<Partido> partido,
-                                           TipoCandidato tipo,
-                                           Ciudad* ciudadAspirante,
-                                           std::shared_ptr<Candidato> vicepresidente) {
+Candidato* DatosElectoral::crearCandidato(std::string nombre, std::string apellido, std::string identificacion, Sexo sexo, EstadoCivil estadoCivil, std::tm fechaNacimiento,
+                                           Ciudad* ciudadNacimiento, Ciudad* ciudadResidencia, Partido* partido, TipoCandidato tipo, Ciudad* ciudadAspirante, 
+                                           Candidato* vicepresidente) {
     
     Candidato* candidato = new Candidato();
     
@@ -180,7 +131,6 @@ Candidato* DatosElectoral::crearCandidato(std::string nombre,
     candidato->ciudadResidencia = ciudadResidencia;
     
     // Información electoral
-    candidato->codigo = parses.hashToHex(identificacion);
     candidato->partido = partido;
     candidato->tipo = tipo;
     candidato->ciudadAspirante = ciudadAspirante;
@@ -188,12 +138,22 @@ Candidato* DatosElectoral::crearCandidato(std::string nombre,
     
     // Validar integridad del candidato
     if (!candidato->esValido()) {
+        std::cerr << "Candidato invalido: " << nombre << " " << apellido << std::endl;
         delete candidato;
         return nullptr;
     }
     
+    // Agregar a listas apropiadas
+    if (tipo == TipoCandidato::ALCALDE && ciudadAspirante) {
+        ciudadAspirante->candidatosAlcaldia.push_back(candidato);
+        candidatosAlcaldia.push_back(candidato);
+    } else if (tipo == TipoCandidato::PRESIDENTE || tipo == TipoCandidato::VICEPRESIDENTE) {
+        candidatosPresidenciaLista.push_back(candidato);
+    }
+    
     return candidato;
 }
+
 
 // Crear Partido
 // Crea un nuevo partido político
@@ -320,7 +280,7 @@ std::vector<std::tuple<Ciudad*, Partido*, std::vector<Candidato*>>> DatosElector
     
     for (auto ciudad : ciudades) {
         for (auto cand : ciudad->candidatosAlcaldia) {
-            Partido* p = cand->partido.get();
+            Partido* p = cand->partido;
             
             // Buscar si ya existe tupla (ciudad, partido)
             bool found = false;
@@ -354,7 +314,7 @@ std::pair<Candidato*, Candidato*> DatosElectoral::candidatosPresidenciaPorPartid
         for (int j = 0; j < nPresidentes; ++j) {
             Candidato* pres = p->candidatosPresidencia[j];
             
-            if (pres->partido.get() == partido) {
+            if (pres->partido == partido) {
                 Candidato* vice = nullptr;
                 
                 if (j < static_cast<int>(p->candidatosVicepresidencia.size())) {
@@ -395,6 +355,8 @@ std::vector<Candidato*>& DatosElectoral::obtenerListaCandidatos() {
 
 // Obtener lista de partidos
 std::vector<Partido*>& DatosElectoral::obtenerListaPartidos() {
+ 
+
     return partidos;
 }
 

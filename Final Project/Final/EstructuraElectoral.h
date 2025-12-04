@@ -61,7 +61,7 @@ struct Partido {
     std::string codigo;
     std::string nombre; 
     std::string representanteLegal;
-    std::bool legal;
+    bool legal;
 };
 
 // ---------------------------------------------------------------------------
@@ -83,10 +83,10 @@ struct Candidato {
     
     // Informacion electoral
     
-    std::shared_ptr<Partido> partido;
+    Partido* partido;
     TipoCandidato tipo; 
     Ciudad* ciudadAspirante = nullptr;  // Para alcaldes
-    std::shared_ptr<Candidato> vicepresidente = nullptr; // Solo para el presidente
+    Candidato* vicepresidente = nullptr; // Solo para el presidente
 
     // Validaciones
     bool esValido() const {
@@ -105,17 +105,12 @@ struct Candidato {
                 return false;
         }
         
-        // El presidente debe tener a un vicepresidente asociado
-        if (tipo == TipoCandidato::PRESIDENTE) {
-            if (!vicepresidente)
-                return false;
-            
-            // El presidente y Vicepresidente pertenecen al mismo partid
-            if (vicepresidente->partido != partido)
-                return false;
-        }
+        // El presidente NO requiere vicepresidente en este momento
+        // Se asigna después durante la carga
         
         return true;
     }
 };
+
+
 #endif

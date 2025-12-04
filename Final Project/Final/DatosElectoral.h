@@ -23,6 +23,8 @@ private:
     std::vector<Ciudad*> ciudades;
     std::vector<Candidato*> candidatosAlcaldia;
     std::vector<Candidato*> candidatosPresidenciaLista;
+    std::vector<Partido*> partidos;
+    
     
     // Métodos auxiliares 
     
@@ -31,8 +33,6 @@ private:
 
 public:
 	
-    // Lista pública de partidos
-    std::vector<Partido*> partidos;
     
     // Constructor y destructor
     DatosElectoral();
@@ -59,18 +59,18 @@ public:
     
     // Crear Candidato
     // IM,PORTANTE: Retorna nullptr si el candidato no es valido
-    Candidato* crearCandidato(std::string nombre, 
-                              std::string apellido,
-                              std::string identificacion,
-                              Sexo sexo,
-                              EstadoCivil estadoCivil,
-                              std::tm fechaNacimiento,
-                              Ciudad* ciudadNacimiento,
-                              Ciudad* ciudadResidencia,
-                              std::shared_ptr<Partido> partido,
-                              TipoCandidato tipo,
-                              Ciudad* ciudadAspirante = nullptr,
-                              std::shared_ptr<Candidato> vicepresidente = nullptr);
+	Candidato* crearCandidato(std::string nombre, 
+    	                      std::string apellido,
+        	                  std::string identificacion,
+            	              Sexo sexo,
+                	          EstadoCivil estadoCivil,
+                    	      std::tm fechaNacimiento,
+                        	  Ciudad* ciudadNacimiento,
+                	          Ciudad* ciudadResidencia,
+                    	      Partido* partido,
+                        	  TipoCandidato tipo,
+                         	 Ciudad* ciudadAspirante = nullptr,
+                         	 Candidato* vicepresidente = nullptr);
     
     // Crear Partido
     Partido* crearPartido(std::string nombre, 
