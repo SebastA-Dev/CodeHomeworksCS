@@ -84,12 +84,8 @@ void SimulacionElectoral::simularAlcaldias(DatosElectoral& sistema, std::vector<
 void SimulacionElectoral::simularPresidencia(Pais* pais, int totalCenso, ResultadosNacionales& resultados) {
     int votosUsados = 0;
     
-    int minFormulas = (pais->candidatosPresidencia.size() < pais->candidatosVicepresidencia.size())
-                      ? pais->candidatosPresidencia.size()
-                      : pais->candidatosVicepresidencia.size();
-    
     // Generar votos aleatorios para cada formula presidencial
-    for (int i = 0; i < minFormulas; i++) {
+    for (int i = 0; i < pais->candidatosPresidencia.size(); i++) {
         Candidato* pres = pais->candidatosPresidencia[i];
         int votos = generarVotosAleatorios(totalCenso, votosUsados);
         resultados.votosPresidencia[pres] = votos;

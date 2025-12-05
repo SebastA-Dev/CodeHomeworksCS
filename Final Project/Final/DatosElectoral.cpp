@@ -47,29 +47,28 @@ std::string DatosElectoral::pesoHex(const std::string& texto) const {
 
 
 // ============================================================================
-// MÉTODOS DE CREACIÓN (crear...)
+// Mï¿½TODOS DE CREACIï¿½N (crear...)
 // ============================================================================
 
-// Crear País
-// Crea un nuevo país y lo agrega a la lista de países
-// Parámetros: nombre, candidatos a presidencia, candidatos a vicepresidencia
-// Retorna: puntero al País creado
+// Crear Paï¿½s
+// Crea un nuevo paï¿½s y lo agrega a la lista de paï¿½ses
+// Parï¿½metros: nombre, candidatos a presidencia, candidatos a vicepresidencia
+// Retorna: puntero al Paï¿½s creado
 Pais* DatosElectoral::crearPais(std::string& nombre, 
                                  std::vector<Candidato*> candidatosPresidencia, 
                                  std::vector<Candidato*> candidatosVicepresidencia) {
     Pais* p = new Pais();
     p->nombre = nombre;
     p->codigo = parses.hashToHex(nombre);
-    p->candidatosPresidencia = candidatosPresidencia;
-    p->candidatosVicepresidencia = candidatosVicepresidencia;
+    p->candidatosPresidencia = candidatosPresidencia;    
     paises.push_back(p);
     return p;
 }
 
-// Crear Región
-// Crea una nueva región asociada a un país padre
-// Parámetros: nombre, lista de ciudades, país padre
-// Retorna: puntero a la Región creada
+// Crear Regiï¿½n
+// Crea una nueva regiï¿½n asociada a un paï¿½s padre
+// Parï¿½metros: nombre, lista de ciudades, paï¿½s padre
+// Retorna: puntero a la Regiï¿½n creada
 Region* DatosElectoral::crearRegion(std::string nombre, 
                                      std::vector<Ciudad*> ciudades, 
                                      Pais* padre) {
@@ -90,8 +89,8 @@ Region* DatosElectoral::crearRegion(std::string nombre,
 }
 
 // Crear Ciudad
-// Crea una nueva ciudad asociada a una región padre
-// Parámetros: nombre, región padre, candidatos a alcaldía
+// Crea una nueva ciudad asociada a una regiï¿½n padre
+// Parï¿½metros: nombre, regiï¿½n padre, candidatos a alcaldï¿½a
 // Retorna: puntero a la Ciudad creada
 Ciudad* DatosElectoral::crearCiudad(std::string nombre, 
                                      Region* regionPadre, 
@@ -109,11 +108,11 @@ Ciudad* DatosElectoral::crearCiudad(std::string nombre,
 
 // Crear Candidato
 // Crea un nuevo candidato con todos sus datos personales y electorales
-// Valida automáticamente que el candidato sea válido
-// Parámetros: datos personales, ubicación, información electoral
-// Retorna: puntero al Candidato (nullptr si es inválido)
+// Valida automï¿½ticamente que el candidato sea vï¿½lido
+// Parï¿½metros: datos personales, ubicaciï¿½n, informaciï¿½n electoral
+// Retorna: puntero al Candidato (nullptr si es invï¿½lido)
 Candidato* DatosElectoral::crearCandidato(std::string nombre, std::string apellido, std::string identificacion, Sexo sexo, EstadoCivil estadoCivil, std::tm fechaNacimiento,
-                                           Ciudad* ciudadNacimiento, Ciudad* ciudadResidencia, Partido* partido, TipoCandidato tipo, Ciudad* ciudadAspirante, 
+                                           Ciudad* ciudadNacimiento, Ciudad* ciudadResidencia, Partido* partido, TipoCandidato tipo, Pais* pais, Ciudad* ciudadAspirante, 
                                            Candidato* vicepresidente) {
     
     Candidato* candidato = new Candidato();
@@ -126,11 +125,11 @@ Candidato* DatosElectoral::crearCandidato(std::string nombre, std::string apelli
     candidato->estadoCivil = estadoCivil;
     candidato->fechaNacimiento = fechaNacimiento;
     
-    // Ubicación geográfica
+    // Ubicaciï¿½n geogrï¿½fica
     candidato->ciudadNacimiento = ciudadNacimiento;
     candidato->ciudadResidencia = ciudadResidencia;
     
-    // Información electoral
+    // Informaciï¿½n electoral
     candidato->partido = partido;
     candidato->tipo = tipo;
     candidato->ciudadAspirante = ciudadAspirante;
@@ -144,20 +143,21 @@ Candidato* DatosElectoral::crearCandidato(std::string nombre, std::string apelli
     }
     
     // Agregar a listas apropiadas
-    if (tipo == TipoCandidato::ALCALDE && ciudadAspirante) {
+    if (tipo == TipoCandidato::ALCALDE) {
         ciudadAspirante->candidatosAlcaldia.push_back(candidato);
         candidatosAlcaldia.push_back(candidato);
-    } else if (tipo == TipoCandidato::PRESIDENTE || tipo == TipoCandidato::VICEPRESIDENTE) {
+        
+    } else {
         candidatosPresidenciaLista.push_back(candidato);
-    }
-    
+        pais->candidatosPresidencia.push_back(candidato);
+    }    
     return candidato;
 }
 
 
 // Crear Partido
-// Crea un nuevo partido político
-// Parámetros: nombre, representante legal, estado legal
+// Crea un nuevo partido polï¿½tico
+// Parï¿½metros: nombre, representante legal, estado legal
 // Retorna: puntero al Partido creado
 Partido* DatosElectoral::crearPartido(std::string nombre, 
                                        std::string representanteLegal, 
@@ -173,12 +173,12 @@ Partido* DatosElectoral::crearPartido(std::string nombre,
 }
 
 // ============================================================================
-// MÉTODOS DE AGREGACIÓN (agregar...)
+// Mï¿½TODOS DE AGREGACIï¿½N (agregar...)
 // ============================================================================
 
 // Agregar candidato a ciudad
-// Agrega un candidato a la lista de candidatos de una ciudad específica
-// Parámetros: candidato, ciudad, región
+// Agrega un candidato a la lista de candidatos de una ciudad especï¿½fica
+// Parï¿½metros: candidato, ciudad, regiï¿½n
 void DatosElectoral::agregarCandidatoACiudad(Candidato* candidato, 
                                               Ciudad* ciudad, 
                                               Region* region) {
@@ -191,12 +191,12 @@ void DatosElectoral::agregarCandidatoACiudad(Candidato* candidato,
         ciudades.push_back(ciudad);
     }
     
-    // Asegurar que la ciudad está en la región
+    // Asegurar que la ciudad estï¿½ en la regiï¿½n
     if (std::find(region->ciudades.begin(), region->ciudades.end(), ciudad) == region->ciudades.end()) {
         region->ciudades.push_back(ciudad);
     }
     
-    // Verificar si el candidato ya está presente
+    // Verificar si el candidato ya estï¿½ presente
     if (std::find(ciudad->candidatosAlcaldia.begin(), ciudad->candidatosAlcaldia.end(), candidato) 
         != ciudad->candidatosAlcaldia.end()) {
         return;
@@ -206,7 +206,7 @@ void DatosElectoral::agregarCandidatoACiudad(Candidato* candidato,
 }
 
 // ============================================================================
-// MÉTODOS DE CONSULTA (obtener... / consultar...)
+// Mï¿½TODOS DE CONSULTA (obtener... / consultar...)
 // ============================================================================
 
 // 1. Obtener ciudades electorales
@@ -234,7 +234,7 @@ std::vector<Partido*> DatosElectoral::obtenerPartidosLegales() {
 }
 
 // 3. Obtener candidatos por ciudad
-// Retorna pares (Ciudad, vector de candidatos a alcaldía)
+// Retorna pares (Ciudad, vector de candidatos a alcaldï¿½a)
 std::vector<std::pair<Ciudad*, std::vector<Candidato*>*>> DatosElectoral::candidatosPorCiudad() {
     std::vector<std::pair<Ciudad*, std::vector<Candidato*>*>> res;
     
@@ -246,34 +246,24 @@ std::vector<std::pair<Ciudad*, std::vector<Candidato*>*>> DatosElectoral::candid
 }
 
 // 4. Obtener candidatos presidenciales
-// Retorna pares (Presidente, Vicepresidente) de cada país
+// Retorna pares (Presidente, Vicepresidente) de cada paï¿½s
 std::vector<std::pair<Candidato*, Candidato*>> DatosElectoral::candidatosPresidenciales() {
     std::vector<std::pair<Candidato*, Candidato*>> res;
     
     for (auto p : paises) {
-        int nPresidentes = static_cast<int>(p->candidatosPresidencia.size());
-        int nVicepresidentes = static_cast<int>(p->candidatosVicepresidencia.size());
+        int nPresidentes = static_cast<int>(p->candidatosPresidencia.size());        
         
-        // Emparejar presidentes con vicepresidentes
-        int minSize = (nPresidentes < nVicepresidentes) ? nPresidentes : nVicepresidentes;
-        
-        for (int j = 0; j < minSize; ++j) {
+        for (int j = 0; j < nPresidentes; ++j) {
             Candidato* pres = p->candidatosPresidencia[j];
-            Candidato* vice = p->candidatosVicepresidencia[j];
+            Candidato* vice = pres->vicepresidente;
             res.push_back({pres, vice});
-        }
-        
-        // Presidentes sin vicepresidente (si existen)
-        for (int j = minSize; j < nPresidentes; ++j) {
-            Candidato* pres = p->candidatosPresidencia[j];
-            res.push_back({pres, nullptr});
         }
     }
     
     return res;
 }
 
-// 5. Obtener candidatos a alcaldía por partido
+// 5. Obtener candidatos a alcaldï¿½a por partido
 // Retorna tuplas (Ciudad, Partido, vector de candidatos)
 std::vector<std::tuple<Ciudad*, Partido*, std::vector<Candidato*>>> DatosElectoral::candidatosAlcaldiaPorPartido() {
     std::vector<std::tuple<Ciudad*, Partido*, std::vector<Candidato*>>> res;
@@ -304,7 +294,7 @@ std::vector<std::tuple<Ciudad*, Partido*, std::vector<Candidato*>>> DatosElector
 }
 
 // 6. Obtener candidatos presidenciales por partido
-// Retorna par (Presidente, Vicepresidente) de un partido específico
+// Retorna par (Presidente, Vicepresidente) de un partido especï¿½fico
 std::pair<Candidato*, Candidato*> DatosElectoral::candidatosPresidenciaPorPartido(Partido* partido) {
     if (!partido) return {nullptr, nullptr};
     
@@ -313,16 +303,10 @@ std::pair<Candidato*, Candidato*> DatosElectoral::candidatosPresidenciaPorPartid
         
         for (int j = 0; j < nPresidentes; ++j) {
             Candidato* pres = p->candidatosPresidencia[j];
-            
-            if (pres->partido == partido) {
-                Candidato* vice = nullptr;
-                
-                if (j < static_cast<int>(p->candidatosVicepresidencia.size())) {
-                    vice = p->candidatosVicepresidencia[j];
-                }
-                
-                return {pres, vice};
-            }
+            if (pres->partido != partido)
+                continue;
+            Candidato* vice = pres->vicepresidente;                            
+            return {pres, vice};
         }
     }
     
@@ -330,10 +314,10 @@ std::pair<Candidato*, Candidato*> DatosElectoral::candidatosPresidenciaPorPartid
 }
 
 // ============================================================================
-// MÉTODOS ACCESORES (obtenerLista...)
+// Mï¿½TODOS ACCESORES (obtenerLista...)
 // ============================================================================
 
-// Obtener lista de países
+// Obtener lista de paï¿½ses
 std::vector<Pais*>& DatosElectoral::obtenerListaPaises() {
     return paises;
 }
@@ -348,7 +332,7 @@ std::vector<Ciudad*>& DatosElectoral::obtenerListaCiudades() {
     return ciudades;
 }
 
-// Obtener lista de candidatos a alcaldía
+// Obtener lista de candidatos a alcaldï¿½a
 std::vector<Candidato*>& DatosElectoral::obtenerListaCandidatos() {
     return candidatosAlcaldia;
 }

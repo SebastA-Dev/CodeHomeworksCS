@@ -18,6 +18,13 @@ class UtilidadesAnalisis {
 public:
     // Funciones existentes
     static std::string stringToHex(const std::string &input);
+    static EstadoCivil parsearEstadoCivil(int opcion);
+    static EstadoCivil parsearEstadoCivil(std::string opcion);
+    static std::tm parsearFecha(const std::string& fechaStr);
+    static Sexo parsearSexo(char opcion);
+    static TipoCandidato parsearTipoCandidato(int opc);
+    static TipoCandidato parsearTipoCandidato(std::string opc);
+
     static int calcularEdad(const std::tm& fechaNacimiento);
     static unsigned long long hashToULL(const std::string &input);
     static std::string hashToHex(const std::string &input);
@@ -29,6 +36,12 @@ public:
     static void imprimirCandidatosPartidoRegion(const std::vector<Candidato*>& candidatos, Partido* partido, Region* region);
     static void imprimirCandidatosPartidoTodasCiudades(const std::vector<std::tuple<Ciudad*, std::string, Sexo, int>>& candidatos, Partido* partido);
     static void imprimirCandidatosPorCiudadPorPartido(const std::vector<std::pair<Partido*, Candidato*>>& candidatos, Ciudad* ciudad);
+
+    //Validaciones
+    static char leerSexo();
+    static int leerEstadoCivil();
+    static std::tm leerFechaNacimiento();
+    static int leerTipoCandidato();
 
     //Busqueda binaria
     template<typename T>

@@ -8,12 +8,12 @@
 
 class CargarDatos {
 public:
-    static bool cargarTodosLosDatos(DatosElectoral& sistema, const std::string& rutaPartidos, const std::string& rutaRegiones, const std::string& rutaCiudades, const std::string& rutaCandidatos);
+    static bool cargarTodosLosDatos(DatosElectoral& sistema, const std::string& rutaPartidos, const std::string& rutaRegiones, const std::string& rutaCiudades, const std::string& rutaCandidatos, Pais* pais);
     
 private:
     static bool cargarPartidos(DatosElectoral& sistema, const std::string& ruta);
     static bool cargarCiudades(DatosElectoral& sistema, const std::string& ruta);
-    static bool cargarCandidatos(DatosElectoral& sistema, const std::string& ruta);
+    static bool cargarCandidatos(DatosElectoral& sistema, const std::string& ruta, Pais* pais);
     static bool cargarRegiones(DatosElectoral& sistema, const std::string& ruta, Pais* pais);
     
     static std::vector<std::string> dividirLinea(const std::string& linea, char delimitador = ',');
@@ -21,4 +21,5 @@ private:
 };
 
 #endif
+
 

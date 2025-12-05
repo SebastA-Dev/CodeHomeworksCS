@@ -26,7 +26,7 @@ private:
     std::vector<Partido*> partidos;
     
     
-    // Métodos auxiliares 
+    // Mï¿½todos auxiliares 
     
     unsigned long calcularPesoAscii(const std::string& texto) const;
     std::string pesoHex(const std::string& texto) const;
@@ -38,14 +38,14 @@ public:
     DatosElectoral();
     ~DatosElectoral();
     
-    // ===== MÉTODOS CREACIÓN =====
+    // ===== Mï¿½TODOS CREACIï¿½N =====
     
-    // Crear País
+    // Crear Paï¿½s
     Pais* crearPais(std::string& nombre, 
                     std::vector<Candidato*> candidatosPresidencia, 
                     std::vector<Candidato*> candidatosVicepresidencia);
     
-    // Crear Región 
+    // Crear Regiï¿½n 
     
     Region* crearRegion(std::string nombre, 
                         std::vector<Ciudad*> ciudades, 
@@ -68,16 +68,17 @@ public:
                         	  Ciudad* ciudadNacimiento,
                 	          Ciudad* ciudadResidencia,
                     	      Partido* partido,
-                        	  TipoCandidato tipo,
-                         	 Ciudad* ciudadAspirante = nullptr,
-                         	 Candidato* vicepresidente = nullptr);
+                        	  TipoCandidato tipo,                         	  
+                              Pais* pais,
+                              Ciudad* ciudadAspirante = nullptr,
+                              Candidato* vicepresidente = nullptr);
     
     // Crear Partido
     Partido* crearPartido(std::string nombre, 
                           std::string representanteLegal, 
                           bool legal = false);
     
-    // ===== MÉTODOS AGREGACIÓN =====
+    // ===== Mï¿½TODOS AGREGACIï¿½N =====
     
     // Agregar candidato a una ciudad
     
@@ -85,7 +86,7 @@ public:
                                   Ciudad* ciudad, 
                                   Region* region);
     
-    // ===== MÉTODOS DE CONSULTA =====
+    // ===== Mï¿½TODOS DE CONSULTA =====
     
     // 1. Ciudades electorales (con censo > 0)
     std::vector<Ciudad*> obtenerCiudadesElectorales();
@@ -100,14 +101,14 @@ public:
     
     std::vector<std::pair<Candidato*, Candidato*>> candidatosPresidenciales();
     
-    // 5. Candidatos a alcaldía por partido
+    // 5. Candidatos a alcaldï¿½a por partido
     // Retorna tuplas
     std::vector<std::tuple<Ciudad*, Partido*, std::vector<Candidato*>>> candidatosAlcaldiaPorPartido();
     
-    // 6. Candidatos presidenciales de un partido específico
+    // 6. Candidatos presidenciales de un partido especï¿½fico
     std::pair<Candidato*, Candidato*> candidatosPresidenciaPorPartido(Partido* partido);
     
-    // ===== MÉTODOS ACCESORES =====
+    // ===== Mï¿½TODOS ACCESORES =====
     
     std::vector<Pais*>& obtenerListaPaises();
     std::vector<Region*>& obtenerListaRegiones();
@@ -115,6 +116,5 @@ public:
     std::vector<Candidato*>& obtenerListaCandidatos();
     std::vector<Partido*>& obtenerListaPartidos();
 };
-
 #endif
 

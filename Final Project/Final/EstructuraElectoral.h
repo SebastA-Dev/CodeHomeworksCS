@@ -28,7 +28,6 @@ struct Pais {
     std::string codigo;
     std::string nombre;        
     std::vector<Candidato*> candidatosPresidencia;
-    std::vector<Candidato*> candidatosVicepresidencia;
     std::vector<Region*> regiones;
 };
 
@@ -100,13 +99,11 @@ struct Candidato {
             return false;
         
         // El alcalde debe vivir en su ciudad
-        if (tipo == TipoCandidato::ALCALDE) {
-            if (!ciudadAspirante || ciudadResidencia != ciudadAspirante)
+        if ((tipo == TipoCandidato::ALCALDE) && (!ciudadAspirante || ciudadResidencia != ciudadAspirante))
                 return false;
-        }
         
         // El presidente NO requiere vicepresidente en este momento
-        // Se asigna después durante la carga
+        // Se asigna despuï¿½s durante la carga
         
         return true;
     }

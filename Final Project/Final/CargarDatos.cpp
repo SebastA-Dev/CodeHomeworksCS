@@ -1,4 +1,5 @@
 #include "CargarDatos.h"
+#include "UtilidadesAnalisis.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -57,7 +58,7 @@ bool CargarDatos::cargarPartidos(DatosElectoral& sistema, const std::string& rut
         
         std::string nombre = trim(datos[0]);
         std::string representante = trim(datos[1]);
-        bool legal = (trim(datos[2]) == "1");
+        bool legal = (trim(datos[2]) == "true");
         
         Partido* p = sistema.crearPartido(nombre, representante, legal);
         
@@ -133,7 +134,7 @@ bool CargarDatos::cargarCiudades(DatosElectoral& sistema, const std::string& rut
         }
         
         if (!region) {
-            std::cerr << "Regi�n no encontrada: " << nombreRegion << std::endl;
+            std::cerr << "Regi�n no encontrada: " << nombreRegion << std::endl;
             continue;
         }
         
@@ -151,142 +152,175 @@ bool CargarDatos::cargarCiudades(DatosElectoral& sistema, const std::string& rut
     return contador > 0;
 }
 
-bool CargarDatos::cargarCandidatos(DatosElectoral& sistema, const std::string& ruta) {
-    std::ifstream archivo(ruta);
+std::vector<Candidato*> presidentes;
+bool CargarDatos::cargarCandidatos(DatosElectoral& sistema, const std::string& ruta, Pais* pais) {
+    auto& ciudades = sistema.obtenerListaCiudades();
+    auto& partidos = sistema.obtenerListaPartidos();
     
+    std::vector<Candidato*> presidentesLocales;
+
+    auto buscarCiudad = [&](const std::string& nombre) -> Ciudad* {
+        std::string buscado = trim(nombre);
+        for (auto c : ciudades) {
+            if (c && c->nombre == buscado) {
+                return c;
+            }
+        }
+        return nullptr;
+    };
+
+    auto buscarPartido = [&](const std::string& nombre) -> Partido* {
+        std::string buscado = trim(nombre);
+        for (auto c : partidos) {
+            if (c && c->nombre == buscado) {
+                return c;
+            }
+        }
+        return nullptr;
+    };
+
+    auto buscarPresidente = [&](const Partido* partido, const std::vector<Candidato*>& listaPresidentes) -> Candidato* {            
+        for (auto c : listaPresidentes) {
+            if (c && c->partido == partido) {
+                return c;
+            }
+        }
+        return nullptr;
+    };
+
+    std::ifstream archivo(ruta);
+
     if (!archivo.is_open()) {
         std::cerr << "No se pudo abrir: " << ruta << std::endl;
         return false;
     }
-    
+
     std::string linea;
-    int contador = 0;
-    int linea_num = 0;
-    
+    int cargados = 0;
+
     while (std::getline(archivo, linea)) {
-        linea_num++;
-        linea = trim(linea);
-        if (linea.empty()) continue;
-        
-        auto datos = dividirLinea(linea, ',');
-        
-        if (datos.size() < 10) {
-            std::cerr << "Linea " << linea_num << ": Datos insuficientes (" << datos.size() << ")" << std::endl;
+        if (linea.empty())
             continue;
-        }
-        
-        std::string nombre = trim(datos[0]);
-        std::string apellido = trim(datos[1]);
-        std::string identificacion = trim(datos[2]);
-        
-        if (nombre.empty() || apellido.empty() || identificacion.empty()) {
-            std::cerr << "Linea " << linea_num << ": Datos personales vacios" << std::endl;
-            continue;
-        }
-        
-        Sexo sexo = (trim(datos[3]) == "M") ? Sexo::Masculino : Sexo::Femenino;
-        
-        EstadoCivil estadoCivil;
-        std::string ec = trim(datos[4]);
-        if (ec == "Soltero") estadoCivil = EstadoCivil::Soltero;
-        else if (ec == "Casado") estadoCivil = EstadoCivil::Casado;
-        else if (ec == "Divorciado") estadoCivil = EstadoCivil::Divorciado;
-        else estadoCivil = EstadoCivil::UnionLibre;
-        
-        std::tm fechaNacimiento = parsearFecha(trim(datos[5]));
-        
-        Ciudad* ciudadNacimiento = nullptr;
-        Ciudad* ciudadResidencia = nullptr;
-        
-        auto& ciudades = sistema.obtenerListaCiudades();
-        
-        for (auto c : ciudades) {
-            if (c && c->nombre == trim(datos[6])) {
-                ciudadNacimiento = c;
-            }
-            if (c && c->nombre == trim(datos[7])) {
-                ciudadResidencia = c;
-            }
-        }
-        
-        if (!ciudadNacimiento || !ciudadResidencia) {
-            std::cerr << "Linea " << linea_num << ": Ciudades no encontradas para " << nombre << " " << apellido << std::endl;
-            continue;
-        }
-        
-        Partido* partido = nullptr;
-		auto& partidos = sistema.obtenerListaPartidos();
 
-		for (auto p : partidos) {
-    		if (p && p->nombre == trim(datos[8])) {
-        		partido = p;
-        		break;
-    		}
-		}
+        std::vector<std::string> campos;
+        std::string campo;
+        
+        // Separar manualmente por comas
+        size_t inicio = 0;
+        size_t fin = linea.find(',');
+        
+        while (fin != std::string::npos) {
+            campo = linea.substr(inicio, fin - inicio);
+            campos.push_back(trim(campo));
+            inicio = fin + 1;
+            fin = linea.find(',', inicio);
+        }
+        
+        // Último campo después de la última coma
+        campo = linea.substr(inicio);
+        campos.push_back(trim(campo));
 
-		if (!partido) {
-    		std::cerr << "Linea " << linea_num << ": Partido no encontrado: '" << trim(datos[8]) << "'" << std::endl;
-    		continue;
-		}
+        // Verificar que tenemos los campos mínimos
+        if (campos.size() < 10) {
+            continue;
+        }
+
+        // Extraer campos en el orden correcto
+        std::string nombre          = campos[0];
+        std::string apellido        = campos[1];
+        std::string codigo          = campos[2];
         
-        TipoCandidato tipo;
-        std::string tipoStr = trim(datos[9]);
-        if (tipoStr == "ALCALDE") tipo = TipoCandidato::ALCALDE;
-        else if (tipoStr == "PRESIDENTE") tipo = TipoCandidato::PRESIDENTE;
-        else tipo = TipoCandidato::VICEPRESIDENTE;
+        char sexoChar = campos[3].empty() ? ' ' : campos[3][0];
+        Sexo sexo = UtilidadesAnalisis::parsearSexo(sexoChar);
         
-        Ciudad* ciudadAspirante = nullptr;
-        if (tipo == TipoCandidato::ALCALDE && datos.size() > 10) {
-            for (auto c : ciudades) {
-                if (c && c->nombre == trim(datos[10])) {
-                    ciudadAspirante = c;
-                    break;
-                }
-            }
-            if (!ciudadAspirante) {
-                std::cerr << "Linea " << linea_num << ": Ciudad aspirante no encontrada para alcalde" << std::endl;
+        EstadoCivil estadoCivil = UtilidadesAnalisis::parsearEstadoCivil(campos[4]);
+        
+        std::tm fechaNac = parsearFecha(campos[5]);
+        
+        Ciudad* ciudadNac = buscarCiudad(campos[6]);
+        Ciudad* ciudadRes = buscarCiudad(campos[7]);
+        Partido* partido = buscarPartido(campos[8]);
+        
+        TipoCandidato cargo = UtilidadesAnalisis::parsearTipoCandidato(campos[9]);
+        
+        Candidato* candidato = nullptr;
+
+        // Validaciones básicas
+        if (!ciudadNac || !ciudadRes || !partido) {
+            continue;
+        }
+
+        if (cargo == TipoCandidato::ALCALDE && campos.size() > 10) {
+            Ciudad* ciudadAlcalde = buscarCiudad(campos[10]);
+            if (!ciudadAlcalde) {
                 continue;
             }
+            
+            candidato = sistema.crearCandidato(
+                nombre, apellido, codigo, sexo, estadoCivil, fechaNac,
+                ciudadNac, ciudadRes, partido, cargo,pais, ciudadAlcalde, nullptr
+            );
+        } else if (cargo == TipoCandidato::PRESIDENTE) {
+            // Verificar si ya existe un presidente para este partido
+            Candidato* presidenteExistente = buscarPresidente(partido, presidentesLocales);
+            if (presidenteExistente) {
+                continue;
+            }
+            
+            candidato = sistema.crearCandidato(
+                nombre, apellido, codigo, sexo, estadoCivil, fechaNac,
+                ciudadNac, ciudadRes, partido, cargo, pais,nullptr, nullptr
+            );
+            
+            if (candidato) {
+                presidentesLocales.push_back(candidato);
+            }
+        } else if (cargo == TipoCandidato::VICEPRESIDENTE) {
+            Candidato* presidente = buscarPresidente(partido, presidentesLocales);
+            if (!presidente) {
+                continue;
+            }
+            
+            Candidato* vic = new Candidato();
+            vic->nombre = nombre;
+            vic->apellido = apellido;
+            vic->identificacion = codigo;
+            vic->sexo = sexo;
+            vic->estadoCivil = estadoCivil;
+            vic->fechaNacimiento = fechaNac;
+            vic->ciudadNacimiento = ciudadNac;
+            vic->ciudadResidencia = ciudadNac;
+            vic->partido = partido;
+            vic->tipo = cargo;
+            
+            if (presidente) {
+                presidente->vicepresidente = vic;
+            }
         }
         
-		Candidato* candidato = sistema.crearCandidato(
-    		nombre, apellido, identificacion, sexo, estadoCivil,
-    		fechaNacimiento, ciudadNacimiento, ciudadResidencia,
-    		partido, tipo, ciudadAspirante, nullptr
-		);
-
-        
-   	    if (candidato) {
-            contador++;
-            std::cout << "  Candidato creado: " << nombre << " " << apellido << std::endl;
-        } else {
-            std::cerr << "Linea " << linea_num << ": crearCandidato retorno nullptr para " << nombre << " " << apellido << std::endl;
+        if (candidato != nullptr) {
+            cargados++;
         }
-
     }
-    
-    archivo.close();
-    std::cout << "Cargados " << contador << " candidatos" << std::endl;
-    return contador > 0;
-    
+
+    std::cout << "Cargados " << cargados << " candidatos\n";
+    return cargados > 0;
 }
+
 
 bool CargarDatos::cargarTodosLosDatos(
     DatosElectoral& sistema,
     const std::string& rutaPartidos,
     const std::string& rutaRegiones,
     const std::string& rutaCiudades,
-    const std::string& rutaCandidatos) {
+    const std::string& rutaCandidatos,
+    Pais* pais) {
     
     std::cout << "\n+----------------------------------------+" << std::endl;
     std::cout << "|  CARGANDO DATOS DEL SISTEMA ELECTORAL  |" << std::endl;
     std::cout << "+----------------------------------------+\n" << std::endl;
     
     bool ok = true;
-    
-    Pais* pais = new Pais();
-    pais->nombre = "Pa�s";
-    pais->codigo = "PAIS_001";
     
     std::cout << "1. Cargando partidos..." << std::endl;
     ok = ok && cargarPartidos(sistema, rutaPartidos);
@@ -298,7 +332,7 @@ bool CargarDatos::cargarTodosLosDatos(
     ok = ok && cargarCiudades(sistema, rutaCiudades);
     
     std::cout << "4. Cargando candidatos..." << std::endl;
-    ok = ok && cargarCandidatos(sistema, rutaCandidatos);
+    ok = ok && cargarCandidatos(sistema, rutaCandidatos, pais);
     
     if (ok) {
         std::cout << "\nDATOS CARGADOS EXITOSAMENTE\n" << std::endl;
