@@ -1,0 +1,902 @@
+\documentclass{article}
+\usepackage{rotating}
+
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{fontspec}
+\usepackage{tocloft}
+\usepackage{titletoc}
+\usepackage{lipsum}
+\usepackage[spanish]{babel}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{booktabs}
+
+%márgenes
+\geometry{left=3cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+% Configuración de encabezados y pies de página
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Sistema de Elecciones}
+\fancyhead[R]{\thepage}
+\fancyfoot[C]{Universidad Distrital Francisco José de Caldas}
+
+
+% Configuración de código
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\textbf,
+    commentstyle=\color{gray}\textit,
+    stringstyle=\color{red},
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=2,
+    frame=single,
+    rulecolor=\color{black},
+    backgroundcolor=\color{white},
+    captionpos=b,
+    numbers=left,
+    numberstyle=\tiny\color{gray}
+}
+
+% Font for titles
+\setmainfont{LEMONMILK-Bold.otf}[Path=Assets/Fonts/]
+
+\begin{document}
+%%%%%%%%%%    COVER    %%%%%%%%%%
+\begin{titlepage}
+\begin{tikzpicture}[remember picture,overlay]
+    \fill[color=black] (current page.north west) rectangle ++(5cm,-\paperheight);
+    \node[anchor=south west, text=white] at (current page.south west) {\hspace{1.5cm}\begin{turn}{90}
+    \resizebox{!}{55.5pt}{\hspace{0.17cm}Diseño del Software}\end{turn}};
+\end{tikzpicture}
+
+\begin{flushright}
+
+\vspace{7.5cm}
+
+\Huge PROYECTO FINAL - CS
+
+\vspace{0.5cm}
+
+\Large Sistema de Elecciones 
+
+\vspace{0.5cm}
+
+\small Avendaño Rodriguez Sebastian - 20232020101 \\
+\small Mendivelso Martinez Sergio Nicolas - 20231020227
+
+\vspace{5cm}
+
+\normalsize Diciembre 5, 2025
+
+\end{flushright}
+
+\end{titlepage}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%    LIST OF CONTENTS    %%%%%%%%%%
+\tableofcontents
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%    CONTENT    %%%%%%%%%%
+\setmainfont{LEMONMILK-Bold.otf}[Path=Assets/Fonts/]
+
+
+%======================================================
+%                        DESCRIPCIÓN         
+%======================================================
+\section{Descripción}
+
+    % Font for body text
+    \setmainfont{Latin Modern Roman}
+
+Este proyecto es expuesto como proyecto final dentro del marco de notas de la asignatura de Ciencias de la Computacion 1. Donde se evidencia la siguiente problemática:
+
+
+\subsection{Resumen}
+
+La Registraduría Nacional del Estado Civil de un país del sagrado corazón requiere un software robusto que permita:
+
+\begin{enumerate}
+    \item \textbf{Generar aleatoriamente tarjetones electorales} para alcaldías locales y presidencia
+    \item \textbf{Simular el proceso electoral completo} con validaciones
+    \item \textbf{Reportar resultados} mediante estadísticas y reportes
+    \item \textbf{Validar la calidad del sistema} antes de su implementación nacional
+    
+\end{enumerate}
+
+\subsection{¿Por qué es importante?}
+
+\begin{itemize}
+    \item Automatiza la generación de tarjetones respetando la estructura política
+    \item Se simula comportamientos electorales reales con restricciones válidas
+    \item Genera reportes estadísticos para su debida verificación
+    \item Permite múltiples simulaciones para validación y calibración
+    
+\end{itemize}
+
+
+\subsection{Incluye por defecto:}
+
+\begin{itemize}
+    \item Gestión de 10 partidos políticos
+    \item Elecciones en 8 capitales de departamentos
+    \item 5 candidatos presidenciales con fórmulas vicepresidenciales
+    \item 4 candidatos por alcaldía en cada capital
+    \item Generación aleatoria de votos con restricciones
+    \item Reportes de estadísticas por región y nacional
+    \item Detección de segunda vuelta presidencial
+\end{itemize}
+    
+\newpage
+%================================================
+% 2. Plan de desarrollo
+%================================================
+\setmainfont{LEMONMILK-Bold.otf}[Path=Assets/Fonts/]
+\section{Plan de Desarrollo}
+
+\setmainfont{Latin Modern Roman}
+
+\subsection{Problemática Original}
+
+
+\begin{quote}
+\textit{``La Registraduría Nacional del Estado Civil quiere hacer en un mismo día las elecciones de alcaldes y de presidente para ahorrar gastos. Para esto necesita un programa que pueda crear tarjetones al azar para cada ciudad y para la presidencia (incluyendo voto en blanco), simular todo el proceso de votación y mostrar los resultados y algunas estadísticas.''}
+\end{quote}
+
+\subsection{Requisitos Identificados}
+
+\subsubsection{Requisitos Funcionales}
+
+\paragraph{Consultas sobre candidatos}
+\begin{itemize}
+    \item Ver candidatos por partido y región
+    \item Ver candidatos por partido en todas las capitales
+    \item Ver candidatos por ciudad y partido
+    \item Ver candidatos presidenciales con sus vicepresidentes
+\end{itemize}
+
+\paragraph{Visualización de datos}
+\begin{itemize}
+    \item Ver tarjetones de alcaldía
+    \item Ver tarjetones de presidencia
+    \item Ver el número de personas que pueden votar por ciudad
+\end{itemize}
+
+\paragraph{Gestión de datos pre-simulación}
+\begin{itemize}
+    \item Agregar candidatos
+    \item Eliminar candidatos
+    \item Editar información de candidatos
+\end{itemize}
+
+\paragraph{Simulación electoral}
+\begin{itemize}
+    \item Generar votos al azar
+    \item No sobre pasar el número máximo de votantes por ciudad
+    \item Calcular automáticamente la edad de los candidatos
+    \item Encontrar alcaldes ganadores
+    \item Encontrar el candidato a presidencia ganador
+    \item Detectar si se necesita segunda vuelta
+\end{itemize}
+
+\paragraph{Estadísticas}
+\begin{itemize}
+    \item Mostrar resultados por región para las alcaldías
+    \item Mostrar resultados nacionales para la presidencia
+    \item Mostrar datos separados por sexo
+    \item Mostrar datos separados por partido
+\end{itemize}
+
+\subsubsection{Requisitos No-Funcionales}
+
+\begin{itemize}
+    \item Código claro y fácil de entender
+    \item Buen manejo de los datos
+    \item Respuesta rápida del programa
+    \item Estructuras de datos
+    \item Revisiones internas para evitar errores
+\end{itemize}
+
+\newpage
+% ============================================================================
+% 3. OBJETIVOS DEL PROYECTO
+% ============================================================================
+\setmainfont{LEMONMILK-Bold.otf}[Path=Assets/Fonts/]
+
+    \section{Objetivos del Proyecto}
+
+    
+\setmainfont{Latin Modern Roman}
+\subsection{Objetivo General}
+
+Crear un sistema que simule las elecciones de presidente y de alcaldes en las capitales de los departamentos. El sistema debe generar tarjetones al azar, procesar los votos y mostrar resultados y estadísticas claras y confiables.
+
+\subsection{Objetivos Específicos}
+
+\begin{itemize}
+    \item Usar estructuras de datos para manejar la información electoral
+    \item Hacer búsquedas rápidas y eficientes dentro del sistema
+    \item Crear tarjetones al azar para cada capital
+    \item Simular votos
+    \item Calcular los resultados de las elecciones
+    \item Mostrar estadísticas por región, partido y género
+    \item Detectar casos especiales como segunda vuelta
+\end{itemize}
+
+\newpage
+% ============================================================================
+% 4. DISEÑO DE LA SOLUCIÓN
+% ============================================================================
+\setmainfont{LEMONMILK-Bold.otf}[Path=Assets/Fonts/]
+\section{Diseño de la Solución}
+
+\setmainfont{Latin Modern Roman}
+\subsection{Visión General}
+
+El sistema está organizado de tal manera que cada parte del programa tiene una tarea clara y no depende demasiado de las otras.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm, font=\small]
+        \node (struct) [draw, rectangle, fill=blue!10, minimum width=3.5cm] {EstructuraElectoral};
+        \node (datos) [draw, rectangle, below of=struct, fill=green!10, minimum width=3.5cm, minimum height=1.2cm] {DatosElectoral};
+        
+        \node (carga) [draw, rectangle, below left of=datos, xshift=-2.5cm, yshift=-1.5cm, fill=yellow!10] {CargarDatos};
+        \node (util) [draw, rectangle, below of=datos, yshift=-1.5cm, fill=yellow!10] {Utilidades};
+        \node (sim) [draw, rectangle, below right of=datos, xshift=2.5cm, yshift=-1.5cm, fill=yellow!10] {Simulacion};
+        
+        \node (menu) [draw, rectangle, below of=util, yshift=-2cm, fill=red!10, minimum width=5cm] {SistemaElectoral + main};
+        
+        \draw[-] (struct) -- (datos);
+        \draw[-] (datos) -- (carga);
+        \draw[-] (datos) -- (util);
+        \draw[-] (datos) -- (sim);
+        \draw[-] (carga) -- (menu);
+        \draw[-] (util) -- (menu);
+        \draw[-] (sim) -- (menu);
+    \end{tikzpicture}
+    \caption{Relaciones simples entre las partes del sistema y como está organizado}
+\end{figure}
+
+\subsection{Principios de Diseño Aplicados}
+
+\subsubsection{Separación de Responsabilidades}
+\begin{itemize}
+    \item Cada parte del sistema tiene una tarea clara
+    \item Las partes se comunican de manera sencilla
+    \item Se evita que los módulos dependan demasiado entre sí
+\end{itemize}
+
+\subsubsection{Cohesión Alta}
+\begin{itemize}
+    \item Las funciones parecidas están en la misma clase
+    \item Los datos importantes están protegidos
+    \item Se usan funciones generales cuando se necesita algo para todo el sistema
+\end{itemize}
+
+\subsubsection{Acoplamiento Bajo}
+\begin{itemize}
+    \item Se usan referencias simples para conectar módulos
+    \item Se evita cargar archivos o dependencias que no se necesitan
+    \item Se anuncian clases sin detalles cuando es posible para no sobrecargar el sistema
+\end{itemize}
+
+\subsubsection{Escalabilidad}
+\begin{itemize}
+    \item Es fácil agregar nuevas consultas o funciones
+    \item El sistema puede crecer sin tener que volver a hacerlo
+    \item Los datos están separados de la lógica
+\end{itemize}
+
+\newpage
+% ============================================================================
+% 5. ESTRUCTURAS DE DATOS
+% ============================================================================
+\setmainfont{LEMONMILK-Bold.otf}[Path=Assets/Fonts/]
+
+\section{Estructuras de Datos}
+
+\setmainfont{Latin Modern Roman}
+
+    \subsection{Generación del Esqueleto de Structs}
+    Se construyó un esqueleto de estructuras (\textit{structs}) que modela las entidades del sistema electoral: \textbf{País}, \textbf{Región}, \textbf{Ciudad}, \textbf{Partido} y \textbf{Candidato}. Cada una contiene únicamente la información esencial para mantener el sistema flexible, modular y escalable.
+    
+    \subsection{Código Hexadecimal para Identificación}
+    Cada entidad posee un campo \texttt{codigo}, el cual puede almacenar un valor generado a partir del \textbf{hexadecimal del nombre u otra variable única}.  
+    El propósito es:
+
+    \begin{itemize}
+        \item permitir un ordenamiento homogéneo y eficiente,
+        \item clasificar entidades usando un tipo de dato común,
+        \item facilitar búsquedas, filtrados y acceso rápido.
+    \end{itemize}
+    
+    Este identificador hexadecimal será utilizado para mantener las listas ordenadas automáticamente.
+    
+    \subsection{División del Sistema en Listas Especializadas}
+    Cada entidad del sistema se almacena en una lista completamente separada:
+    \begin{itemize}
+        \item Lista de Países
+        \item Lista de Regiones
+        \item Lista de Ciudades
+        \item Lista de Partidos
+        \item Lista de Candidatos
+    \end{itemize}
+    
+    \subsection{Conexión Jerárquica Similar a un Árbol}
+    Aunque los datos se almacenan en listas, la relación entre estructuras respeta una jerarquía:
+
+    \begin{itemize}
+        \item Un \textbf{País} contiene múltiples candidatos presidenciales.
+        \item Una \textbf{Región} pertenece a un País (\textit{muchas a uno}).
+        \item Una \textbf{Ciudad} pertenece a una Región (\textit{muchas a uno}).
+        \item Los \textbf{Candidatos} no poseen una relación directa entre sí más allá del Partido.
+    \end{itemize}
+    
+    Esto crea un modelo de datos que funciona como un árbol conceptual:
+    
+    \[
+    \text{País} \rightarrow \text{Región} \rightarrow \text{Ciudad}
+    \]
+    
+    \
+
+    \subsection{Ordenamiento Automático de Listas}
+    Cada lista ordenará sus elementos inmediatamente después de insertarlos, basándose en el código hexadecimal, lo que permite consultas más rápidas y una organización constante.
+
+    \subsection{Ejemplo de las relaciones}
+    \begin{itemize}
+        \item El \textbf{País} contiene una \texttt{Lista<Candidato*>} con candidatos a la presidencia.
+        \item Cada \textbf{Región} tiene un puntero a su País padre:  
+        \[
+        \text{Región} \rightarrow \text{País}
+        \]
+        \item Cada \textbf{Ciudad} tiene un puntero a su Región padre:  
+        \[
+        \text{Ciudad} \rightarrow \text{Región}
+        \]
+        \item Los candidatos se enlazan únicamente con su Partido y,si va al caso, con su fórmula.
+    \end{itemize}
+
+Este diseño permite representar de manera eficiente el modelo electoral, respetando la jerarquía institucional sin sacrificar velocidad de acceso ni facilidad para mostrar información general.
+
+A continuación, se presenta la estructura principal de los objetos en código.
+
+\subsection{Clases Enum}
+
+\begin{lstlisting}
+enum class Sexo {
+    Masculino,
+    Femenino
+};
+
+enum class EstadoCivil {
+    Soltero,
+    Casado,
+    Divorciado,
+    UnionLibre
+};
+
+enum class TipoCandidato {
+    ALCALDE,
+    PRESIDENTE,
+    VICEPRESIDENTE
+};
+\end{lstlisting}
+
+\subsection{Estructura País}
+
+\begin{lstlisting}
+struct Pais {
+    std::string codigo;                    / Código único del país
+    std::string nombre;                    / Ejemplo: "Colombia"
+    std::vector<Candidato*> candidatosPresidencia;
+    std::vector<Region*> regiones;
+};
+\end{lstlisting}
+
+\subsubsection{Relaciones}
+
+\begin{itemize}
+    \item Contiene varias regiones
+    \item Contiene los candidatos a la presidencia
+\end{itemize}
+
+\subsection{Estructura Región}
+
+\begin{lstlisting}
+struct Region {
+    std::string codigo;                    / Identificador
+    std::string nombre;                    / Ejemplo: "Andina Central"
+    std::vector<Ciudad*> ciudades;
+    int censoElectoral = 0;
+    Pais* pais = nullptr;
+};
+\end{lstlisting}
+
+\subsubsection{Relaciones}
+
+\begin{itemize}
+    \item Pertenece a un país
+    \item Contiene varias ciudades
+\end{itemize}
+
+\subsubsection{Cálculo de Censo}
+
+Cada ciudad cuenta con su Censo correspondiente. El censo de la región es la suma de los censos de todas las ciudades.
+
+\subsection{Estructura: Ciudad (Ciudad)}
+
+\begin{lstlisting}
+
+struct Ciudad {
+    std::string codigo;
+    std::string nombre;
+    Region* region = nullptr;
+    std::vector<Candidato*> candidatosAlcaldia;
+    int censoElectoral = 0;
+};
+
+\end{lstlisting}
+
+
+\subsection{Estructura: Partido Político (Partido)}
+
+\begin{lstlisting}
+struct Partido {
+    std::string codigo;
+    std::string nombre;
+    std::string representanteLegal;
+    bool legal = false;
+};
+\end{lstlisting}
+
+\subsection{Estructura: Candidato (Candidato)}
+
+\begin{lstlisting}
+struct Candidato {
+    / Información personal
+    std::string nombre;
+    std::string apellido;
+    std::string identificacion;
+    std::tm fechaNacimiento;
+    Sexo sexo;
+    EstadoCivil estadoCivil;
+    
+    / Información de ciudades
+    Ciudad* ciudadNacimiento = nullptr;
+    Ciudad* ciudadResidencia = nullptr;
+    
+    / Información electoral
+    Partido* partido = nullptr;
+    TipoCandidato tipo;
+    Ciudad* ciudadAspirante = nullptr;
+    Candidato* vicepresidente = nullptr;
+    
+    bool esValido() const;
+};
+\end{lstlisting}
+
+\subsubsection{Validaciones}
+
+\begin{itemize}
+    \item Nombre, apellido e identificación no pueden estar vacíos
+    \item Debe tener un partido asignado
+    \item Su edad debe estar entre 18 y 100 años
+    \item Si es candidato a alcalde, debe vivir en la ciudad donde se postula
+    
+\end{itemize}
+
+\newpage
+
+%================================================================
+% 6. MÓDULOS Y COMPONENTES
+% ============================================================================
+
+\setmainfont{LEMONMILK-Bold.otf}[Path=Assets/Fonts/]
+
+\section{Módulos y Componentes}
+
+\setmainfont{Latin Modern Roman}
+
+\subsection{Módulo: CargarDatos}
+
+\textbf{Archivos:} \texttt{CargarDatos.h y CargarDatos.cpp}
+
+\textbf{Responsabilidad:} Leer archivos de texto y llenar las estructuras en memoria.
+
+\subsubsection{Métodos principales}
+
+\begin{lstlisting}
+static bool cargarTodosLosDatos(
+    DatosElectoral& sistema,
+    const std::string& rutaPartidos,
+    const std::string& rutaRegiones,
+    const std::string& rutaCiudades,
+    const std::string& rutaCandidatos,
+    Pais* pais
+);
+
+static bool cargarPartidos(DatosElectoral& sistema, 
+                           const std::string& ruta);
+static bool cargarRegiones(DatosElectoral& sistema, 
+                           const std::string& ruta, Pais* pais);
+static bool cargarCiudades(DatosElectoral& sistema, 
+                           const std::string& ruta);
+static bool cargarCandidatos(DatosElectoral& sistema, 
+                             const std::string& ruta, Pais* pais);
+\end{lstlisting}
+
+\subsubsection{Cómo se leen los datos}
+
+\begin{itemize}
+    \item Abrir el archivo con \texttt{ifstream}
+    \item Leer una línea por vez
+    \item Revisar que el formato sea correcto y que no falte nada
+\end{itemize}
+
+\subsubsection{Cómo se separan los datos}
+
+\begin{itemize}
+    \item Dividir cada línea usando la coma como separador
+    \item Convertir los datos al tipo necesario (texto a número, fecha, etc.)
+    \item Quitar espacios extra con \texttt{trim()}
+\end{itemize}
+
+\subsection{Módulo: DatosElectoral}
+
+\textbf{Archivo:} \texttt{DatosElectoral.h y DatosElectoral.cpp}
+
+\textbf{Responsabilidad:} Manejar todos los datos del sistema.
+
+\subsubsection{Crear elementos nuevos}
+
+\begin{lstlisting}
+Pais* crearPais(std::string nombre, ...);
+Region* crearRegion(std::string nombre, ...);
+Ciudad* crearCiudad(std::string nombre, ...);
+Partido* crearPartido(std::string nombre, ...);
+\end{lstlisting}
+
+\subsubsection{Consultar información}
+
+\begin{lstlisting}
+std::vector<Ciudad*> obtenerCiudadesElectorales();
+std::vector<Partido*> obtenerPartidosLegales();
+std::vector<Region*> obtenerListaRegiones();
+
+std::vector<pair<Candidato*, Candidato*>> 
+    candidatosPresidenciales();
+\end{lstlisting}
+
+\subsection{Módulo: UtilidadesAnalisis}
+
+\textbf{Archivo:} \texttt{UtilidadesAnalisis.h y UtilidadesAnalisis.cpp}
+
+\textbf{Responsabilidad:} Funciones de apoyo para leer, revisar datos y mostrar información.
+
+\subsubsection{Funciones principales}
+
+\begin{lstlisting}
+/ Leer datos
+static std::tm parsearFecha(const std::string& fecha);
+static Sexo parsearSexo(char opcion);
+static EstadoCivil parsearEstadoCivil(int opcion);
+
+/ Cálculos sencillos
+static int calcularEdad(const std::tm& fechaNacimiento);
+static unsigned long long hashToULL(const std::string& input);
+
+/ Impresión de información
+static void imprimirTarjetonAlcaldia(Ciudad* ciudad);
+static void imprimirTarjetonPresidencia(Pais* pais);
+\end{lstlisting}
+
+\subsection{Módulo: SistemaElectoral}
+
+\textbf{Archivo:} \texttt{SistemaElectoral.h y SistemaElectoral.cpp}
+
+\textbf{Responsabilidad:} Menús e interacción con la persona usuaria.
+
+\begin{lstlisting}
+namespace SistemaElectoral {
+    Ciudad* seleccionarCiudad(DatosElectoral& sistema);
+    Partido* seleccionarPartido(DatosElectoral& sistema);
+    
+    void agregarCandidato(DatosElectoral& sistema, Pais* pais);
+    void eliminarCandidato(DatosElectoral& sistema);
+    void modificarCandidato(DatosElectoral& sistema);
+    
+    void menuGestionCandidatos(DatosElectoral& sistema, 
+                               Pais* pais);
+    void menuConsultas(DatosElectoral& sistema, Pais* pais);
+}
+\end{lstlisting}
+
+\subsection{Módulo: SimulacionElectoral}
+
+\textbf{Archivo:} \texttt{SimulacionElectoral.h y SimulacionElectoral.cpp}
+
+\textbf{Responsabilidad:} Manejar la simulación de las votaciones .
+
+\subsubsection{Resultados}
+
+\begin{lstlisting}
+struct ResultadosCiudad {
+    Ciudad* ciudad;
+    std::<Candidato*, int> votosAlcaldia;
+    int votosEnBlancoAlcaldia = 0;
+    int votosNulosAlcaldia = 0;
+    int abstencionAlcaldia = 0;
+    Candidato* ganadorAlcaldia = nullptr;
+};
+
+struct ResultadosNacionales {
+    std::map<Candidato*, int> votosPresidencia;
+    int votosEnBlancoPresidencia = 0;
+    int votosNulosPresidencia = 0;
+    int abstencionPresidencia = 0;
+    Candidato* ganadorPresidencia = nullptr;
+    bool requiereSegundaVuelta = false;
+};
+
+\end{lstlisting}
+
+\newpage
+
+% ============================================================================
+%  7. ESTRUCTURAS DE DATOS EN MEMORIA SECUNDARIA
+% ============================================================================
+\setmainfont{LEMONMILK-Bold.otf}[Path=Assets/Fonts/]
+
+\section{Estructuras de Datos en Memoria Secundaria}
+
+\setmainfont{Latin Modern Roman}
+
+\subsection{Archivos Planos}
+
+
+\setmainfont{Latin Modern Roman}
+
+\subsubsection{PARTIDOS.txt}
+
+\textbf{Formato:} \texttt{nombre,representanteLegal,legal}
+
+\begin{lstlisting}[language=bash]
+Centro Democrático,Juan Perez,true
+Partido Liberal,Carlos Garcia,true
+Polo Democratico,Maria Lopez,true
+Cambio Radical,Roberto Silva,true
+Alianza Verde,Ana Martinez,true
+
+\end{lstlisting}
+
+\subsubsection{REGIONES.txt}
+
+\textbf{Formato:} \texttt{nombreRegion:ciudad1,ciudad2,ciudad3}
+
+\begin{lstlisting}[language=bash]
+Andina Central:Bogotá,Medellín,Cali
+Caribe:Cartagena,Santa Marta,Barranquilla
+Pacifica:Buenaventura,Quibdó
+\end{lstlisting}
+
+\subsubsection{CIUDADES.txt}
+
+\textbf{Formato:} \texttt{nombreCiudad,nombreRegion,censoElectoral}
+
+\begin{lstlisting}[language=bash]
+Bogotá,Andina Central,2500000
+Medellín,Andina Central,1800000
+Cali,Andina Central,1600000
+\end{lstlisting}
+
+\subsubsection{CANDIDATOS.txt}
+
+\textbf{Formato:} nombre,apellido,ID,sexo,estadoCivil,fechaNac,ciudadNac,ciudadRes,partido,tipo[,ciudadAspirante]
+
+\begin{lstlisting}[language=bash]
+Carlos,Gomez,1234567890,M,Casado,1975-03-15,Bogotá,Bogotá,Centro Democrático,Alcalde,Bogotá
+Ana,Rodriguez,0987654321,F,Soltero,1980-08-22,Medellín,Medellín,Partido Liberal,Alcalde,Medellín
+\end{lstlisting}
+
+
+
+\subsection{División del Sistema en Listas}
+
+\subsubsection{Uso en DatosElectoral}
+
+\begin{lstlisting}
+/ Listas separadas para cada tipo
+class DatosElectoral {
+private:
+    std::vector<Pais*> paises;
+    std::vector<Region*> regiones;
+    std::vector<Ciudad*> ciudades;
+    std::vector<Candidato*> candidatosAlcaldia;
+    std::vector<Candidato*> candidatosPresidenciaLista;
+    std::vector<Partido*> partidos;
+    
+public:
+    std::vector<Pais*>& obtenerListaPaises();
+    std::vector<Region*>& obtenerListaRegiones();
+    std::vector<Ciudad*>& obtenerListaCiudades();
+    std::vector<Candidato*>& obtenerListaCandidatos();
+    std::vector<Partido*>& obtenerListaPartidos();
+};
+\end{lstlisting}
+
+
+
+\subsubsection{Relaciones entre Datos}
+
+Aunque cada cosa está en su propia lista, siguen conectadas mediante punteros:
+
+\begin{lstlisting}
+/ Una Ciudad pertenece a una Región
+struct Ciudad {
+    std::string nombre;
+    Region* region;
+    std::vector<Candidato*> candidatosAlcaldia;
+    int censoElectoral;
+};
+
+/ Un Candidato pertenece a un Partido y Ciudades
+struct Candidato {
+    std::string nombre;
+    Partido* partido;
+    Ciudad* ciudadNacimiento;
+    Ciudad* ciudadResidencia;
+    Candidato* vicepresidente;
+};
+
+/ Una Región pertenece a un País
+struct Region {
+    std::string nombre;
+    Pais* pais;
+    std::vector<Ciudad*> ciudades;
+};
+\end{lstlisting}
+
+\subsubsection{Ventajas de Usar Listas}
+
+\begin{itemize}
+    \item Son independientes y no duplican datos
+    \item Se pueden recorrer fácilmente
+    \item Es sencillo agregar o quitar elementos
+    \item Cada lista tiene una función clara
+    \item Se pueden añadir nuevos tipos sin complicaciones
+    \item Es fácil obtener datos generales
+\end{itemize}
+
+
+
+\subsubsection{Ejemplo de Uso}
+
+\begin{lstlisting}
+/ Crear toda la estructura
+DatosElectoral sistema;
+
+/ 1. Crear un País
+Pais* pais = new Pais();
+pais->nombre = "Colombia";
+sistema.obtenerListaPaises().push_back(pais);
+
+/ 2. Crear una Región
+Region* region = new Region();
+region->nombre = "Andina Central";
+region->pais = pais;
+sistema.obtenerListaRegiones().push_back(region);
+
+/ 3. Crear una Ciudad
+Ciudad* ciudad = new Ciudad();
+ciudad->nombre = "Bogotá";
+ciudad->region = region;
+sistema.obtenerListaCiudades().push_back(ciudad);
+
+/ 4. Crear un Partido
+Partido* partido = new Partido();
+partido->nombre = "Centro Democrático";
+sistema.obtenerListaPartidos().push_back(partido);
+
+/ 5. Crear un Candidato
+Candidato* candidato = new Candidato();
+candidato->nombre = "Carlos";
+candidato->partido = partido;
+candidato->ciudadResidencia = ciudad;
+sistema.obtenerListaCandidatos().push_back(candidato);
+\end{lstlisting}
+
+\subsubsection{¿Por Qué Listas y No Árboles?}
+
+\begin{itemize}
+    \item Es fácil recorrer todos los elementos
+    \item Las estadísticas se consiguen rápidamente
+    \item La estructura es simple y clara
+    \item No obliga a tener jerarquías estrictas
+    \item Agregar elementos es muy rápido
+    \item No hay dependencias complicadas
+\end{itemize}
+
+Las relaciones importantes se manejan por punteros, no por estructuras rígidas como árboles.
+
+\newpage
+
+% ============================================================================
+% 8. INTERFAZ DE USUARIO
+% ============================================================================
+
+\setmainfont{LEMONMILK-Bold.otf}[Path=Assets/Fonts/]
+
+\section{Interfaz de Usuario}
+
+\setmainfont{Latin Modern Roman}
+
+\subsection{Menú Principal}
+
+\begin{lstlisting}[language=bash]
++----------------------------------------+
+| SISTEMA ELECTORAL - MENU PRINCIPAL     |
+|----------------------------------------|
+| 1. Consultas                           |
+| 2. Gestión de candidatos               |
+| 3. Simulación de elecciones            |
+| 0. Salir                               |
++----------------------------------------+
+
+Seleccione una opción: 
+\end{lstlisting}
+
+\subsection{Menú de Consultas}
+
+\begin{lstlisting}[language=bash]
++----------------------------------------+
+| MENU DE CONSULTAS                      |
+|----------------------------------------|
+| 1. Ciudades electorales                |
+| 2. Partidos legales                    |
+| 3. Candidatos por ciudad               |
+| 4. Candidatos presidenciales           |
+| 5. Tarjetón de alcaldía                |
+| 6. Tarjetón de presidencia             |
+| 7. Censo electoral                     |
+| 0. Volver                              |
++----------------------------------------+
+
+Seleccione una opción: 
+\end{lstlisting}
+
+\newpage
+
+% ============================================================================
+% 9. CONCLUSIONES
+% ============================================================================
+\setmainfont{LEMONMILK-Bold.otf}[Path=Assets/Fonts/]
+
+\section{Conclusiones}
+
+\setmainfont{Latin Modern Roman}
+
+\subsection{Objetivos logrados}
+
+El desarrollo de este sistema electoral nos ayudo a entender de forma práctica conceptos prinicipales que hemos estado viendo en la asignatura de Ciencias de la Computación; cosas como el diseño de estructuras de datos, análisis de algoritmos y programación modular en C++, permitieron nuestro mejor entendimiento de las cosas. Se modelaron entidades como país, región, ciudad, partido y candidato usando structs y vectores, por lo que mantuvimos relaciones mediante punteros para lograr una organización clara y eficiente.
+
+En términos algorítmicos, se implementaron búsquedas optimizadas y se controló que operaciones críticas respetaran invariantes como que la suma de votos no supere el censo electoral. Esto con el fin de aplicar conceptos sobre complejidad temporal y corrección, incluso en proyectos de simulación.
+
+La arquitectura por módulos (carga de datos, gestor central, utilidades, sistema de menús y simulación) favorece la cohesión y reduce el acoplamiento, lo que facilita mantener y extender el código en caso que se necesite.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
