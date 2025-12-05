@@ -91,25 +91,6 @@ int main() {
     }
     
     std::vector<std::pair<Candidato *, Candidato *>> test = sistema.candidatosPresidenciales();    
-    
-    for (auto c : test) {
-        Candidato* presidente = c.first;
-        if (presidente != nullptr) {
-            // Mostrar presidente
-            std::cout << "Presidente: " << presidente->nombre << " " << presidente->apellido;
-            
-            // Acceder al vicepresidente
-            Candidato* vicepresidente = c.second;
-            
-            if (vicepresidente != nullptr) {
-                std::cout << " - Vice: " << vicepresidente->nombre << " " << vicepresidente->apellido;
-            } else {
-                std::cout << " - Sin vicepresidente";
-            }
-            
-            std::cout << std::endl;
-        }
-    }
 
     menuPrincipal(sistema, pais);
     

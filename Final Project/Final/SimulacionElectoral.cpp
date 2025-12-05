@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <cstdlib>
 #include <ctime>
+#include <algorithm>
+#include <vector>
 
 struct VotoDetallado {
     Candidato* candidato;
@@ -14,11 +16,20 @@ struct VotoDetallado {
     int edad;
 };
 
-int SimulacionElectoral::generarVotosAleatorios(int censo, int& votosUsados) {
-    int votosDisponibles = censo - votosUsados;
+int SimulacionElectoral::generarVotosAleatorios(int totalDisponibles, int& votosUsados, float maxPorcentaje) {
+    // Asegurar que no excedamos el límite de votos disponibles
+    int votosDisponibles = totalDisponibles - votosUsados;
     if (votosDisponibles <= 0) return 0;
     
-    int votos = rand() % (votosDisponibles + 1);
+    // Calcular el máximo de votos que podemos asignar basado en el porcentaje máximo
+    int maxVotosPermitidos = static_cast<int>(votosDisponibles * maxPorcentaje);
+    if (maxVotosPermitidos < 0) maxVotosPermitidos = 0;
+    
+    // Generar votos aleatorios dentro del rango permitido
+    int votos = 0;
+    if (maxVotosPermitidos > 0) {
+        votos = rand() % (maxVotosPermitidos + 1);
+    }
     votosUsados += votos;
     return votos;
 }
@@ -49,6 +60,26 @@ EstadoCivil generarEstadoCivilAleatorio() {
     }
 }
 
+// Función auxiliar para generar estadísticas de género
+EstadisticasGenero calcularEstadisticasGenero(int totalVotos) {
+    EstadisticasGenero stats;
+    
+    if (totalVotos > 0) {
+        // Distribución típica: aproximadamente 48-52% femenino, 48-52% masculino
+        int baseFemenino = totalVotos * 48 / 100;
+        int variacion = totalVotos * 4 / 100;
+        
+        stats.votosFemeninos = baseFemenino + (rand() % (variacion * 2 + 1)) - variacion;
+        stats.votosFemeninos = std::max(0, std::min(totalVotos, stats.votosFemeninos));
+        stats.votosMasculinos = totalVotos - stats.votosFemeninos;
+        
+        stats.porcentajeFemenino = (stats.votosFemeninos * 100.0) / totalVotos;
+        stats.porcentajeMasculino = (stats.votosMasculinos * 100.0) / totalVotos;
+    }
+    
+    return stats;
+}
+
 void SimulacionElectoral::simularAlcaldias(DatosElectoral& sistema, std::vector<ResultadosCiudad>& resultados) {
     auto& ciudades = sistema.obtenerListaCiudades();
     
@@ -57,19 +88,50 @@ void SimulacionElectoral::simularAlcaldias(DatosElectoral& sistema, std::vector<
         resultado.ciudad = ciudad;
         int votosUsados = 0;
         
-        // Generar votos aleatorios para cada candidato
+        // Calcular participación aleatoria entre 80% y 100%
+        float participacion = 0.8f + (rand() % 21) / 100.0f; // 80-100%
+        int votosTotalesPermitidos = static_cast<int>(ciudad->censoElectoral * participacion);
+        
+        // Distribuir votos entre candidatos (total debe ser <= votosTotalesPermitidos)
+        int votosCandidatosUsados = 0;
+        int numCandidatos = ciudad->candidatosAlcaldia.size();
+        
         for (auto candidato : ciudad->candidatosAlcaldia) {
-            int votos = generarVotosAleatorios(ciudad->censoElectoral, votosUsados);
-            resultado.votosAlcaldia[candidato] = votos;
+            // Para el último candidato, asignar los votos restantes
+            if (--numCandidatos == 0) {
+                int votos = votosTotalesPermitidos - votosCandidatosUsados;
+                resultado.votosAlcaldia[candidato] = std::max(0, votos);
+                votosUsados += std::max(0, votos);
+            } else {
+                // Calcular votos disponibles para este candidato
+                int votosDisponibles = votosTotalesPermitidos - votosCandidatosUsados;
+                float porcentajeMax = 1.0f / (numCandidatos + 1); // Distribuir equitativamente
+                
+                int votos = generarVotosAleatorios(votosDisponibles, votosCandidatosUsados, porcentajeMax);
+                resultado.votosAlcaldia[candidato] = votos;
+                votosUsados += votos;
+            }
         }
         
-        // Generar votos especiales (blanco, nulo, abstencion)
-        resultado.votosEnBlancoAlcaldia = generarVotosAleatorios(ciudad->censoElectoral, votosUsados);
-        resultado.votosNulosAlcaldia = generarVotosAleatorios(ciudad->censoElectoral, votosUsados);
+        // Generar votos especiales con los votos restantes hasta votosTotalesPermitidos
+        int votosRestantes = votosTotalesPermitidos - votosUsados;
+        if (votosRestantes > 0) {
+            // Distribuir votos restantes entre blanco, nulo y abstencion
+            resultado.votosEnBlancoAlcaldia = generarVotosAleatorios(votosRestantes, votosUsados, 0.4f);
+            resultado.votosNulosAlcaldia = generarVotosAleatorios(votosRestantes - resultado.votosEnBlancoAlcaldia, 
+                                                                 votosUsados, 0.4f);
+        }
+        
+        // La abstencion es la diferencia entre el censo total y los votos usados
         resultado.abstencionAlcaldia = ciudad->censoElectoral - votosUsados;
+        
+        // Calcular estadísticas de género para esta ciudad
+        int totalVotosCiudad = votosUsados;
+        resultado.estadisticasGenero = calcularEstadisticasGenero(totalVotosCiudad);
         
         // Encontrar ganador
         int votosMax = 0;
+        resultado.ganadorAlcaldia = nullptr;
         for (auto& par : resultado.votosAlcaldia) {
             if (par.second > votosMax) {
                 votosMax = par.second;
@@ -84,17 +146,47 @@ void SimulacionElectoral::simularAlcaldias(DatosElectoral& sistema, std::vector<
 void SimulacionElectoral::simularPresidencia(Pais* pais, int totalCenso, ResultadosNacionales& resultados) {
     int votosUsados = 0;
     
-    // Generar votos aleatorios para cada formula presidencial
+    // Calcular participación aleatoria entre 80% y 100%
+    float participacion = 0.8f + (rand() % 21) / 100.0f; // 80-100%
+    int votosTotalesPermitidos = static_cast<int>(totalCenso * participacion);
+    
+    // Distribuir votos entre fórmulas presidenciales
+    int votosCandidatosUsados = 0;
+    int numCandidatos = pais->candidatosPresidencia.size();
+    
     for (int i = 0; i < pais->candidatosPresidencia.size(); i++) {
         Candidato* pres = pais->candidatosPresidencia[i];
-        int votos = generarVotosAleatorios(totalCenso, votosUsados);
-        resultados.votosPresidencia[pres] = votos;
+        
+        if (--numCandidatos == 0) {
+            // Último candidato obtiene los votos restantes
+            int votos = votosTotalesPermitidos - votosCandidatosUsados;
+            resultados.votosPresidencia[pres] = std::max(0, votos);
+            votosUsados += std::max(0, votos);
+        } else {
+            // Distribuir equitativamente entre los candidatos restantes
+            int votosDisponibles = votosTotalesPermitidos - votosCandidatosUsados;
+            float porcentajeMax = 1.0f / (numCandidatos + 1);
+            
+            int votos = generarVotosAleatorios(votosDisponibles, votosCandidatosUsados, porcentajeMax);
+            resultados.votosPresidencia[pres] = votos;
+            votosUsados += votos;
+        }
     }
     
-    // Generar votos especiales
-    resultados.votosEnBlancoPresidencia = generarVotosAleatorios(totalCenso, votosUsados);
-    resultados.votosNulosPresidencia = generarVotosAleatorios(totalCenso, votosUsados);
+    // Distribuir votos especiales con los votos restantes
+    int votosRestantes = votosTotalesPermitidos - votosUsados;
+    if (votosRestantes > 0) {
+        resultados.votosEnBlancoPresidencia = generarVotosAleatorios(votosRestantes, votosUsados, 0.4f);
+        resultados.votosNulosPresidencia = generarVotosAleatorios(votosRestantes - resultados.votosEnBlancoPresidencia,
+                                                                 votosUsados, 0.4f);
+    }
+    
+    // La abstención es la diferencia total
     resultados.abstencionPresidencia = totalCenso - votosUsados;
+    
+    // Calcular estadísticas de género para la presidencia
+    int totalVotosPresidenciales = votosUsados;
+    resultados.estadisticasGenero = calcularEstadisticasGenero(totalVotosPresidenciales);
     
     // Encontrar ganador y verificar segunda vuelta
     int votosMax = 0;
@@ -112,10 +204,14 @@ void SimulacionElectoral::simularPresidencia(Pais* pais, int totalCenso, Resulta
     }
     
     resultados.ganadorPresidencia = ganador;
+    resultados.requiereSegundaVuelta = false;
     
-    double porcentajeGanador = totalCenso > 0 ? (votosMax * 100.0) / totalCenso : 0;
-    if (porcentajeGanador < 50.0) {
-        resultados.requiereSegundaVuelta = true;
+    // Solo verificar segunda vuelta si hay votos suficientes
+    if (votosTotalesPermitidos > 0) {
+        double porcentajeGanador = (votosMax * 100.0) / votosTotalesPermitidos;
+        if (porcentajeGanador < 50.0) {
+            resultados.requiereSegundaVuelta = true;
+        }
     }
 }
 
@@ -125,15 +221,27 @@ void SimulacionElectoral::mostrarResultadosAlcaldias(const std::vector<Resultado
     std::cout << std::string(50, '=') << std::endl;
     
     for (const auto& res : resultados) {
-        int totalVotos = res.votosEnBlancoAlcaldia + res.votosNulosAlcaldia + res.abstencionAlcaldia;
+        int totalVotos = res.votosEnBlancoAlcaldia + res.votosNulosAlcaldia;
         for (const auto& par : res.votosAlcaldia) {
             totalVotos += par.second;
         }
         
+        double participacion = (totalVotos * 100.0) / res.ciudad->censoElectoral;
+        
         std::cout << "\n[CIUDAD: " << res.ciudad->nombre << "]" << std::endl;
-        std::cout << "Total votantes: " << totalVotos << " / Censo: " << res.ciudad->censoElectoral << std::endl;
+        std::cout << "Censo: " << res.ciudad->censoElectoral << std::endl;
+        std::cout << "Votantes: " << totalVotos << std::endl;
         std::cout << "Participacion: " << std::fixed << std::setprecision(1) 
-                  << ((totalVotos * 100.0) / res.ciudad->censoElectoral) << "%" << std::endl;
+                  << participacion << "%" << std::endl;
+        std::cout << "Abstencion: " << std::fixed << std::setprecision(1)
+                  << (100.0 - participacion) << "%" << std::endl;
+        
+        // Mostrar estadísticas de género
+        std::cout << "\nDistribucion por genero:" << std::endl;
+        std::cout << "  Votos masculinos: " << res.estadisticasGenero.votosMasculinos 
+                  << " (" << std::fixed << std::setprecision(1) << res.estadisticasGenero.porcentajeMasculino << "%)" << std::endl;
+        std::cout << "  Votos femeninos: " << res.estadisticasGenero.votosFemeninos 
+                  << " (" << std::fixed << std::setprecision(1) << res.estadisticasGenero.porcentajeFemenino << "%)" << std::endl;
         
         std::cout << "\nCandidatos:" << std::endl;
         for (const auto& par : res.votosAlcaldia) {
@@ -143,9 +251,10 @@ void SimulacionElectoral::mostrarResultadosAlcaldias(const std::vector<Resultado
         }
         
         std::cout << "\nVotos especiales:" << std::endl;
-        std::cout << "  Votos en blanco: " << res.votosEnBlancoAlcaldia << std::endl;
-        std::cout << "  Votos nulos: " << res.votosNulosAlcaldia << std::endl;
-        std::cout << "  Abstencion: " << res.abstencionAlcaldia << std::endl;
+        std::cout << "  Votos en blanco: " << res.votosEnBlancoAlcaldia 
+                  << " (" << (totalVotos > 0 ? (res.votosEnBlancoAlcaldia * 100.0) / totalVotos : 0) << "%)" << std::endl;
+        std::cout << "  Votos nulos: " << res.votosNulosAlcaldia 
+                  << " (" << (totalVotos > 0 ? (res.votosNulosAlcaldia * 100.0) / totalVotos : 0) << "%)" << std::endl;
         
         if (res.ganadorAlcaldia) {
             int votosGanador = res.votosAlcaldia.at(res.ganadorAlcaldia);
@@ -162,15 +271,26 @@ void SimulacionElectoral::mostrarResultadosPresidencia(const ResultadosNacionale
     std::cout << "       RESULTADOS PRESIDENCIALES" << std::endl;
     std::cout << std::string(50, '=') << std::endl;
     
-    int totalVotos = resultados.votosEnBlancoPresidencia + resultados.votosNulosPresidencia + 
-                     resultados.abstencionPresidencia;
+    int totalVotos = resultados.votosEnBlancoPresidencia + resultados.votosNulosPresidencia;
     for (const auto& par : resultados.votosPresidencia) {
         totalVotos += par.second;
     }
     
-    std::cout << "\nTotal votantes: " << totalVotos << " / Censo: " << totalCenso << std::endl;
+    double participacion = (totalVotos * 100.0) / totalCenso;
+    
+    std::cout << "\nTotal censo: " << totalCenso << std::endl;
+    std::cout << "Total votantes: " << totalVotos << std::endl;
     std::cout << "Participacion: " << std::fixed << std::setprecision(1) 
-              << ((totalVotos * 100.0) / totalCenso) << "%" << std::endl;
+              << participacion << "%" << std::endl;
+    std::cout << "Abstencion: " << std::fixed << std::setprecision(1)
+              << (100.0 - participacion) << "%" << std::endl;
+    
+    // Mostrar estadísticas de género
+    std::cout << "\nDistribucion por genero:" << std::endl;
+    std::cout << "  Votos masculinos: " << resultados.estadisticasGenero.votosMasculinos 
+              << " (" << std::fixed << std::setprecision(1) << resultados.estadisticasGenero.porcentajeMasculino << "%)" << std::endl;
+    std::cout << "  Votos femeninos: " << resultados.estadisticasGenero.votosFemeninos 
+              << " (" << std::fixed << std::setprecision(1) << resultados.estadisticasGenero.porcentajeFemenino << "%)" << std::endl;
     
     std::cout << "\nFormulas presidenciales:" << std::endl;
     for (const auto& par : resultados.votosPresidencia) {
@@ -180,9 +300,10 @@ void SimulacionElectoral::mostrarResultadosPresidencia(const ResultadosNacionale
     }
     
     std::cout << "\nVotos especiales:" << std::endl;
-    std::cout << "  Votos en blanco: " << resultados.votosEnBlancoPresidencia << std::endl;
-    std::cout << "  Votos nulos: " << resultados.votosNulosPresidencia << std::endl;
-    std::cout << "  Abstencion: " << resultados.abstencionPresidencia << std::endl;
+    std::cout << "  Votos en blanco: " << resultados.votosEnBlancoPresidencia 
+              << " (" << (totalVotos > 0 ? (resultados.votosEnBlancoPresidencia * 100.0) / totalVotos : 0) << "%)" << std::endl;
+    std::cout << "  Votos nulos: " << resultados.votosNulosPresidencia 
+              << " (" << (totalVotos > 0 ? (resultados.votosNulosPresidencia * 100.0) / totalVotos : 0) << "%)" << std::endl;
     
     if (resultados.ganadorPresidencia) {
         int votosGanador = resultados.votosPresidencia.at(resultados.ganadorPresidencia);
@@ -212,10 +333,12 @@ void SimulacionElectoral::mostrarEstadisticasAlcaldias(DatosElectoral& sistema, 
         int totalNulos = 0;
         int totalAbst = 0;
         int totalCenso = 0;
+        int votosMasculinos = 0;
+        int votosFemeninos = 0;
         
         for (const auto& res : resultados) {
             if (res.ciudad->region == region) {
-                int votsCiudad = res.votosEnBlancoAlcaldia + res.votosNulosAlcaldia + res.abstencionAlcaldia;
+                int votsCiudad = res.votosEnBlancoAlcaldia + res.votosNulosAlcaldia;
                 for (const auto& par : res.votosAlcaldia) {
                     votsCiudad += par.second;
                 }
@@ -225,17 +348,37 @@ void SimulacionElectoral::mostrarEstadisticasAlcaldias(DatosElectoral& sistema, 
                 totalNulos += res.votosNulosAlcaldia;
                 totalAbst += res.abstencionAlcaldia;
                 totalCenso += res.ciudad->censoElectoral;
+                
+                // Acumular votos por género
+                votosMasculinos += res.estadisticasGenero.votosMasculinos;
+                votosFemeninos += res.estadisticasGenero.votosFemeninos;
             }
         }
         
-        std::cout << "  Total votos: " << totalVotos << " / Censo: " << totalCenso << std::endl;
+        std::cout << "  Total censo: " << totalCenso << std::endl;
+        std::cout << "  Total votantes: " << totalVotos << std::endl;
         std::cout << "  Votos en blanco: " << totalBlancos << std::endl;
         std::cout << "  Votos nulos: " << totalNulos << std::endl;
         std::cout << "  Abstencion: " << totalAbst << std::endl;
         
+        // Mostrar estadísticas de género por región
+        if (totalVotos > 0) {
+            double porcentajeMasculino = (votosMasculinos * 100.0) / totalVotos;
+            double porcentajeFemenino = (votosFemeninos * 100.0) / totalVotos;
+            
+            std::cout << "\n  Distribucion por genero en la region:" << std::endl;
+            std::cout << "    Votos masculinos: " << votosMasculinos 
+                      << " (" << std::fixed << std::setprecision(1) << porcentajeMasculino << "%)" << std::endl;
+            std::cout << "    Votos femeninos: " << votosFemeninos 
+                      << " (" << std::fixed << std::setprecision(1) << porcentajeFemenino << "%)" << std::endl;
+        }
+        
         if (totalCenso > 0) {
-            std::cout << "  Participacion: " << std::fixed << std::setprecision(1) 
-                      << ((totalVotos * 100.0) / totalCenso) << "%" << std::endl;
+            double participacion = (totalVotos * 100.0) / totalCenso;
+            std::cout << "\n  Participacion: " << std::fixed << std::setprecision(1) 
+                      << participacion << "%" << std::endl;
+            std::cout << "  Abstencion regional: " << std::fixed << std::setprecision(1)
+                      << (100.0 - participacion) << "%" << std::endl;
         }
     }
 }
@@ -245,22 +388,52 @@ void SimulacionElectoral::mostrarEstadisticasPresidencia(Pais* pais, const Resul
     std::cout << "   ESTADISTICAS PRESIDENCIALES NACIONALES" << std::endl;
     std::cout << std::string(50, '=') << std::endl;
     
-    int totalVotos = resultados.votosEnBlancoPresidencia + resultados.votosNulosPresidencia + 
-                     resultados.abstencionPresidencia;
+    int totalVotos = resultados.votosEnBlancoPresidencia + resultados.votosNulosPresidencia;
     for (const auto& par : resultados.votosPresidencia) {
         totalVotos += par.second;
     }
     
-    std::cout << "\nTotal votantes: " << totalVotos << std::endl;
-    std::cout << "Total censo: " << totalCenso << std::endl;
+    double participacion = (totalVotos * 100.0) / totalCenso;
+    
+    std::cout << "\nTotal censo: " << totalCenso << std::endl;
+    std::cout << "Total votantes: " << totalVotos << std::endl;
     std::cout << "Participacion nacional: " << std::fixed << std::setprecision(2) 
-              << ((totalVotos * 100.0) / totalCenso) << "%" << std::endl;
+              << participacion << "%" << std::endl;
+    std::cout << "Abstencion nacional: " << std::fixed << std::setprecision(2)
+              << (100.0 - participacion) << "%" << std::endl;
+    
+    std::cout << "\nDistribucion de votos por genero a nivel nacional:" << std::endl;
+    std::cout << "  Votos masculinos: " << resultados.estadisticasGenero.votosMasculinos 
+              << " (" << std::fixed << std::setprecision(2) << resultados.estadisticasGenero.porcentajeMasculino << "% de los votos)" << std::endl;
+    std::cout << "  Votos femeninos: " << resultados.estadisticasGenero.votosFemeninos 
+              << " (" << std::fixed << std::setprecision(2) << resultados.estadisticasGenero.porcentajeFemenino << "% de los votos)" << std::endl;
     
     std::cout << "\nTasa de votos especiales:" << std::endl;
     std::cout << "  Votos en blanco: " << std::fixed << std::setprecision(2)
-              << ((resultados.votosEnBlancoPresidencia * 100.0) / totalCenso) << "%" << std::endl;
-    std::cout << "  Votos nulos: " << ((resultados.votosNulosPresidencia * 100.0) / totalCenso) << "%" << std::endl;
-    std::cout << "  Abstencion: " << ((resultados.abstencionPresidencia * 100.0) / totalCenso) << "%" << std::endl;
+              << ((resultados.votosEnBlancoPresidencia * 100.0) / totalCenso) << "% del censo" << std::endl;
+    std::cout << "  Votos nulos: " << ((resultados.votosNulosPresidencia * 100.0) / totalCenso) << "% del censo" << std::endl;
+    
+    // Mostrar distribución por candidato con análisis de género
+    std::cout << "\nDistribucion por candidato:" << std::endl;
+    for (const auto& par : resultados.votosPresidencia) {
+        double porcentajeCenso = (par.second * 100.0) / totalCenso;
+        double porcentajeVotos = totalVotos > 0 ? (par.second * 100.0) / totalVotos : 0;
+        std::cout << "  " << par.first->nombre << " " << par.first->apellido 
+                  << ": " << porcentajeCenso << "% del censo, " 
+                  << porcentajeVotos << "% de los votos validos" << std::endl;
+    }
+    
+    // Análisis adicional de género por candidato (simplificado)
+    std::cout << "\nAnalisis de genero por candidato (estimado):" << std::endl;
+    for (const auto& par : resultados.votosPresidencia) {
+        // Estimación simple: distribución similar a la nacional
+        int votosMasculinosEstimados = par.second * resultados.estadisticasGenero.porcentajeMasculino / 100;
+        int votosFemeninosEstimados = par.second * resultados.estadisticasGenero.porcentajeFemenino / 100;
+        
+        std::cout << "  " << par.first->nombre << " " << par.first->apellido 
+                  << ": " << votosMasculinosEstimados << " votos masculinos, "
+                  << votosFemeninosEstimados << " votos femeninos" << std::endl;
+    }
 }
 
 void SimulacionElectoral::simularElecciones(DatosElectoral& sistema, Pais* pais) {

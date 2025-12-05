@@ -142,7 +142,7 @@ void agregarCandidato(DatosElectoral& sistema, Pais* pais) {
     std::cout << "+======================================================================+" << std::endl;
     Ciudad* ciudadResidencia = seleccionarCiudad(sistema);    
     if (!ciudadResidencia) return;
-    
+
     Partido* partido = seleccionarPartido(sistema);
     if (!partido) return;
 
@@ -322,18 +322,22 @@ void menuConsultas(DatosElectoral& sistema, Pais* pais) {
     
     while (opcion != 0) {
         std::cout << "\n";
-        std::cout << "+----------------------------------------+" << std::endl;
-        std::cout << "|      MENU DE CONSULTAS                 |" << std::endl;
-        std::cout << "|----------------------------------------|" << std::endl;
-        std::cout << "|  1. Ciudades electorales               |" << std::endl;
-        std::cout << "|  2. Partidos legales                   |" << std::endl;
-        std::cout << "|  3. Candidatos por ciudad              |" << std::endl;
-        std::cout << "|  4. Candidatos presidenciales          |" << std::endl;
-        std::cout << "|  5. Tarjeton de alcaldia               |" << std::endl;
-        std::cout << "|  6. Tarjeton de presidencia            |" << std::endl;
-        std::cout << "|  7. Censo electoral                    |" << std::endl;
-        std::cout << "|  0. Volver                             |" << std::endl;
-        std::cout << "+----------------------------------------+" << std::endl;
+        std::cout << "+------------------------------------------------+" << std::endl;
+        std::cout << "|           MENU DE CONSULTAS                   |" << std::endl;
+        std::cout << "+------------------------------------------------+" << std::endl;
+        std::cout << "|  1. Ciudades electorales                      |" << std::endl;
+        std::cout << "|  2. Partidos legales                          |" << std::endl;
+        std::cout << "|  3. Candidatos por ciudad                     |" << std::endl;
+        std::cout << "|  4. Candidatos presidenciales                 |" << std::endl;
+        std::cout << "|  5. Tarjeton de alcaldia                      |" << std::endl;
+        std::cout << "|  6. Tarjeton de presidencia                   |" << std::endl;
+        std::cout << "|  7. Censo electoral                           |" << std::endl;
+        std::cout << "|  8. Candidatos a alcaldia por partido y region|" << std::endl;
+        std::cout << "|  9. Candidatos a alcaldia por partido         |" << std::endl;
+        std::cout << "|     (todas las ciudades)                      |" << std::endl;
+        std::cout << "| 10. Candidatos por ciudad por partido         |" << std::endl;
+        std::cout << "|  0. Volver                                    |" << std::endl;
+        std::cout << "+------------------------------------------------+" << std::endl;
         std::cout << "\nSeleccione opcion: ";
         std::cin >> opcion;
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -401,6 +405,255 @@ void menuConsultas(DatosElectoral& sistema, Pais* pais) {
                 break;
             }
             
+            case 8: {
+                // ============================================
+                // CANDIDATOS A ALCALDIA POR PARTIDO Y REGIÓN
+                // ============================================
+                
+                std::cout << "\n";
+                std::cout << "+===================================================+" << std::endl;
+                std::cout << "|  CANDIDATOS A ALCALDIA POR PARTIDO Y REGIÓN     |" << std::endl;
+                std::cout << "+===================================================+" << std::endl;
+                
+                // 1. Obtener y mostrar todas las regiones
+                std::cout << "\n--- REGIONES DISPONIBLES ---" << std::endl;
+                                
+                // Obtener regiones directamente del sistema
+                auto regiones = sistema.obtenerListaRegiones();
+
+                if (regiones.empty()) {
+                    std::cout << "No hay regiones disponibles." << std::endl;
+                    break;
+                }
+
+                // Mostrar regiones numeradas
+                std::cout << "\n--- REGIONES DISPONIBLES ---" << std::endl;
+                for (size_t i = 0; i < regiones.size(); i++) {
+                    std::cout << "  " << i + 1 << ". " << regiones[i]->nombre 
+                            << " (" << regiones[i]->ciudades.size() << " ciudades)" << std::endl;
+                }
+
+                // Seleccionar región
+                int opcionRegion;
+                std::cout << "\nSeleccione una región (1-" << regiones.size() << "): ";
+                std::cin >> opcionRegion;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+                if (opcionRegion < 1 || opcionRegion > static_cast<int>(regiones.size())) {
+                    std::cout << "Selección inválida. Operación cancelada." << std::endl;
+                    break;
+                }
+                
+                Region* regionSeleccionada = regiones[opcionRegion - 1];
+                
+                // 2. Obtener y mostrar todos los partidos
+                std::cout << "\n--- PARTIDOS LEGALES ---" << std::endl;
+                auto partidos = sistema.obtenerPartidosLegales();
+                
+                if (partidos.empty()) {
+                    std::cout << "No hay partidos legales registrados." << std::endl;
+                    break;
+                }
+                
+                for (size_t i = 0; i < partidos.size(); i++) {
+                    std::cout << "  " << i + 1 << ". " << partidos[i]->nombre << std::endl;
+                }
+                
+                // Seleccionar partido
+                int opcionPartido;
+                std::cout << "\nSeleccione un partido (1-" << partidos.size() << "): ";
+                std::cin >> opcionPartido;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                
+                if (opcionPartido < 1 || opcionPartido > static_cast<int>(partidos.size())) {
+                    std::cout << "Selección inválida. Operación cancelada." << std::endl;
+                    break;
+                }
+                
+                Partido* partidoSeleccionado = partidos[opcionPartido - 1];
+                
+                // 3. Obtener candidatos usando el método
+                std::cout << "\n";
+                std::cout << "+===================================================+" << std::endl;
+                std::cout << "|            CANDIDATOS ALCALDIA P/R                |" << std::endl;
+                std::cout << "|  REGION: " << std::setw(36) << std::left << regionSeleccionada->nombre << "|" << std::endl;
+                std::cout << "|  PARTIDO: " << std::setw(35) << std::left << partidoSeleccionado->nombre << "|" << std::endl;
+                std::cout << "+===================================================+" << std::endl;
+                
+                // Llamar al método que implementaste
+               auto resultados = sistema.candidatosAlcaldiaPorPartidoYRegion(partidoSeleccionado, regionSeleccionada);
+
+                if (resultados.empty()) {
+                    std::cout << "\nNo hay candidatos de " << partidoSeleccionado->nombre 
+                            << " en " << regionSeleccionada->nombre << std::endl;
+                    break;
+                }
+
+                for (size_t i = 0; i < resultados.size(); i++) {
+                    Ciudad* ciudad = std::get<0>(resultados[i]);  // Extraer ciudad de la tupla
+                    Candidato* cand = std::get<1>(resultados[i]); // Extraer candidato de la tupla
+                    
+                    int edad = UtilidadesAnalisis::calcularEdad(cand->fechaNacimiento);
+                    std::string sexo = (cand->sexo == Sexo::Masculino) ? "M" : "F";
+                    std::string ciudadNombre = ciudad ? ciudad->nombre : "N/A";
+                    
+                    std::cout << i + 1 << ". " << cand->nombre << " " << cand->apellido << std::endl;
+                    std::cout << "   Ciudad: " << ciudadNombre 
+                            << " | Edad: " << edad 
+                            << " | Sexo: " << sexo << std::endl;
+                }
+
+                std::cout << "\nTotal: " << resultados.size() << " candidato(s)" << std::endl;
+                break;
+            }
+
+            case 9: {
+                auto partidos = sistema.obtenerPartidosLegales();
+                
+                if (partidos.empty()) {
+                    std::cout << "\nNo hay partidos legales registrados." << std::endl;
+                    break;
+                }
+                
+                std::cout << "\n+------------------------------------------------+" << std::endl;
+                std::cout << "|      CANDIDATOS A ALCALDIA POR PARTIDO        |" << std::endl;
+                std::cout << "+------------------------------------------------+" << std::endl;
+                std::cout << "|  PARTIDOS DISPONIBLES:                        |" << std::endl;
+                
+                for (size_t i = 0; i < partidos.size(); i++) {
+                    std::cout << "|  " << std::setw(2) << std::left << i + 1 
+                            << ". " << std::setw(35) << std::left 
+                            << partidos[i]->nombre << " |" << std::endl;
+                }
+                
+                std::cout << "|   0. Cancelar                                 |" << std::endl;
+                std::cout << "+------------------------------------------------+" << std::endl;
+                
+                int opcion;
+                std::cout << "\nSeleccione partido (1-" << partidos.size() << "): ";
+                std::cin >> opcion;
+                std::cin.ignore();
+                
+                if (opcion < 1 || opcion > static_cast<int>(partidos.size())) {
+                    std::cout << "Operación cancelada." << std::endl;
+                    break;
+                }
+                
+                Partido* partidoElegido = partidos[opcion - 1];
+                
+                // Obtener candidatos del partido
+                auto candidatosData = sistema.candidatosAlcaldiaPorPartido(partidoElegido);
+                
+                if (candidatosData.empty()) {
+                    std::cout << "\nEl partido no tiene candidatos a alcaldia." << std::endl;
+                    break;
+                }
+                
+                auto& candidatos = std::get<1>(candidatosData[0]);
+                
+                // Imprimir resultados
+                std::cout << "\n";
+                std::cout << "+================================================================+" << std::endl;
+                std::cout << "|  CANDIDATOS A ALCALDIA - " 
+                        << std::setw(35) << std::left << partidoElegido->nombre << "|" << std::endl;
+                std::cout << "|  Total: " << std::setw(52) << std::left 
+                        << std::to_string(candidatos.size()) + " candidato(s)" << "|" << std::endl;
+                std::cout << "+================================================================+" << std::endl;
+                
+                for (size_t i = 0; i < candidatos.size(); i++) {
+                    Candidato* c = candidatos[i];                    
+                    std::string sexo = (c->sexo == Sexo::Masculino) ? "M" : "F";
+                    std::string ciudad = c->ciudadAspirante ? c->ciudadAspirante->nombre : "N/A";
+                    
+                    std::cout << "| " << std::setw(2) << std::right << i + 1 << ". " 
+                            << std::setw(25) << std::left << (c->nombre + " " + c->apellido)
+                            << " | Ciudad: " << std::setw(15) << std::left << ciudad                            
+                            << " | Sexo: " << sexo << " |" << std::endl;
+                }
+                
+                std::cout << "+================================================================+" << std::endl;
+                break;
+            }
+
+            case 10: {
+                std::cout << "\n=== CANDIDATOS A ALCALDIA POR CIUDAD Y PARTIDO ===" << std::endl;
+                
+                // 1. Seleccionar ciudad
+                auto ciudades = sistema.obtenerCiudadesElectorales();
+                auto partidos = sistema.obtenerPartidosLegales();
+
+                if (ciudades.empty() || partidos.empty()) {
+                    std::cout << "No hay ciudades o partidos disponibles." << std::endl;
+                    break;
+                }
+                
+                std::cout << "\nSeleccione ciudad:" << std::endl;
+                for (size_t i = 0; i < ciudades.size(); i++) {
+                    std::cout << i + 1 << ". " << ciudades[i]->nombre 
+                            << " (" << ciudades[i]->candidatosAlcaldia.size() << " candidatos)" << std::endl;
+                }
+                
+                int opcionCiudad;
+                std::cout << "Opción: ";
+                std::cin >> opcionCiudad;
+                std::cin.ignore();
+                
+                if (opcionCiudad < 1 || opcionCiudad > static_cast<int>(ciudades.size())) {
+                    std::cout << "Opción inválida." << std::endl;
+                    break;
+                }
+                
+                Ciudad* ciudadSeleccionada = ciudades[opcionCiudad - 1];
+                
+                
+                std::cout << "\nSeleccione partido:" << std::endl;
+                for (size_t i = 0; i < partidos.size(); i++) {
+                    std::cout << i + 1 << ". " << partidos[i]->nombre << std::endl;
+                }
+                
+                int opcionPartido;
+                std::cout << "Opción: ";
+                std::cin >> opcionPartido;
+                std::cin.ignore();
+                
+                if (opcionPartido < 1 || opcionPartido > static_cast<int>(partidos.size())) {
+                    std::cout << "Opción inválida." << std::endl;
+                    break;
+                }
+                
+                Partido* partidoSeleccionado = partidos[opcionPartido - 1];
+                
+                // 3. Obtener y mostrar resultados
+                auto candidatos = sistema.candidatosAlcaldiaPorCiudadYPartido(ciudadSeleccionada, partidoSeleccionado);
+                
+                std::cout << "\n==================================================" << std::endl;
+                std::cout << "CIUDAD: " << ciudadSeleccionada->nombre << std::endl;
+                std::cout << "PARTIDO: " << partidoSeleccionado->nombre << std::endl;
+                std::cout << "==================================================" << std::endl;
+                
+                if (candidatos.empty()) {
+                    std::cout << "\nNo hay candidatos para esta combinación." << std::endl;
+                } else {
+                    std::cout << "\nCandidatos encontrados: " << candidatos.size() << "\n" << std::endl;
+                    
+                    for (size_t i = 0; i < candidatos.size(); i++) {
+                        Candidato* cand = candidatos[i];
+                        int edad = UtilidadesAnalisis::calcularEdad(cand->fechaNacimiento);
+                        std::string sexo = (cand->sexo == Sexo::Masculino) ? "Masculino" : "Femenino";
+                        
+                        std::cout << i + 1 << ". " << cand->nombre << " " << cand->apellido << std::endl;
+                        std::cout << "   Edad: " << edad << " años" << std::endl;
+                        std::cout << "   Sexo: " << sexo << std::endl;
+                        std::cout << "   Estado Civil: ";
+                        std::cout << std::endl;                        
+                        std::cout << std::string(40, '-') << std::endl;
+                    }
+                }
+                
+                std::cout << "\n==================================================" << std::endl;
+                break;
+            }
+
             case 0:
                 std::cout << "Volviendo..." << std::endl;
                 break;

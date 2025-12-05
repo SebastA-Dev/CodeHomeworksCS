@@ -263,37 +263,68 @@ std::vector<std::pair<Candidato*, Candidato*>> DatosElectoral::candidatosPreside
     return res;
 }
 
-// 5. Obtener candidatos a alcald�a por partido
-// Retorna tuplas (Ciudad, Partido, vector de candidatos)
-std::vector<std::tuple<Ciudad*, Partido*, std::vector<Candidato*>>> DatosElectoral::candidatosAlcaldiaPorPartido() {
-    std::vector<std::tuple<Ciudad*, Partido*, std::vector<Candidato*>>> res;
+// 5. Obtener candidatos a alcaldia por partido
+// Retorna tuplas (Partido, vector de candidatos)
+std::vector<std::tuple<Partido*, std::vector<Candidato*>>> DatosElectoral::candidatosAlcaldiaPorPartido(Partido* partido) {
+    std::vector<std::tuple<Partido*, std::vector<Candidato*>>> resultado;
     
+    if (!partido) {
+        std::cerr << "Partido no valido" << std::endl;
+        return resultado;
+    }
+    
+    std::vector<Candidato*> candidatosDelPartido;
+    
+    // Recorrer todas las ciudades y buscar candidatos del partido
     for (auto ciudad : ciudades) {
-        for (auto cand : ciudad->candidatosAlcaldia) {
-            Partido* p = cand->partido;
-            
-            // Buscar si ya existe tupla (ciudad, partido)
-            bool found = false;
-            for (auto& t : res) {
-                if (std::get<0>(t) == ciudad && std::get<1>(t) == p) {
-                    std::get<2>(t).push_back(cand);
-                    found = true;
-                    break;
-                }
-            }
-            
-            if (!found) {
-                std::vector<Candidato*> v;
-                v.push_back(cand);
-                res.push_back(std::make_tuple(ciudad, p, v));
+        for (auto candidato : ciudad->candidatosAlcaldia) {
+            if (candidato && candidato->partido == partido) {
+                candidatosDelPartido.push_back(candidato);
             }
         }
     }
     
-    return res;
+    // Crear la tupla con el partido y todos sus candidatos
+    if (!candidatosDelPartido.empty()) {
+        resultado.push_back(std::make_tuple(partido, candidatosDelPartido));
+    }
+    
+    return resultado;
 }
 
-// 6. Obtener candidatos presidenciales por partido
+// Implementación
+std::vector<std::tuple<Ciudad*, Candidato*>> 
+DatosElectoral::candidatosAlcaldiaPorPartidoYRegion(Partido* partido, Region* region) {
+    std::vector<std::tuple<Ciudad*, Candidato*>> resultado;
+    
+    // Validaciones exhaustivas
+    if (!partido || !region || region->ciudades.empty()) {
+        std::cerr << "ERROR: Partido es nullptr en candidatosAlcaldiaPorPartidoYRegion" << std::endl;
+        return resultado;
+    }
+        
+    for (auto ciudad : region->ciudades) {
+        if (!ciudad) {
+            std::cerr << "Advertencia: Ciudad nula encontrada en región " << region->nombre << std::endl;
+            continue;
+        }
+                
+        for (auto candidato : ciudad->candidatosAlcaldia) {
+            if (!candidato) {
+                std::cerr << "Advertencia: Candidato nulo en ciudad " << ciudad->nombre << std::endl;
+                continue;
+            }
+            
+            if (candidato->partido == partido) {
+                resultado.push_back(std::make_tuple(ciudad, candidato));
+            }
+        }        
+    }
+    
+    return resultado;
+}
+
+// 7. Obtener candidatos presidenciales por partido
 // Retorna par (Presidente, Vicepresidente) de un partido espec�fico
 std::pair<Candidato*, Candidato*> DatosElectoral::candidatosPresidenciaPorPartido(Partido* partido) {
     if (!partido) return {nullptr, nullptr};
@@ -311,6 +342,27 @@ std::pair<Candidato*, Candidato*> DatosElectoral::candidatosPresidenciaPorPartid
     }
     
     return {nullptr, nullptr};
+}
+
+//8. Obtener candidatos a alcaldia por ciudad y partido específicos
+std::vector<Candidato*> 
+DatosElectoral::candidatosAlcaldiaPorCiudadYPartido(Ciudad* ciudad, Partido* partido) {
+    std::vector<Candidato*> resultado;
+    
+    // Validar parámetros
+    if (!ciudad || !partido) {
+        std::cerr << "ERROR: Ciudad es nullptr en candidatosAlcaldiaPorCiudadYPartido" << std::endl;
+        return resultado;
+    }
+    
+    // Recorrer candidatos a alcaldía de la ciudad
+    for (auto candidato : ciudad->candidatosAlcaldia) {
+        if (candidato && candidato->partido == partido) {
+            resultado.push_back(candidato);
+        }
+    }
+    
+    return resultado;
 }
 
 // ============================================================================
