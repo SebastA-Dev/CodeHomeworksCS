@@ -7,10 +7,10 @@
 #include <limits>
 #include <regex>
 #include <sstream>
-#include <iomanip>
 #include <cctype>
 #include <ctime>
 #include <functional>
+#include <iomanip>
 
 std::string UtilidadesAnalisis::stringToHex(const std::string &input) {
     std::ostringstream oss;
@@ -198,10 +198,21 @@ std::tm UtilidadesAnalisis::leerFechaNacimiento() {
             continue;
         }
 
-        std::istringstream ss(fechaStr);
-        ss >> std::get_time(&fechaNacimiento, "%Y-%m-%d");
+        // Parsear la fecha usando sscanf
+        int year, month, day;
+        if (sscanf(fechaStr.c_str(), "%d-%d-%d", &year, &month, &day) != 3) {
+            std::cout << "Fecha invalida.\n";
+            continue;
+        }
 
-        if (ss.fail()) {
+        // Asignar a la estructura tm
+        fechaNacimiento.tm_year = year - 1900;
+        fechaNacimiento.tm_mon = month - 1;
+        fechaNacimiento.tm_mday = day;
+
+        // Validar que la fecha es v�lida (d�as del mes, etc.)
+        // Podemos hacer una validaci�n b�sica
+        if (month < 1 || month > 12 || day < 1 || day > 31) {
             std::cout << "Fecha invalida.\n";
             continue;
         }
@@ -210,9 +221,9 @@ std::tm UtilidadesAnalisis::leerFechaNacimiento() {
         std::time_t t = std::time(nullptr);
         std::tm* now = std::localtime(&t);
 
-        int edad = now->tm_year + 1900 - (fechaNacimiento.tm_year + 1900);
-        if ((now->tm_mon < fechaNacimiento.tm_mon) ||
-           (now->tm_mon == fechaNacimiento.tm_mon && now->tm_mday < fechaNacimiento.tm_mday)) {
+        int edad = now->tm_year + 1900 - year;
+        if ((now->tm_mon + 1 < month) ||
+           (now->tm_mon + 1 == month && now->tm_mday < day)) {
             edad--;
         }
 

@@ -94,7 +94,6 @@ Region* seleccionarRegion(DatosElectoral& sistema) {
 // =========================
 // GESTION DE CANDIDATOS
 // =========================
-
 void agregarCandidato(DatosElectoral& sistema, Pais* pais) {
     std::string nombre, apellido, identificacion;
 
@@ -129,12 +128,21 @@ void agregarCandidato(DatosElectoral& sistema, Pais* pais) {
     // ============================
     // SELECCIONAR CIUDADES Y PARTIDO
     // ============================
+
+    std::cout << "\n";
+    std::cout << "+======================================================================+" << std::endl;
+    std::cout << "        CIUDAD DE NACIMIENTO" << std::endl;
+    std::cout << "+======================================================================+" << std::endl;
     Ciudad* ciudadNacimiento = seleccionarCiudad(sistema);
     if (!ciudadNacimiento) return;
 
-    Ciudad* ciudadResidencia = seleccionarCiudad(sistema);
+    std::cout << "\n";
+    std::cout << "+======================================================================+" << std::endl;
+    std::cout << "        CIUDAD DE RESIDENCIA" << std::endl;
+    std::cout << "+======================================================================+" << std::endl;
+    Ciudad* ciudadResidencia = seleccionarCiudad(sistema);    
     if (!ciudadResidencia) return;
-
+    
     Partido* partido = seleccionarPartido(sistema);
     if (!partido) return;
 
@@ -144,11 +152,10 @@ void agregarCandidato(DatosElectoral& sistema, Pais* pais) {
     int tipoCandidatoOpt = UtilidadesAnalisis::leerTipoCandidato();
     TipoCandidato tipo = UtilidadesAnalisis::parsearTipoCandidato(tipoCandidatoOpt);
 
+    // Debido a que el Alcalde tiene que ser si o si ser residente de la ciudad, se establece directamente
     Ciudad* ciudadAspirante = nullptr;
-    if (tipo == TipoCandidato::ALCALDE) {
-        std::cout << "\nSeleccione ciudad donde aspira a la alcadia:\n";
-        ciudadAspirante = seleccionarCiudad(sistema);
-        if (!ciudadAspirante) return;
+    if (tipo == TipoCandidato::ALCALDE) {        
+        ciudadAspirante = ciudadResidencia;        
     }
 
     // ============================
