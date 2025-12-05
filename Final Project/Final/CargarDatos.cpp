@@ -152,12 +152,12 @@ bool CargarDatos::cargarCiudades(DatosElectoral& sistema, const std::string& rut
     return contador > 0;
 }
 
-std::vector<Candidato*> presidentes;
 bool CargarDatos::cargarCandidatos(DatosElectoral& sistema, const std::string& ruta, Pais* pais) {
     auto& ciudades = sistema.obtenerListaCiudades();
     auto& partidos = sistema.obtenerListaPartidos();
     
     std::vector<Candidato*> presidentesLocales;
+    std::vector<Candidato*> vicepresidentesLocales;
 
     auto buscarCiudad = [&](const std::string& nombre) -> Ciudad* {
         std::string buscado = trim(nombre);
@@ -181,6 +181,15 @@ bool CargarDatos::cargarCandidatos(DatosElectoral& sistema, const std::string& r
 
     auto buscarPresidente = [&](const Partido* partido, const std::vector<Candidato*>& listaPresidentes) -> Candidato* {            
         for (auto c : listaPresidentes) {
+            if (c && c->partido == partido) {
+                return c;
+            }
+        }
+        return nullptr;
+    };
+
+    auto buscarVicepresidente = [&](const Partido* partido, const std::vector<Candidato*>& listaVicepresidentes) -> Candidato* {            
+        for (auto c : listaVicepresidentes) {
             if (c && c->partido == partido) {
                 return c;
             }
@@ -221,80 +230,88 @@ bool CargarDatos::cargarCandidatos(DatosElectoral& sistema, const std::string& r
         campos.push_back(trim(campo));
 
         // Verificar que tenemos los campos mínimos
-        if (campos.size() < 10) {
+        if (campos.size() < 12) { // Cambiado a 12 porque ahora hay un campo extra (true/false) al inicio
+            std::cerr << "Línea con campos insuficientes: " << campos.size() << std::endl;
             continue;
         }
 
-        // Extraer campos en el orden correcto
-        std::string nombre          = campos[0];
-        std::string apellido        = campos[1];
-        std::string codigo          = campos[2];
+        // Extraer campos - CORRECCIÓN DE ÍNDICES
+        bool persiste               = (campos[0] == "true");  // Primer campo
+        std::string nombre          = campos[1];              // Segundo campo
+        std::string apellido        = campos[2];              // Tercer campo
+        std::string codigo          = campos[3];              // Cuarto campo
         
-        char sexoChar = campos[3].empty() ? ' ' : campos[3][0];
+        char sexoChar = campos[4].empty() ? ' ' : campos[4][0];
         Sexo sexo = UtilidadesAnalisis::parsearSexo(sexoChar);
         
-        EstadoCivil estadoCivil = UtilidadesAnalisis::parsearEstadoCivil(campos[4]);
+        EstadoCivil estadoCivil = UtilidadesAnalisis::parsearEstadoCivil(campos[5]);
         
-        std::tm fechaNac = parsearFecha(campos[5]);
+        std::tm fechaNac = parsearFecha(campos[6]);
         
-        Ciudad* ciudadNac = buscarCiudad(campos[6]);
-        Ciudad* ciudadRes = buscarCiudad(campos[7]);
-        Partido* partido = buscarPartido(campos[8]);
+        Ciudad* ciudadNac = buscarCiudad(campos[7]);
+        Ciudad* ciudadRes = buscarCiudad(campos[8]);
+        Partido* partido = buscarPartido(campos[9]);
         
-        TipoCandidato cargo = UtilidadesAnalisis::parsearTipoCandidato(campos[9]);
+        TipoCandidato cargo = UtilidadesAnalisis::parsearTipoCandidato(campos[10]);
         
         Candidato* candidato = nullptr;
 
         // Validaciones básicas
         if (!ciudadNac || !ciudadRes || !partido) {
+            std::cerr << "No se encontró ciudad o partido para: " << nombre << " " << apellido << std::endl;
             continue;
         }
 
-        if (cargo == TipoCandidato::ALCALDE && campos.size() > 10) {
-            Ciudad* ciudadAlcalde = buscarCiudad(campos[10]);
-            if (!ciudadAlcalde) {
-                continue;
-            }
+        if (cargo == TipoCandidato::ALCALDE && campos.size() > 11) {
+            Ciudad* ciudadAlcalde = buscarCiudad(campos[11]);
+            if (!ciudadAlcalde)                
+                continue;            
             
-            candidato = sistema.crearCandidato(
+            candidato = sistema.crearCandidato(persiste,
                 nombre, apellido, codigo, sexo, estadoCivil, fechaNac,
-                ciudadNac, ciudadRes, partido, cargo,pais, ciudadAlcalde, nullptr
+                ciudadNac, ciudadRes, partido, cargo, pais, ciudadAlcalde, nullptr
             );
-        } else if (cargo == TipoCandidato::PRESIDENTE) {
-            // Verificar si ya existe un presidente para este partido
-            Candidato* presidenteExistente = buscarPresidente(partido, presidentesLocales);
-            if (presidenteExistente) {
-                continue;
-            }
             
-            candidato = sistema.crearCandidato(
+        } 
+        else if (cargo == TipoCandidato::PRESIDENTE) {            
+            Candidato* presidenteExistente = buscarPresidente(partido, presidentesLocales);
+            if (presidenteExistente)                
+                continue;
+            
+            
+            candidato = sistema.crearCandidato(persiste,
                 nombre, apellido, codigo, sexo, estadoCivil, fechaNac,
-                ciudadNac, ciudadRes, partido, cargo, pais,nullptr, nullptr
+                ciudadNac, ciudadRes, partido, cargo, pais, nullptr, nullptr
+            );
+            
+            if (candidato) 
+                presidentesLocales.push_back(candidato);
+            
+        } 
+        else if (cargo == TipoCandidato::VICEPRESIDENTE) {
+            // Verificar si ya existe un vicepresidente para este partido
+            Candidato* vicepresidenteExistente = buscarVicepresidente(partido, vicepresidentesLocales);
+            if (vicepresidenteExistente)                 
+                continue;
+            
+            
+            Candidato* presidente = buscarPresidente(partido, presidentesLocales);
+            if (!presidente)
+                continue;
+            
+            
+            // Crear el vicepresidente usando el sistema
+            candidato = sistema.crearCandidato(persiste,
+                nombre, apellido, codigo, sexo, estadoCivil, fechaNac,
+                ciudadNac, ciudadRes, partido, cargo, pais, nullptr, nullptr
             );
             
             if (candidato) {
-                presidentesLocales.push_back(candidato);
-            }
-        } else if (cargo == TipoCandidato::VICEPRESIDENTE) {
-            Candidato* presidente = buscarPresidente(partido, presidentesLocales);
-            if (!presidente) {
-                continue;
-            }
-            
-            Candidato* vic = new Candidato();
-            vic->nombre = nombre;
-            vic->apellido = apellido;
-            vic->identificacion = codigo;
-            vic->sexo = sexo;
-            vic->estadoCivil = estadoCivil;
-            vic->fechaNacimiento = fechaNac;
-            vic->ciudadNacimiento = ciudadNac;
-            vic->ciudadResidencia = ciudadNac;
-            vic->partido = partido;
-            vic->tipo = cargo;
-            
-            if (presidente) {
-                presidente->vicepresidente = vic;
+                vicepresidentesLocales.push_back(candidato);
+                // Asignar el vicepresidente al presidente
+                if (presidente) {
+                    presidente->vicepresidente = candidato;
+                }
             }
         }
         
@@ -303,7 +320,19 @@ bool CargarDatos::cargarCandidatos(DatosElectoral& sistema, const std::string& r
         }
     }
 
-    std::cout << "Cargados " << cargados << " candidatos\n";
+    std::cout << "Total cargados " << cargados << " candidatos\n";
+    std::cout << "- Presidentes: " << presidentesLocales.size() << std::endl;
+    std::cout << "- Vicepresidentes: " << vicepresidentesLocales.size() << std::endl;
+    
+    // Contar alcaldes
+    int alcaldesCount = 0;
+    for (auto ciudad : ciudades) {
+        if (ciudad && ciudad->candidatosAlcaldia.size() > 0) {
+            alcaldesCount += ciudad->candidatosAlcaldia.size();
+        }
+    }
+    std::cout << "- Alcaldes: " << alcaldesCount << std::endl;
+    
     return cargados > 0;
 }
 

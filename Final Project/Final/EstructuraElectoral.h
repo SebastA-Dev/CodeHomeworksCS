@@ -69,6 +69,7 @@ struct Partido {
 
 struct Candidato {
     // Identificacion personal
+    bool persiste; 
     std::string nombre;
     std::string apellido;
     std::string identificacion;
@@ -83,7 +84,7 @@ struct Candidato {
     // Informacion electoral
     
     Partido* partido;
-    TipoCandidato tipo; 
+    TipoCandidato tipo;    
     Ciudad* ciudadAspirante = nullptr;  // Para alcaldes
     Candidato* vicepresidente = nullptr; // Solo para el presidente
 

@@ -161,7 +161,7 @@ void agregarCandidato(DatosElectoral& sistema, Pais* pais) {
     // ============================
     // CREAR CANDIDATO
     // ============================
-    Candidato* candidato = sistema.crearCandidato(
+    Candidato* candidato = sistema.crearCandidato(true,
         nombre, apellido, identificacion, sexo, estadoCivil,
         fechaNacimiento, ciudadNacimiento, ciudadResidencia,
         partido, tipo, pais, ciudadAspirante, nullptr
@@ -203,6 +203,8 @@ void eliminarCandidato(DatosElectoral& sistema) {
         }
     }
     
+    UtilidadesAnalisis::eliminarCandidatoDelArchivo(".Candidatos.txt",identificacion);
+
     if (encontrado) {
         std::cout << "\n> Candidato eliminado." << std::endl;
     } else {
@@ -366,6 +368,8 @@ void menuConsultas(DatosElectoral& sistema, Pais* pais) {
                 if (ciudad) {
                     std::cout << "\n=== CANDIDATOS EN " << ciudad->nombre << " ===" << std::endl;
                     for (auto c : ciudad->candidatosAlcaldia) {
+                        if(!c->persiste)
+                            continue;
                         int edad = UtilidadesAnalisis::calcularEdad(c->fechaNacimiento);
                         std::string sexo = (c->sexo == Sexo::Masculino) ? "M" : "F";
                         std::cout << "- " << c->nombre << " " << c->apellido 
@@ -380,6 +384,8 @@ void menuConsultas(DatosElectoral& sistema, Pais* pais) {
                 std::cout << "\n=== CANDIDATOS PRESIDENCIALES ===" << std::endl;
                 for (const auto& par : candidatos) {
                     auto pres = par.first;
+                    if(!pres->persiste)
+                        continue;
                     auto vice = par.second;
                     std::cout << "- " << pres->nombre << " - " << vice->nombre << std::endl;
                 }

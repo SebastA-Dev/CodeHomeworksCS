@@ -37,6 +37,15 @@ public:
     static void imprimirCandidatosPartidoTodasCiudades(const std::vector<std::tuple<Ciudad*, std::string, Sexo, int>>& candidatos, Partido* partido);
     static void imprimirCandidatosPorCiudadPorPartido(const std::vector<std::pair<Partido*, Candidato*>>& candidatos, Ciudad* ciudad);
 
+    //Modificacion    
+    static bool modificarCandidatoEnArchivo(const std::string& rutaArchivo, 
+                                            const std::string& identificacionBuscada,
+                                            const std::vector<int>& columnasModificar,
+                                            const std::vector<std::string>& nuevosValores);
+                                        
+    static bool eliminarCandidatoDelArchivo(const std::string& rutaArchivo,
+                                            const std::string& identificacionBuscada);
+
     //Validaciones
     static char leerSexo();
     static int leerEstadoCivil();

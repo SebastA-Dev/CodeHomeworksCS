@@ -42,7 +42,270 @@ unsigned long long UtilidadesAnalisis::hashToULL(const std::string &input) {
     return static_cast<unsigned long long>(h);
 }
 
-//Parsers
+// =========================
+// Modificacion
+// =========================
+
+// Método auxiliar para leer una línea específica con ID
+static bool leerLineaConID(const std::string& rutaArchivo, 
+                          const std::string& identificacionBuscada, 
+                          std::string& lineaEncontrada,
+                          size_t& numeroLinea) {
+    std::ifstream archivo(rutaArchivo);
+    if (!archivo.is_open()) {
+        return false;
+    }
+    
+    std::string linea;
+    numeroLinea = 0;
+    
+    while (std::getline(archivo, linea)) {
+        numeroLinea++;
+        
+        if (linea.empty()) continue;
+        
+        // Dividir línea para buscar ID en columna 3
+        std::vector<std::string> campos;
+        size_t inicio = 0;
+        size_t fin = linea.find(',');
+        int campoActual = 0;
+        
+        // Solo necesitamos llegar al campo 3 (ID)
+        while (fin != std::string::npos && campoActual < 4) {
+            std::string campo = linea.substr(inicio, fin - inicio);
+            campos.push_back(campo);
+            inicio = fin + 1;
+            fin = linea.find(',', inicio);
+            campoActual++;
+        }
+        
+        // Si llegamos al campo 3
+        if (campoActual >= 3 && campos.size() >= 4) {
+            std::string idActual = campos[3]; // Columna 3 = ID
+            
+            if (idActual == identificacionBuscada) {
+                lineaEncontrada = linea;
+                archivo.close();
+                return true;
+            }
+        }
+    }
+    
+    archivo.close();
+    return false;
+}
+
+// Método para modificar un candidato en el archivo (versión optimizada)
+bool UtilidadesAnalisis::modificarCandidatoEnArchivo(const std::string& rutaArchivo, 
+                                                    const std::string& identificacionBuscada,
+                                                    const std::vector<int>& columnasModificar,
+                                                    const std::vector<std::string>& nuevosValores) {
+    // Validar que haya el mismo número de columnas que valores
+    if (columnasModificar.size() != nuevosValores.size()) {
+        std::cerr << "Error: El número de columnas a modificar no coincide con el número de valores nuevos." << std::endl;
+        return false;
+    }
+    
+    // Validar columnas permitidas (1, 2, 4, 5)
+    for (int columna : columnasModificar) {
+        if (columna != 1 && columna != 2 && columna != 4 && columna != 5) {
+            std::cerr << "Error: Columna " << columna << " no permitida para modificación." << std::endl;
+            std::cerr << "Columnas permitidas: 1 (nombre), 2 (apellido), 4 (sexo), 5 (estadoCivil)" << std::endl;
+            return false;
+        }
+    }
+    
+    // Primero, buscar la línea específica con el ID
+    std::string lineaOriginal;
+    size_t numeroLinea;
+    
+    if (!leerLineaConID(rutaArchivo, identificacionBuscada, lineaOriginal, numeroLinea)) {
+        std::cerr << "Error: No se encontró candidato con identificación " << identificacionBuscada << std::endl;
+        return false;
+    }
+    
+    // Dividir la línea original en campos
+    std::vector<std::string> campos;
+    std::string campo;
+    size_t inicio = 0;
+    size_t fin = lineaOriginal.find(',');
+    
+    while (fin != std::string::npos) {
+        campo = lineaOriginal.substr(inicio, fin - inicio);
+        campos.push_back(campo);
+        inicio = fin + 1;
+        fin = lineaOriginal.find(',', inicio);
+    }
+    
+    // Último campo
+    campo = lineaOriginal.substr(inicio);
+    campos.push_back(campo);
+    
+    // Verificar campos suficientes
+    if (campos.size() < 12) {
+        std::cerr << "Error: Línea no tiene suficientes campos." << std::endl;
+        return false;
+    }
+    
+    // Verificar que el candidato no esté "eliminado"
+    if (campos[0] == "false") {
+        std::cerr << "Error: No se puede modificar un candidato marcado como false (eliminado)." << std::endl;
+        return false;
+    }
+    
+    // Modificar las columnas especificadas
+    std::cout << "Modificando candidato " << identificacionBuscada << ":" << std::endl;
+    for (size_t i = 0; i < columnasModificar.size(); i++) {
+        int columna = columnasModificar[i];
+        if (columna >= 0 && columna < (int)campos.size()) {
+            std::string valorAnterior = campos[columna];
+            campos[columna] = nuevosValores[i];
+            std::cout << "  Columna " << columna << ": '" << valorAnterior 
+                     << "' -> '" << nuevosValores[i] << "'" << std::endl;
+        } else {
+            std::cerr << "Error: Columna " << columna << " fuera de rango." << std::endl;
+            return false;
+        }
+    }
+    
+    // Reconstruir la línea modificada
+    std::string lineaModificada;
+    for (size_t i = 0; i < campos.size(); i++) {
+        if (i > 0) lineaModificada += ",";
+        lineaModificada += campos[i];
+    }
+    
+    // Leer todo el archivo y reemplazar solo la línea modificada
+    std::ifstream archivoEntrada(rutaArchivo);
+    if (!archivoEntrada.is_open()) {
+        std::cerr << "Error: No se pudo abrir el archivo para lectura." << std::endl;
+        return false;
+    }
+    
+    std::vector<std::string> lineas;
+    std::string linea;
+    size_t lineaActual = 0;
+    
+    while (std::getline(archivoEntrada, linea)) {
+        lineaActual++;
+        if (lineaActual == numeroLinea) {
+            // Reemplazar esta línea con la modificada
+            lineas.push_back(lineaModificada);
+        } else {
+            lineas.push_back(linea);
+        }
+    }
+    
+    archivoEntrada.close();
+    
+    // Escribir el archivo actualizado
+    std::ofstream archivoSalida(rutaArchivo);
+    if (!archivoSalida.is_open()) {
+        std::cerr << "Error: No se pudo abrir el archivo para escritura." << std::endl;
+        return false;
+    }
+    
+    for (const auto& l : lineas) {
+        archivoSalida << l << std::endl;
+    }
+    
+    archivoSalida.close();
+    std::cout << "Candidato modificado exitosamente." << std::endl;
+    return true;
+}
+
+// Método para "eliminar" un candidato (versión optimizada)
+bool UtilidadesAnalisis::eliminarCandidatoDelArchivo(const std::string& rutaArchivo,
+                                                    const std::string& identificacionBuscada) {
+    // Primero, buscar la línea específica con el ID
+    std::string lineaOriginal;
+    size_t numeroLinea;
+    
+    if (!leerLineaConID(rutaArchivo, identificacionBuscada, lineaOriginal, numeroLinea)) {
+        std::cerr << "Error: No se encontró candidato con identificación " << identificacionBuscada << std::endl;
+        return false;
+    }
+    
+    // Dividir la línea original para verificar
+    std::vector<std::string> campos;
+    size_t inicio = 0;
+    size_t fin = lineaOriginal.find(',');
+    
+    while (fin != std::string::npos) {
+        std::string campo = lineaOriginal.substr(inicio, fin - inicio);
+        campos.push_back(campo);
+        inicio = fin + 1;
+        fin = lineaOriginal.find(',', inicio);
+    }
+    
+    // Último campo
+    std::string campo = lineaOriginal.substr(inicio);
+    campos.push_back(campo);
+    
+    if (campos.size() < 12) {
+        std::cerr << "Error: Línea no tiene suficientes campos." << std::endl;
+        return false;
+    }
+    
+    std::string nombreCandidato = campos[1] + " " + campos[2];
+    
+    // Verificar si ya está marcado como false
+    if (campos[0] == "false") {
+        std::cerr << "Error: El candidato " << nombreCandidato 
+                 << " ya está marcado como eliminado (false)." << std::endl;
+        return false;
+    }
+    
+    // Cambiar true por false
+    campos[0] = "false";
+    
+    // Reconstruir la línea modificada
+    std::string lineaModificada;
+    for (size_t i = 0; i < campos.size(); i++) {
+        if (i > 0) lineaModificada += ",";
+        lineaModificada += campos[i];
+    }
+    
+    // Leer todo el archivo y reemplazar solo la línea modificada
+    std::ifstream archivoEntrada(rutaArchivo);
+    if (!archivoEntrada.is_open()) {
+        std::cerr << "Error: No se pudo abrir el archivo para lectura." << std::endl;
+        return false;
+    }
+    
+    std::vector<std::string> lineas;
+    std::string linea;
+    size_t lineaActual = 0;
+    
+    while (std::getline(archivoEntrada, linea)) {
+        lineaActual++;
+        if (lineaActual == numeroLinea) {
+            // Reemplazar esta línea con la modificada
+            lineas.push_back(lineaModificada);
+            std::cout << "Marcando como eliminado: " << nombreCandidato 
+                     << " (ID: " << identificacionBuscada << ")" << std::endl;
+        } else {
+            lineas.push_back(linea);
+        }
+    }
+    
+    archivoEntrada.close();
+    
+    // Escribir el archivo actualizado
+    std::ofstream archivoSalida(rutaArchivo);
+    if (!archivoSalida.is_open()) {
+        std::cerr << "Error: No se pudo abrir el archivo para escritura." << std::endl;
+        return false;
+    }
+    
+    for (const auto& l : lineas) {
+        archivoSalida << l << std::endl;
+    }
+    
+    archivoSalida.close();
+    std::cout << "Candidato " << nombreCandidato << " marcado como eliminado (false)." << std::endl;
+    return true;
+}
 
 // =========================
 // PARSERS
@@ -293,29 +556,30 @@ void UtilidadesAnalisis::imprimirTarjetonAlcaldia(Ciudad* ciudad) {
     for (size_t i = 0; i < ciudad->candidatosAlcaldia.size(); i++) {
         Candidato* candidato = ciudad->candidatosAlcaldia[i];
         
-        if (candidato != nullptr) {
-            std::string partidoNombre = "Sin partido";
-            if (candidato->partido != nullptr) {
-                partidoNombre = candidato->partido->nombre;
-            }
-            
-            std::string candidatoNombre = candidato->nombre + " " + candidato->apellido;
-            
-            // Asegurar que los nombres no sean muy largos
-            if (partidoNombre.length() > ANCHO_PARTIDO) {
-                partidoNombre = partidoNombre.substr(0, ANCHO_PARTIDO - 3) + "...";
-            }
-            
-            if (candidatoNombre.length() > ANCHO_CANDIDATO) {
-                candidatoNombre = candidatoNombre.substr(0, ANCHO_CANDIDATO - 3) + "...";
-            }
-            
-            // Imprimir con columnas alineadas
-            std::cout << "  " << opcion << ". " 
-                      << std::setw(ANCHO_PARTIDO) << std::left << partidoNombre
-                      << std::setw(ANCHO_CANDIDATO) << std::left <<" - "<<candidatoNombre << std::endl;
-            opcion++;
+        if (candidato == nullptr || candidato->persiste == false)
+            continue;
+        
+        std::string partidoNombre = "Sin partido";
+        if (candidato->partido != nullptr) {
+            partidoNombre = candidato->partido->nombre;
         }
+        
+        std::string candidatoNombre = candidato->nombre + " " + candidato->apellido;
+        
+        // Asegurar que los nombres no sean muy largos
+        if (partidoNombre.length() > ANCHO_PARTIDO) {
+            partidoNombre = partidoNombre.substr(0, ANCHO_PARTIDO - 3) + "...";
+        }
+        
+        if (candidatoNombre.length() > ANCHO_CANDIDATO) {
+            candidatoNombre = candidatoNombre.substr(0, ANCHO_CANDIDATO - 3) + "...";
+        }
+        
+        // Imprimir con columnas alineadas
+        std::cout << "  " << opcion << ". " 
+                    << std::setw(ANCHO_PARTIDO) << std::left << partidoNombre
+                    << std::setw(ANCHO_CANDIDATO) << std::left <<" - "<<candidatoNombre << std::endl;
+        opcion++;
     }
     
     std::cout << "+======================================================================+" << std::endl;
@@ -344,37 +608,35 @@ void UtilidadesAnalisis::imprimirTarjetonPresidencia(Pais* pais) {
     for (size_t i = 0; i < pais->candidatosPresidencia.size(); i++) {
         Candidato* presidente = pais->candidatosPresidencia[i];
         
-        if (presidente != nullptr) {
-            std::string partidoNombre = "Sin partido";
-            if (presidente->partido != nullptr) {
-                partidoNombre = presidente->partido->nombre;
-                // Acortar si es muy largo
-                if (partidoNombre.length() > ANCHO_PARTIDO) {
-                    partidoNombre = partidoNombre.substr(0, ANCHO_PARTIDO - 3) + "...";
-                }
-            }
-            
-            std::string presidenteNombre = presidente->nombre + " " + presidente->apellido;
-            if (presidenteNombre.length() > ANCHO_PRESIDENTE) {
-                presidenteNombre = presidenteNombre.substr(0, ANCHO_PRESIDENTE - 3) + "...";
-            }
-            
-            std::string viceNombre;
-            if (presidente->vicepresidente != nullptr) {
-                Candidato* vicepresidente = presidente->vicepresidente;
-                viceNombre = vicepresidente->nombre + " " + vicepresidente->apellido;
-                viceNombre = " | VP: " + viceNombre;
-            } else {
-                viceNombre = " | Sin VP";
-            }
-            
-            // Formatear con columnas alineadas
-            std::cout << "  " << opcion << ". " 
-                      << std::setw(ANCHO_PARTIDO) << std::left << partidoNombre << " "
-                      << std::setw(ANCHO_PRESIDENTE) << std::left << presidenteNombre
-                      << viceNombre << std::endl;
-            opcion++;
+        if (presidente == nullptr)
+            continue;
+
+        std::string partidoNombre = "Sin partido";
+        if (presidente->partido == nullptr || presidente->persiste == false || !(presidente->vicepresidente->persiste) || presidente->vicepresidente == nullptr)
+            continue;
+        
+        partidoNombre = presidente->partido->nombre;
+        // Acortar si es muy largo
+        if (partidoNombre.length() > ANCHO_PARTIDO) {
+            partidoNombre = partidoNombre.substr(0, ANCHO_PARTIDO - 3) + "...";
         }
+
+        std::string presidenteNombre = presidente->nombre + " " + presidente->apellido;
+        if (presidenteNombre.length() > ANCHO_PRESIDENTE) {
+            presidenteNombre = presidenteNombre.substr(0, ANCHO_PRESIDENTE - 3) + "...";
+        }
+        
+        std::string viceNombre;
+        Candidato* vicepresidente = presidente->vicepresidente;
+        viceNombre = vicepresidente->nombre + " " + vicepresidente->apellido;
+        viceNombre = " | VP: " + viceNombre;
+        
+        // Formatear con columnas alineadas
+        std::cout << "  " << opcion << ". " 
+                    << std::setw(ANCHO_PARTIDO) << std::left << partidoNombre << " "
+                    << std::setw(ANCHO_PRESIDENTE) << std::left << presidenteNombre
+                    << viceNombre << std::endl;
+        opcion++;
     }
     
     std::cout << "+======================================================================+" << std::endl;
@@ -410,6 +672,8 @@ void UtilidadesAnalisis::imprimirCandidatosPartidoRegion(
         std::cout << "No hay candidatos de este partido en esta region." << std::endl;
     } else {
         for (auto c : candidatos) {
+            if(!c->persiste)
+                continue;                
             int edad = calcularEdad(c->fechaNacimiento);
             std::string sexo = (c->sexo == Sexo::Masculino) ? "M" : "F";
             std::cout << "- " << c->nombre << " " << c->apellido 
@@ -428,7 +692,7 @@ void UtilidadesAnalisis::imprimirCandidatosPartidoTodasCiudades(
     if (candidatos.empty()) {
         std::cout << "No hay candidatos de este partido." << std::endl;
     } else {
-        for (const auto& item : candidatos) {
+        for (const auto& item : candidatos) {            
             auto ciudad = std::get<0>(item);
             auto nombre = std::get<1>(item);
             auto sexo = std::get<2>(item);

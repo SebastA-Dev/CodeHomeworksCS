@@ -49,7 +49,8 @@ public:
                         Region* regionPadre, 
                         std::vector<Candidato*> candidatos);
     
-	Candidato* crearCandidato(std::string nombre, 
+	Candidato* crearCandidato(bool persiste,
+                              std::string nombre, 
     	                      std::string apellido,
         	                  std::string identificacion,
             	              Sexo sexo,

@@ -111,13 +111,14 @@ Ciudad* DatosElectoral::crearCiudad(std::string nombre,
 // Valida autom�ticamente que el candidato sea v�lido
 // Par�metros: datos personales, ubicaci�n, informaci�n electoral
 // Retorna: puntero al Candidato (nullptr si es inv�lido)
-Candidato* DatosElectoral::crearCandidato(std::string nombre, std::string apellido, std::string identificacion, Sexo sexo, EstadoCivil estadoCivil, std::tm fechaNacimiento,
+Candidato* DatosElectoral::crearCandidato(bool persiste, std::string nombre, std::string apellido, std::string identificacion, Sexo sexo, EstadoCivil estadoCivil, std::tm fechaNacimiento,
                                            Ciudad* ciudadNacimiento, Ciudad* ciudadResidencia, Partido* partido, TipoCandidato tipo, Pais* pais, Ciudad* ciudadAspirante, 
                                            Candidato* vicepresidente) {
     
     Candidato* candidato = new Candidato();
     
     // Datos personales
+    candidato->persiste = persiste;
     candidato->nombre = nombre;
     candidato->apellido = apellido;
     candidato->identificacion = identificacion;
@@ -361,7 +362,7 @@ DatosElectoral::candidatosAlcaldiaPorCiudadYPartido(Ciudad* ciudad, Partido* par
             resultado.push_back(candidato);
         }
     }
-    
+
     return resultado;
 }
 
